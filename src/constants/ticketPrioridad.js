@@ -1,7 +1,7 @@
 export const PRIORIDAD = {
-  ALTA: "alta",
-  MEDIA: "media",
-  BAJA: "baja",
+  ALTA: "ALTA",
+  MEDIA: "MEDIA",
+  BAJA: "BAJA",
 };
 
 export const PRIORIDAD_OPTIONS = [

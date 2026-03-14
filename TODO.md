@@ -1,36 +1,35 @@
-# Plan de Implementación - Vista de Usuarios
+# TODO - Alineación Frontend con DB Schema
 
-## Información Recopilada:
-- **dummies.json**: Estructura de usuarios con campos: id, email, nombre, apellido, rol
-- **Badge.jsx**: Componente de badges con estilos para diferentes estados
-- **Table.jsx**: Componente base de tabla con estilos oscuros
-- **colors.md**: Paleta de colores "Dark Purple Premium" del proyecto
-- **SucursalTable.jsx**: Ejemplo de uso de Table y Badge
+## Plan Aprobado - Pasos Pendientes:
 
-## Plan de Ejecución:
+### 1. [x] Crear src/types.ts
+   - Interfaces CreateUsuario, CreateTicket con snake_case, tipos correctos (area_id?: number|null).
 
-### 1. Actualizar dummies.json
-- [x] Agregar campos `sucursal`, `area`, `estado` a cada usuario
-- [x] Mantener solo usuarios con rol "soporte" o "responsable" (excluir admin)
+### 2. [ ] Actualizar Constantes
+   - [x] src/constants/ticketStatus.js: Agregar ANULADO, valores UPPER ('ABIERTO', etc.)
+   - [x] src/constants/ticketPrioridad.js: Valores UPPER ('ALTA', etc.)
+   - [x] src/constants/roles.js: Confirmar valores DB ('admin', 'responsable', 'tecnico')
 
-### 2. Crear UsuariosPage.tsx
-- [x] Importar usuarios de dummies.json
-- [x] Filtrar solo usuarios con rol soporte o responsable
-- [x] Crear componente de Avatar con iniciales (círculo de color)
-- [x] Definir columnas de la tabla:
-  - Usuario: Nombre completo + Email (pequeño debajo)
-  - Rol: Badge (soporte=morado, responsable=azul)
-  - Sucursal: Nombre de sucursal
-  - Área: Nombre de área
-  - Estado: Badge verde (Activo) o rojo (Inactivo)
-- [x] Aplicar estilos de tabla oscura con bordes gray-800 y efectos hover
+### 3. [ ] src/components/usuarios/UsuarioForm.jsx
+   - [ ] Renombrar password → contrasena_hash
+   - [ ] ROL_OPTIONS incluir admin/tecnico
+   - [ ] Lógica condicional area_id (NULL para admin/tecnico)
+   - [ ] onSubmit snake_case payload
 
-### 3. Agregar ruta en AppRouter
-- [x] Agregar ruta para la página de usuarios
+### 4. [ ] src/components/tickets/TicketForm.jsx
+   - [ ] Selects para area_id, sucursal_id, responsable_id
+   - [ ] onSubmit snake_case con IDs
 
-## Colores para badges de rol:
-- Soporte: Morado (bg-purple-electric/20, text-purple-electric)
-- Responsable: Azul (bg-accent-blue/20, text-accent-blue)
+### 5. [ ] Actualizar Mocks
+   - [ ] src/utils/mockTickets.js: snake_case, IDs, UPPER enums
+   - [ ] src/utils/dummies.json si aplica
 
-## Colores para avatar de iniciales:
-- Generar colores based on nombre hash o array predefinido
+### 6. [ ] Services
+   - [ ] src/services/userService.js: add create/update
+   - [ ] src/services/ticketService.js: similar
+
+### 7. [ ] Test & Verify
+   - Forms validation
+   - Payloads match DB
+
+Progreso: 1/7 completado (Constantes ✅)
