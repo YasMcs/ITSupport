@@ -17,8 +17,6 @@ export function EditarUsuarioPage() {
         contrasena_hash: payload.contrasena_hash || mockUsers[index].contrasena_hash,
       };
     }
-
-    toast.success("Cambios guardados");
     navigate("/usuarios");
   };
 

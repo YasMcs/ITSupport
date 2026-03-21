@@ -21,6 +21,7 @@ export default function App() {
                 color: "#f8fafc",
                 boxShadow: "0 0 30px rgba(59, 130, 246, 0.12)",
               },
+              className: "sonner-premium-toast",
             }}
           />
         </TicketProvider>

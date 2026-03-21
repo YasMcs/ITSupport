@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { FormField } from "../ui/FormField";
 import { Select } from "../ui/Select";
 import { Button } from "../ui/Button";
@@ -52,31 +53,49 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
   const validate = () => {
     if (!formData.nombre_usuario.trim()) {
       setError("El nombre_usuario es requerido");
+      toast.warning("Informacion incompleta", {
+        description: "Necesitamos un nombre de usuario para continuar.",
+      });
       return false;
     }
 
     if (!formData.email.trim()) {
       setError("El email es requerido");
+      toast.warning("Informacion incompleta", {
+        description: "Agrega un email valido antes de guardar.",
+      });
       return false;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       setError("El email no es valido");
+      toast.warning("Informacion incompleta", {
+        description: "El formato del email no es valido.",
+      });
       return false;
     }
 
     if (!isEditing && !formData.contrasena_hash.trim()) {
       setError("La contrasena_hash es requerida");
+      toast.warning("Informacion incompleta", {
+        description: "Define una contrasena_hash para crear el registro.",
+      });
       return false;
     }
 
     if (!formData.rol) {
       setError("El rol es requerido");
+      toast.warning("Informacion incompleta", {
+        description: "Selecciona un rol para el usuario.",
+      });
       return false;
     }
 
     if (isEncargado && !formData.area_id) {
       setError("El area_id es obligatorio para encargado");
+      toast.warning("Informacion incompleta", {
+        description: "El area es obligatoria cuando el rol es encargado.",
+      });
       return false;
     }
 
@@ -96,6 +115,10 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
       rol: formData.rol,
       estado_cuenta: formData.estado_cuenta,
       area_id: isEncargado ? Number(formData.area_id) : null,
+    });
+
+    toast.success("Registro creado exitosamente", {
+      description: isEditing ? "Los cambios ya fueron aplicados." : "La informacion se guardo correctamente.",
     });
   };
 

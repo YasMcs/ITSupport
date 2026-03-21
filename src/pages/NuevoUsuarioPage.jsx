@@ -16,8 +16,6 @@ export function NuevoUsuarioPage() {
       estado_cuenta: payload.estado_cuenta,
       area_id: payload.area_id,
     });
-
-    toast.success("Usuario creado con exito");
     navigate("/usuarios");
   };
 

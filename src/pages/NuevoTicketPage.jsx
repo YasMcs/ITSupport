@@ -30,8 +30,9 @@ export function NuevoTicketPage() {
       historial: [{ fecha: new Date().toISOString().split("T")[0], accion: "Ticket creado", tecnico_id: null }],
       comentarios: [],
     });
-
-    toast.success("Ticket enviado");
+    toast.success("Registro creado exitosamente", {
+      description: "El ticket ya esta disponible en tu bandeja.",
+    });
     navigate("/tickets");
   };
 

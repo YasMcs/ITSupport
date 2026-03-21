@@ -27,12 +27,14 @@ export function LoginPage() {
       const data = await authService.login({ email, password });
       const nextUser = data.user ?? { email, rol: ROLES.TECNICO, nombre_usuario: "tecnico.demo" };
       login(nextUser);
-      toast.success(`Bienvenido, ${nextUser.nombre_usuario}`);
+      toast.success(`¡Bienvenido de nuevo, ${nextUser.nombre_usuario}!`);
       navigate("/dashboard");
     } catch (err) {
       const message = err.response?.data?.message ?? err.message ?? "Credenciales incorrectas";
       setError(message);
-      toast.error("Credenciales incorrectas");
+      toast.error("Credenciales incorrectas", {
+        description: "Verifica tu email y contrasena para continuar.",
+      });
     } finally {
       setLoading(false);
     }
