@@ -37,11 +37,11 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-purple-electric/20 flex items-center justify-center">
                 <span className="text-sm font-semibold text-purple-electric">
-                  {user.nombre?.[0]}{user.apellido?.[0]}
+                  {user.nombre_usuario?.[0]}
                 </span>
               </div>
               <div className="hidden md:block">
-                <p className="text-sm font-medium text-text-primary">{user.nombre} {user.apellido}</p>
+                <p className="text-sm font-medium text-text-primary">{user.nombre_usuario}</p>
                 <p className="text-xs text-text-muted">{user.rol}</p>
               </div>
             </div>

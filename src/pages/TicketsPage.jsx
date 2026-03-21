@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
-import { mockTickets } from "../utils/mockTickets";
+import { getEnrichedMockTickets } from "../utils/mockTickets";
 import { TicketTable, COLUMN_KEYS } from "../components/tickets/TicketTable";
 import { KanbanBoard } from "../components/tickets/KanbanBoard";
 import { Button } from "../components/ui/Button";
@@ -11,7 +12,8 @@ import { FilterBar } from "../components/ui/FilterBar";
 export function TicketsPage() {
   const { user, role } = useAuth();
   const navigate = useNavigate();
-  
+  const allTickets = useMemo(() => getEnrichedMockTickets(), []);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -21,155 +23,71 @@ export function TicketsPage() {
     sucursal: "",
     tecnico: "",
   });
+  const [tickets, setTickets] = useState(() => filterTicketsByRole(allTickets, role, user));
 
-  // Estado local de tickets para el Drag and Drop (solo para SOPORTE)
-  const [tickets, setTickets] = useState(() => {
-    if (role !== ROLES.SOPORTE) return [];
-    return mockTickets.filter((t) => t.tecnicoAsignado === user?.nombre);
-  });
-
-  // Función para mover ticket entre columnas (solo para SOPORTE)
   const handleTicketMove = (ticketId, newStatus) => {
-    setTickets((prevTickets) =>
-      prevTickets.map((ticket) =>
-        ticket.id === ticketId
-          ? { ...ticket, estado: newStatus }
-          : ticket
-      )
+    setTickets((prev) =>
+      prev.map((ticket) => (ticket.id === ticketId ? { ...ticket, estado: newStatus } : ticket))
     );
+    toast.success(`Estado actualizado a ${newStatus}`);
   };
 
   const filteredTickets = useMemo(() => {
-    let tickets = [];
+    let currentTickets = role === ROLES.TECNICO ? tickets : filterTicketsByRole(allTickets, role, user);
 
-    if (role === ROLES.ADMIN) {
-      tickets = [...mockTickets];
-    } else if (role === ROLES.SOPORTE) {
-      tickets = mockTickets.filter(
-        (t) => t.tecnicoAsignado === user?.nombre
-      );
-    } else if (role === ROLES.RESPONSABLE) {
-      tickets = mockTickets.filter(
-        (t) => t.responsable === user?.nombre
-      );
-    }
-
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      tickets = tickets.filter(ticket => 
-        ticket.id.toLowerCase().includes(query) ||
-        ticket.titulo?.toLowerCase().includes(query) ||
-        ticket.descripcion?.toLowerCase().includes(query) ||
-        ticket.responsable?.toLowerCase().includes(query) ||
-        ticket.tecnicoAsignado?.toLowerCase().includes(query) ||
-        ticket.area?.toLowerCase().includes(query)
+      currentTickets = currentTickets.filter((ticket) =>
+        [ticket.id, ticket.titulo, ticket.descripcion, ticket.encargado, ticket.tecnico, ticket.area]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(query))
       );
     }
 
-    return tickets.filter((ticket) => {
-      // No aplicar filtro de estado en vista Kanban (rol SOPORTE)
-      if (role !== ROLES.SOPORTE && filters.estado && ticket.estado !== filters.estado) return false;
+    return currentTickets.filter((ticket) => {
+      if (role !== ROLES.TECNICO && filters.estado && ticket.estado !== filters.estado) return false;
       if (filters.prioridad && ticket.prioridad !== filters.prioridad) return false;
       if (filters.area && ticket.area !== filters.area) return false;
       if (filters.sucursal && ticket.sucursal !== filters.sucursal) return false;
-      if (filters.tecnico && ticket.tecnicoAsignado !== filters.tecnico) return false;
+      if (filters.tecnico && ticket.tecnico !== filters.tecnico) return false;
       return true;
     });
-  }, [role, user, filters, searchQuery]);
+  }, [allTickets, filters, role, searchQuery, tickets, user]);
 
   const getColumns = () => {
     if (role === ROLES.ADMIN) {
-      return [
-        COLUMN_KEYS.NUMERO,
-        COLUMN_KEYS.PRIORIDAD,
-        COLUMN_KEYS.ESTADO,
-        COLUMN_KEYS.RESPONSABLE,
-        COLUMN_KEYS.TECNICO,
-        COLUMN_KEYS.FECHA,
-        COLUMN_KEYS.ACCIONES,
-      ];
-    } else if (role === ROLES.SOPORTE) {
-      return [
-        COLUMN_KEYS.NUMERO,
-        COLUMN_KEYS.PRIORIDAD,
-        COLUMN_KEYS.ESTADO,
-        COLUMN_KEYS.RESPONSABLE,
-        COLUMN_KEYS.FECHA,
-        COLUMN_KEYS.ACCIONES,
-      ];
-    } else if (role === ROLES.RESPONSABLE) {
-      return [
-        COLUMN_KEYS.NUMERO,
-        COLUMN_KEYS.FECHA,
-        COLUMN_KEYS.PRIORIDAD,
-        COLUMN_KEYS.ESTADO,
-        COLUMN_KEYS.TECNICO,
-        COLUMN_KEYS.ACCIONES,
-      ];
+      return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.RESPONSABLE, COLUMN_KEYS.TECNICO, COLUMN_KEYS.FECHA, COLUMN_KEYS.ACCIONES];
+    }
+    if (role === ROLES.TECNICO) {
+      return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.RESPONSABLE, COLUMN_KEYS.FECHA, COLUMN_KEYS.ACCIONES];
+    }
+    if (role === ROLES.ENCARGADO) {
+      return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.FECHA, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.TECNICO, COLUMN_KEYS.ACCIONES];
     }
     return [];
   };
 
-  const handleVerDetalle = (id) => {
-    navigate(`/tickets/${id}`);
-  };
-
-  const handleGenerarReporte = () => {
-    alert("Reporte generado");
-  };
-
-  const handleFilterChange = (key, value) => {
-    setFilters((f) => ({ ...f, [key]: value }));
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      estado: "",
-      prioridad: "",
-      area: "",
-      sucursal: "",
-      tecnico: "",
-    });
-  };
-
-  const hasActiveFilters = Object.values(filters).some(v => v !== "");
-
-  const renderFilters = () => {
-    return (
-      <FilterBar
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onClearFilters={clearFilters}
-        hasActiveFilters={hasActiveFilters}
-        showFilters={showFilters}
-        onToggleFilters={() => setShowFilters(!showFilters)}
-        hideStatus={role === ROLES.SOPORTE}
-        role={role}
-      />
-    );
-  };
+  const clearFilters = () => setFilters({ estado: "", prioridad: "", area: "", sucursal: "", tecnico: "" });
+  const hasActiveFilters = Object.values(filters).some((value) => value !== "");
 
   const getEmptyMessage = () => {
-    if (role === ROLES.SOPORTE) return "No tienes tickets asignados";
-    if (role === ROLES.RESPONSABLE) return "Aún no tienes tickets registrados";
+    if (role === ROLES.TECNICO) return "No tienes tickets asignados";
+    if (role === ROLES.ENCARGADO) return "Aun no tienes tickets registrados";
     return "No hay tickets registrados";
   };
 
   return (
     <div className="space-y-6">
-      {/* Header - Distribuido con titulo, buscador y botones */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1 max-w-md">
           <h1 className="text-3xl font-bold text-text-primary">Tickets</h1>
           <p className="text-text-secondary mt-1">
             {role === ROLES.ADMIN && "Gestiona todos los tickets del sistema"}
-            {role === ROLES.SOPORTE && "Tickets asignados a ti"}
-            {role === ROLES.RESPONSABLE && "Tus tickets registrados"}
+            {role === ROLES.TECNICO && "Tickets asignados a ti"}
+            {role === ROLES.ENCARGADO && "Tus tickets registrados"}
           </p>
         </div>
-        
-        {/* Buscador - Solo en vista de tablas */}
+
         <div className="flex-1 max-w-md">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -186,22 +104,27 @@ export function TicketsPage() {
             />
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {role === ROLES.ADMIN && (
-            <Button onClick={handleGenerarReporte} variant="secondary">
+            <Button onClick={() => toast.success("Reporte generado")} variant="secondary">
               Generar reporte
             </Button>
           )}
-          {role === ROLES.RESPONSABLE && (
-            <Button onClick={() => navigate("/tickets/nuevo")}>
-              Nuevo Ticket
-            </Button>
-          )}
+          {role === ROLES.ENCARGADO && <Button onClick={() => navigate("/tickets/nuevo")}>Nuevo Ticket</Button>}
         </div>
       </div>
 
-      {renderFilters()}
+      <FilterBar
+        filters={filters}
+        onFilterChange={(key, value) => setFilters((current) => ({ ...current, [key]: value }))}
+        onClearFilters={clearFilters}
+        hasActiveFilters={hasActiveFilters}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters((current) => !current)}
+        hideStatus={role === ROLES.TECNICO}
+        role={role}
+      />
 
       {filteredTickets.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
@@ -212,17 +135,20 @@ export function TicketsPage() {
             <p className="text-text-secondary text-lg">{getEmptyMessage()}</p>
           </div>
         </div>
-      ) : role === ROLES.SOPORTE ? (
-        <KanbanBoard tickets={tickets} onTicketMove={handleTicketMove} />
+      ) : role === ROLES.TECNICO ? (
+        <KanbanBoard tickets={filteredTickets} onTicketMove={handleTicketMove} />
       ) : (
         <div className="glass-card rounded-2xl overflow-hidden">
-          <TicketTable
-            tickets={filteredTickets}
-            columnas={getColumns()}
-            onVerDetalle={handleVerDetalle}
-          />
+          <TicketTable tickets={filteredTickets} columnas={getColumns()} />
         </div>
       )}
     </div>
   );
+}
+
+function filterTicketsByRole(tickets, role, user) {
+  if (role === ROLES.ADMIN) return tickets;
+  if (role === ROLES.TECNICO) return tickets.filter((ticket) => ticket.tecnico_id === user?.id);
+  if (role === ROLES.ENCARGADO) return tickets.filter((ticket) => ticket.encargado_id === user?.id);
+  return [];
 }

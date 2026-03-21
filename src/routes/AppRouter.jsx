@@ -122,7 +122,7 @@ export function AppRouter() {
       <Route
         path="/tickets/nuevo"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.RESPONSABLE]}>
+          <ProtectedRoute allowedRoles={[ROLES.ENCARGADO]}>
             <NuevoTicketPage />
           </ProtectedRoute>
         }

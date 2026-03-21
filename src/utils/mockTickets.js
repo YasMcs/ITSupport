@@ -1,147 +1,176 @@
 import { TICKET_STATUS } from "../constants/ticketStatus";
 import { PRIORIDAD } from "../constants/ticketPrioridad";
+import {
+  enrichMockUser,
+  getAreaById,
+  getMockUserById,
+} from "./mockUsers";
 
 export { PRIORIDAD };
-
-export const SUCURSALES = [
-  "Sucursal Norte",
-  "Sucursal Sur",
-  "Sucursal Centro",
-  "Sucursal Este",
-  "Sucursal Oeste",
-];
-
-export const AREAS = [
-  "Recursos Humanos",
-  "Contabilidad",
-  "Ventas",
-  "Marketing",
-  "Tecnología",
-  "Operaciones",
-];
-
-export const TECNICOS = [
-  { id: 1, nombre: "Carlos Ruiz" },
-  { id: 2, nombre: "María García" },
-  { id: 3, nombre: "Pedro Sánchez" },
-  { id: 4, nombre: "Ana Martínez" },
-];
 
 export const mockTickets = [
   {
     id: "1023",
     titulo: "PC no enciende",
-    descripcion: "La computadora del área de contabilidad no enciende desde esta mañana.",
-    area: "Contabilidad",
-    sucursal: "Sucursal Norte",
+    descripcion: "La computadora del area de contabilidad no enciende desde esta manana.",
     prioridad: PRIORIDAD.ALTA,
     estado: TICKET_STATUS.ABIERTO,
-    tecnicoAsignado: "Carlos Andres",
-    responsable: "Juan Pedro",
-    contacto: "juan@empresa.com",
-    fechaCreacion: "2026-02-18",
+    encargado_id: 2,
+    tecnico_id: 3,
+    area_id: 5,
+    fecha_creacion: "2026-02-18",
     historial: [
-      { fecha: "2026-02-18", accion: "Ticket creado", tecnico: null },
-      { fecha: "2026-02-19", accion: "Estado cambiado a En proceso", tecnico: "Carlos Andres" },
+      { fecha: "2026-02-18", accion: "Ticket creado", tecnico_id: null },
+      { fecha: "2026-02-19", accion: "Estado cambiado a en_proceso", tecnico_id: 3 },
     ],
     comentarios: [
-      { autor: "Carlos Andres", fecha: "2026-02-19", texto: "Revisando el equipo." },
+      { id: 1, contenido: "Revisando el equipo.", ticket_id: "1023", usuario_id: 3, fecha: "2026-02-19" },
     ],
   },
   {
     id: "1024",
-    titulo: "Error en sistema de nómina",
-    descripcion: "El sistema de nómina muestra un error 500 al intentar generar las nóminas del mes.",
-    area: "Recursos Humanos",
-    sucursal: "Sucursal Centro",
+    titulo: "Error en sistema de nomina",
+    descripcion: "El sistema de nomina muestra un error 500 al intentar generar las nominas del mes.",
     prioridad: PRIORIDAD.ALTA,
     estado: TICKET_STATUS.EN_PROCESO,
-    tecnicoAsignado: "Ana",
-    responsable: "Juan Pedro",
-    contacto: "laura@empresa.com",
-    fechaCreacion: "2026-02-17",
+    encargado_id: 2,
+    tecnico_id: 4,
+    area_id: 4,
+    fecha_creacion: "2026-02-17",
     historial: [
-      { fecha: "2026-02-17", accion: "Ticket creado", tecnico: null },
-      { fecha: "2026-02-18", accion: "Estado cambiado a En proceso", tecnico: "Ana" },
+      { fecha: "2026-02-17", accion: "Ticket creado", tecnico_id: null },
+      { fecha: "2026-02-18", accion: "Estado cambiado a en_proceso", tecnico_id: 4 },
     ],
     comentarios: [
-      { autor: "Ana", fecha: "2026-02-18", texto: "El servidor de base de datos tiene alta carga. Investigando." },
+      { id: 2, contenido: "El servidor de base de datos tiene alta carga. Investigando.", ticket_id: "1024", usuario_id: 4, fecha: "2026-02-18" },
     ],
   },
   {
     id: "1025",
     titulo: "Impresora atascada",
-    descripcion: "La impresora del segundo piso está atascada y no imprime.",
-    area: "Operaciones",
-    sucursal: "Sucursal Sur",
+    descripcion: "La impresora del segundo piso esta atascada y no imprime.",
     prioridad: PRIORIDAD.MEDIA,
     estado: TICKET_STATUS.CERRADO,
-    tecnicoAsignado: "Carlos Andres",
-    responsable: "Juan Pedro",
-    contacto: "mario@empresa.com",
-    fechaCreacion: "2026-02-15",
+    encargado_id: 2,
+    tecnico_id: 3,
+    area_id: 6,
+    fecha_creacion: "2026-02-15",
     historial: [
-      { fecha: "2026-02-15", accion: "Ticket creado", tecnico: null },
-      { fecha: "2026-02-16", accion: "Estado cambiado a En proceso", tecnico: "Carlos Andres" },
-      { fecha: "2026-02-17", accion: "Estado cambiado a Cerrado", tecnico: "Carlos Andres" },
+      { fecha: "2026-02-15", accion: "Ticket creado", tecnico_id: null },
+      { fecha: "2026-02-16", accion: "Estado cambiado a en_proceso", tecnico_id: 3 },
+      { fecha: "2026-02-17", accion: "Estado cambiado a cerrado", tecnico_id: 3 },
     ],
     comentarios: [
-      { autor: "Carlos Andres", fecha: "2026-02-16", texto: "Se limpió el rodillo de alimentación." },
-      { autor: "Carlos Andres", fecha: "2026-02-17", texto: "Problema resuelto. Impresora funcionando correctamente." },
+      { id: 3, contenido: "Se limpio el rodillo de alimentacion.", ticket_id: "1025", usuario_id: 3, fecha: "2026-02-16" },
+      { id: 4, contenido: "Problema resuelto. Impresora funcionando correctamente.", ticket_id: "1025", usuario_id: 3, fecha: "2026-02-17" },
     ],
   },
   {
     id: "1026",
-    titulo: "Solicitud de software de diseño",
-    descripcion: "Se necesita instalar Adobe Creative Cloud en la workstation de diseño.",
-    area: "Marketing",
-    sucursal: "Sucursal Este",
+    titulo: "Solicitud de software de diseno",
+    descripcion: "Se necesita instalar Adobe Creative Cloud en la workstation de diseno.",
     prioridad: PRIORIDAD.BAJA,
     estado: TICKET_STATUS.ABIERTO,
-    tecnicoAsignado: null,
-    responsable: "Juan Pedro",
-    contacto: "sofia@empresa.com",
-    fechaCreacion: "2026-02-20",
-    historial: [
-      { fecha: "2026-02-20", accion: "Ticket creado", tecnico: null },
-    ],
+    encargado_id: 5,
+    tecnico_id: null,
+    area_id: 10,
+    fecha_creacion: "2026-02-20",
+    historial: [{ fecha: "2026-02-20", accion: "Ticket creado", tecnico_id: null }],
     comentarios: [],
   },
   {
     id: "1027",
-    titulo: "Conexión VPN lenta",
-    descripcion: "La conexión VPN desde casa funciona extremadamente lenta, dificultando el trabajo remoto.",
-    area: "Tecnología",
-    sucursal: "Sucursal Norte",
+    titulo: "Conexion VPN lenta",
+    descripcion: "La conexion VPN desde casa funciona extremadamente lenta y dificulta el trabajo remoto.",
     prioridad: PRIORIDAD.MEDIA,
     estado: TICKET_STATUS.EN_PROCESO,
-    tecnicoAsignado: "Ana",
-    responsable: "Juan Pedro",
-    contacto: "roberto@empresa.com",
-    fechaCreacion: "2026-02-19",
+    encargado_id: 2,
+    tecnico_id: 4,
+    area_id: 8,
+    fecha_creacion: "2026-02-19",
     historial: [
-      { fecha: "2026-02-19", accion: "Ticket creado", tecnico: null },
-      { fecha: "2026-02-20", accion: "Estado cambiado a En proceso", tecnico: "Ana" },
+      { fecha: "2026-02-19", accion: "Ticket creado", tecnico_id: null },
+      { fecha: "2026-02-20", accion: "Estado cambiado a en_proceso", tecnico_id: 4 },
     ],
     comentarios: [
-      { autor: "Ana", fecha: "2026-02-20", texto: "Verificando configuración de red y ancho de banda." },
+      { id: 5, contenido: "Verificando configuracion de red y ancho de banda.", ticket_id: "1027", usuario_id: 4, fecha: "2026-02-20" },
     ],
   },
   {
     id: "1028",
     titulo: "Teclado defectuoso",
-    descripcion: "Algunas teclas no responden en el teclado del área de ventas.",
-    area: "Ventas",
-    sucursal: "Sucursal Oeste",
+    descripcion: "Algunas teclas no responden en el teclado del area de ventas.",
     prioridad: PRIORIDAD.BAJA,
     estado: TICKET_STATUS.ABIERTO,
-    tecnicoAsignado: "Carlos Andres",
-    responsable: "Juan Pedro",
-    contacto: "patricia@empresa.com",
-    fechaCreacion: "2026-02-21",
-    historial: [
-      { fecha: "2026-02-21", accion: "Ticket creado", tecnico: null },
-    ],
+    encargado_id: 5,
+    tecnico_id: 3,
+    area_id: 11,
+    fecha_creacion: "2026-02-21",
+    historial: [{ fecha: "2026-02-21", accion: "Ticket creado", tecnico_id: null }],
     comentarios: [],
   },
 ];
+
+export function getTicketArea(ticket) {
+  return getAreaById(ticket.area_id);
+}
+
+export function getEncargado(ticket) {
+  return enrichMockUser(getMockUserById(ticket.encargado_id));
+}
+
+export function getTecnico(ticket) {
+  return enrichMockUser(getMockUserById(ticket.tecnico_id));
+}
+
+export function getComentarioAutor(comentario) {
+  return enrichMockUser(getMockUserById(comentario.usuario_id));
+}
+
+export function enrichTicket(ticket) {
+  const area = getTicketArea(ticket);
+  const encargado = getEncargado(ticket);
+  const tecnico = getTecnico(ticket);
+
+  return {
+    ...ticket,
+    area: area?.nombreArea ?? "Sin area",
+    sucursal: area?.nombreSucursal ?? "Sin sucursal",
+    encargado: encargado?.nombre_usuario ?? "Sin encargado",
+    tecnico: tecnico?.nombre_usuario ?? "Sin tecnico",
+    fechaCreacion: ticket.fecha_creacion,
+    tecnicoAsignado: tecnico?.nombre_usuario ?? null,
+    responsable: encargado?.nombre_usuario ?? null,
+    contacto: encargado?.email ?? "",
+    comentarios: (ticket.comentarios ?? []).map((comentario) => ({
+      ...comentario,
+      autor: getComentarioAutor(comentario)?.nombre_usuario ?? "Sistema",
+      texto: comentario.contenido,
+    })),
+    historial: (ticket.historial ?? []).map((item) => ({
+      ...item,
+      tecnico: enrichMockUser(getMockUserById(item.tecnico_id))?.nombre_usuario ?? null,
+    })),
+  };
+}
+
+export function getEnrichedMockTickets() {
+  return mockTickets.map(enrichTicket);
+}
+
+export const AREAS = Array.from(
+  new Set(mockTickets.map((ticket) => getTicketArea(ticket)?.nombreArea).filter(Boolean))
+);
+
+export const SUCURSALES = Array.from(
+  new Set(mockTickets.map((ticket) => getTicketArea(ticket)?.nombreSucursal).filter(Boolean))
+);
+
+export const TECNICOS = Array.from(
+  new Map(
+    mockTickets
+      .map((ticket) => getTecnico(ticket))
+      .filter(Boolean)
+      .map((user) => [user.id, { id: user.id, nombre: user.nombre_usuario }])
+  ).values()
+);

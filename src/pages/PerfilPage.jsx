@@ -9,8 +9,8 @@ export function PerfilPage() {
   const getRoleLabel = (rol) => {
     const labels = {
       [ROLES.ADMIN]: "Administrador",
-      [ROLES.SOPORTE]: "Soporte IT",
-      [ROLES.RESPONSABLE]: "Responsable",
+      [ROLES.TECNICO]: "Tecnico",
+      [ROLES.ENCARGADO]: "Encargado",
     };
     return labels[rol] || rol;
   };
@@ -22,11 +22,11 @@ export function PerfilPage() {
         <div className="flex items-center gap-6">
           {/* Avatar */}
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-electric to-purple-electric-hover flex items-center justify-center text-white text-3xl font-bold shadow-lg shadow-purple-electric/30">
-            {user?.nombre?.[0]}{user?.apellido?.[0]}
+            {user?.nombre_usuario?.[0]}
           </div>
           <div>
             <h2 className="text-2xl font-bold text-text-primary">
-              {user?.nombre} {user?.apellido}
+              {user?.nombre_usuario}
             </h2>
             <p className="text-text-secondary mt-1">{user?.email}</p>
             <span className="inline-flex items-center px-3 py-1 mt-2 rounded-full text-sm font-medium bg-purple-electric/20 text-purple-electric">
@@ -40,7 +40,7 @@ export function PerfilPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-4 bg-dark-purple-700/50 rounded-xl">
               <p className="text-sm text-text-muted mb-1">Nombre completo</p>
-              <p className="text-text-primary font-medium">{user?.nombre} {user?.apellido}</p>
+              <p className="text-text-primary font-medium">{user?.nombre_usuario}</p>
             </div>
             <div className="p-4 bg-dark-purple-700/50 rounded-xl">
               <p className="text-sm text-text-muted mb-1">Correo electrónico</p>
@@ -54,7 +54,7 @@ export function PerfilPage() {
               <p className="text-sm text-text-muted mb-1">Estado</p>
               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500/20 text-green-400">
                 <span className="w-2 h-2 rounded-full bg-green-400 mr-2"></span>
-                Activo
+                {user?.estado_cuenta === "suspendido" ? "Suspendido" : "Activo"}
               </span>
             </div>
           </div>

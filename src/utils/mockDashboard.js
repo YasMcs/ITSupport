@@ -9,13 +9,13 @@ export const MOCK_STATS = {
     { id: 3, label: "Tickets Activos", value: "23", change: "-12%", trend: "down" },
     { id: 4, label: "Total Tickets", value: "156", change: "+8%", trend: "up" },
   ],
-  [ROLES.SOPORTE]: [
+  [ROLES.TECNICO]: [
     { id: 1, label: "Abiertos", value: "12", change: "-3%", trend: "down" },
     { id: 2, label: "En Proceso", value: "8", change: "+2%", trend: "up" },
     { id: 3, label: "Cerrados", value: "45", change: "+15%", trend: "up" },
     { id: 4, label: "Total Asignados", value: "65", change: "+10%", trend: "up" },
   ],
-  [ROLES.RESPONSABLE]: [
+  [ROLES.ENCARGADO]: [
     { id: 1, label: "Activos", value: "5", change: "-2%", trend: "down" },
     { id: 2, label: "Últimos Creados", value: "3", change: "+1", trend: "up" },
     { id: 3, label: "Cerrados", value: "18", change: "+5%", trend: "up" },
@@ -73,8 +73,8 @@ export const MOCK_RECENT_TICKETS = [
 
 export const SUBTITLE_BY_ROLE = {
   [ROLES.ADMIN]: "Resumen general del sistema",
-  [ROLES.SOPORTE]: "Resumen de tickets asignados",
-  [ROLES.RESPONSABLE]: "Resumen de tus tickets",
+  [ROLES.TECNICO]: "Resumen de tickets asignados",
+  [ROLES.ENCARGADO]: "Resumen de tus tickets",
 };
 
 // Datos adicionales para el dashboard
@@ -92,11 +92,11 @@ export const MOCK_QUICK_ACTIONS = {
     { label: "Ver reportes", path: "/reportes", icon: "chart" },
     { label: "Configurar áreas", path: "/areas", icon: "settings" },
   ],
-  [ROLES.SOPORTE]: [
+  [ROLES.TECNICO]: [
     { label: "Ver mis tickets", path: "/tickets", icon: "list" },
     { label: "Estadísticas", path: "/estadisticas", icon: "chart" },
   ],
-  [ROLES.RESPONSABLE]: [
+  [ROLES.ENCARGADO]: [
     { label: "Nuevo ticket", path: "/tickets/nuevo", icon: "plus" },
     { label: "Mis tickets", path: "/tickets", icon: "list" },
   ],

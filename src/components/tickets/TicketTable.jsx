@@ -11,7 +11,7 @@ const COLUMN_KEYS = {
   PRIORIDAD: "prioridad",
   ESTADO: "estado",
   TECNICO: "tecnicoAsignado",
-  RESPONSABLE: "responsable",
+  RESPONSABLE: "encargado",
   FECHA: "fechaCreacion",
   ACCIONES: "acciones",
 };
@@ -24,7 +24,7 @@ const DEFAULT_COLUMNS = [
   { key: COLUMN_KEYS.PRIORIDAD, label: "Prioridad", render: (val) => <Badge priority={val} /> },
   { key: COLUMN_KEYS.ESTADO, label: "Estado", render: (val) => <Badge status={val} /> },
   { key: COLUMN_KEYS.TECNICO, label: "Técnico Asignado" },
-  { key: COLUMN_KEYS.RESPONSABLE, label: "Responsable" },
+  { key: COLUMN_KEYS.RESPONSABLE, label: "Encargado" },
   { key: COLUMN_KEYS.FECHA, label: "Fecha de Creación", render: (val) => val },
   { key: COLUMN_KEYS.ACCIONES, label: "Acciones" },
 ];
@@ -58,7 +58,7 @@ function columnaKeysToColumns(columnas) {
       case COLUMN_KEYS.TECNICO:
         return { key: "tecnicoAsignado", label: "Técnico Asignado", render: (val) => val || "Sin asignar" };
       case COLUMN_KEYS.RESPONSABLE:
-        return { key: "responsable", label: "Responsable" };
+        return { key: "encargado", label: "Encargado" };
       case COLUMN_KEYS.FECHA:
         return { key: "fechaCreacion", label: "Fecha de Creación", render: (val) => val };
       case COLUMN_KEYS.ACCIONES:

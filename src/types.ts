@@ -1,67 +1,60 @@
 // Tipos TypeScript alineados con esquema DB (snake_case, FKs correctas)
 
-export type RolUsuario = 'admin' | 'responsable' | 'tecnico';
+export type RolUsuario = 'admin' | 'encargado' | 'tecnico';
 
 export interface CreateUsuario {
-  nombre: string;
-  apellido: string;
+  nombre_usuario: string;
   email: string;
   contrasena_hash: string;
   rol: RolUsuario;
-  sucursal_id: number;
-  area_id: number | null;  // NULL para admin/tecnico
+  estado_cuenta: 'activo' | 'suspendido';
+  area_id: number | null;
 }
 
 export interface UpdateUsuario {
-  nombre?: string;
-  apellido?: string;
+  nombre_usuario?: string;
   email?: string;
+  contrasena_hash?: string;
   rol?: RolUsuario;
-  sucursal_id?: number;
+  estado_cuenta?: 'activo' | 'suspendido';
   area_id?: number | null;
 }
 
-export type PrioridadTicket = 'ALTA' | 'MEDIA' | 'BAJA';
-export type EstadoTicket = 'ABIERTO' | 'EN_PROCESO' | 'CERRADO' | 'ANULADO';
+export type PrioridadTicket = 'alta' | 'media' | 'baja';
+export type EstadoTicket = 'abierto' | 'en_proceso' | 'cerrado' | 'anulado';
 
 export interface CreateTicket {
   titulo: string;
   descripcion: string;
   area_id: number;
-  sucursal_id: number;
-  responsable_id: number;
+  encargado_id: number;
   prioridad: PrioridadTicket;
-  estado?: EstadoTicket;  // Default 'ABIERTO'
-  tecnico_id_asignado?: number | null;
-  fecha_asignacion?: string | null;
-  tipo_asignacion?: string | null;
+  estado?: EstadoTicket;
+  tecnico_id?: number | null;
 }
 
 export interface Ticket {
-  id_ticket: number;
+  id: string;
   titulo: string;
   descripcion: string;
   area_id: number;
-  sucursal_id: number;
-  responsable_id: number;
-  tecnico_id_asignado: number | null;
+  encargado_id: number;
+  tecnico_id: number | null;
   prioridad: PrioridadTicket;
   estado: EstadoTicket;
   fecha_creacion: string;
-  fecha_asignacion?: string;
-  tipo_asignacion?: string;
-  historial: Array<{fecha: string; accion: string; tecnico?: string}>;
-  comentarios: Array<{autor: string; fecha: string; texto: string}>;
+  historial: Array<{fecha: string; accion: string; tecnico_id?: number | null}>;
+  comentarios: Array<{contenido: string; ticket_id: string; usuario_id: number; fecha: string}>;
 }
 
 export interface Usuario {
-  id_usuario: number;
-  nombre: string;
-  apellido: string;
+  id: number;
+  nombre_usuario: string;
   email: string;
+  contrasena_hash: string;
   rol: RolUsuario;
-  sucursal_id: number;
+  estado_cuenta: 'activo' | 'suspendido';
   area_id: number | null;
-  sucursal?: {id: number; nombre: string};
-  area?: {id: number; nombre: string};
+  sucursal?: string | null;
+  area?: string | null;
 }

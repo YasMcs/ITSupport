@@ -15,8 +15,8 @@ export function DashboardPage() {
   const getRoleLabel = (rol) => {
     const labels = {
       [ROLES.ADMIN]: "Administrador",
-      [ROLES.SOPORTE]: "Soporte IT",
-      [ROLES.RESPONSABLE]: "Responsable",
+      [ROLES.TECNICO]: "Tecnico",
+      [ROLES.ENCARGADO]: "Encargado",
     };
     return labels[rol] || rol;
   };
@@ -66,7 +66,7 @@ export function DashboardPage() {
     <div className="space-y-8">
       {/* Header Minimalista */}
       <div className="flex flex-col gap-1 mb-8">
-        <span className="text-sm font-medium text-purple-electric">Hola, {user?.nombre || "Usuario"}</span>
+        <span className="text-sm font-medium text-purple-electric">Hola, {user?.nombre_usuario || "Usuario"}</span>
         <h1 className="text-3xl font-bold text-white">Dashboard</h1>
       </div>
 

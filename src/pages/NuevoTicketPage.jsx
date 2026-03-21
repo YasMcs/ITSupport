@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
 import { TicketForm } from "../components/tickets/TicketForm";
@@ -8,42 +9,35 @@ export function NuevoTicketPage() {
   const navigate = useNavigate();
   const { user, role } = useAuth();
 
-  if (role !== ROLES.RESPONSABLE) {
+  if (role !== ROLES.ENCARGADO) {
     navigate("/tickets");
     return null;
   }
 
-  const handleSubmit = (formData) => {
+  const handleSubmit = (payload) => {
     const newId = String(1029 + mockTickets.length);
-    
-    const newTicket = {
-      id: newId,
-      titulo: formData.titulo || formData.descripcion.substring(0, 30) + "...",
-      descripcion: formData.descripcion,
-      area: formData.area || "General",
-      sucursal: formData.sucursal,
-      prioridad: formData.prioridad,
-      estado: "abierto",
-      tecnicoAsignado: null,
-      responsable: formData.responsable,
-      contacto: user?.email || "",
-      fechaCreacion: new Date().toISOString().split("T")[0],
-      historial: [
-        { fecha: new Date().toISOString().split("T")[0], accion: "Ticket creado", tecnico: null },
-      ],
-      comentarios: [],
-    };
 
-    mockTickets.push(newTicket);
-    
+    mockTickets.push({
+      id: newId,
+      titulo: payload.titulo,
+      descripcion: payload.descripcion,
+      prioridad: payload.prioridad,
+      estado: "abierto",
+      encargado_id: payload.encargado_id,
+      tecnico_id: null,
+      area_id: payload.area_id,
+      fecha_creacion: new Date().toISOString().split("T")[0],
+      historial: [{ fecha: new Date().toISOString().split("T")[0], accion: "Ticket creado", tecnico_id: null }],
+      comentarios: [],
+    });
+
+    toast.success("Ticket enviado");
     navigate("/tickets");
   };
 
   return (
     <div className="space-y-6">
-      {/* Header con título y botón de regresar alineados en la misma línea */}
       <div className="flex items-center gap-4 mb-8">
-        {/* Botón Regresar */}
         <button
           onClick={() => navigate("/tickets")}
           className="p-2 rounded-xl bg-dark-purple-800 border border-dark-purple-700 text-text-secondary hover:text-text-primary hover:border-purple-electric transition-all"
@@ -53,23 +47,19 @@ export function NuevoTicketPage() {
           </svg>
         </button>
 
-        {/* Título y Subtítulo */}
         <div>
           <h1 className="text-3xl font-bold text-text-primary">Nuevo Ticket</h1>
-          <p className="text-text-secondary mt-1">
-            Completa los datos para reportar tu problema
-          </p>
+          <p className="text-text-secondary mt-1">Crea un ticket usando el contrato exacto del backend</p>
         </div>
       </div>
 
-      {/* TicketForm con layout split (dos columnas) */}
-      <TicketForm 
-        onSubmit={handleSubmit} 
+      <TicketForm
+        onSubmit={handleSubmit}
         layout="split"
         user={{
-          nombre: user?.nombre || "",
-          area: user?.area || "Recursos Humanos",
-          sucursal: user?.sucursal || "Sucursal Norte"
+          id: user?.id,
+          nombre_usuario: user?.nombre_usuario || "",
+          area_id: user?.area_id,
         }}
       />
     </div>

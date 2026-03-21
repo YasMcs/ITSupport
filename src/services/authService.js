@@ -1,23 +1,30 @@
 import axios from "axios";
-import dummiesData from "../utils/dummies.json";
+import {
+  enrichMockUser,
+  getMockUserById,
+  mockUserCredentials,
+} from "../utils/mockUsers";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 const USE_DUMMIES = import.meta.env.DEV && import.meta.env.VITE_USE_DUMMIES !== "false";
 
 /**
- * Busca un usuario en los datos dummy por email y password
+ * Busca un usuario mock por email y password
  */
 function findDummyUser(email, password) {
-  const user = dummiesData.users.find(
-    (u) => u.email === email && u.password === password
+  const credentials = mockUserCredentials.find(
+    (item) => item.email === email && item.password === password
   );
-  if (user) {
+
+  if (credentials) {
+    const user = enrichMockUser(getMockUserById(credentials.user_id));
+
     // Simular delay de red
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          user: user.user,
-          token: `dummy-token-${user.user.id}`,
+          user,
+          token: `dummy-token-${user.id}`,
         });
       }, 500);
     });

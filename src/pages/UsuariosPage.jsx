@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Table } from "../components/ui/Table";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
-import dummies from "../utils/dummies.json";
+import { enrichMockUser, mockUsers } from "../utils/mockUsers";
 
 const avatarColors = [
   "bg-purple-electric",
@@ -14,102 +15,127 @@ const avatarColors = [
   "bg-teal-500",
 ];
 
-const getAvatarColor = (nombre) => {
+const getAvatarColor = (name) => {
   let hash = 0;
-  for (let i = 0; i < nombre.length; i++) {
-    hash = nombre.charCodeAt(i) + ((hash << 5) - hash);
+  for (let i = 0; i < name.length; i += 1) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
   return avatarColors[Math.abs(hash) % avatarColors.length];
 };
 
-const AvatarIniciales = ({ nombre, apellido }) => {
-  const iniciales = `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase();
-  const colorClass = getAvatarColor(nombre + apellido);
+const AvatarIniciales = ({ nombreUsuario }) => {
+  const parts = nombreUsuario.split(".");
+  const initials = `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? parts[0]?.[1] ?? ""}`.toUpperCase();
+  const colorClass = getAvatarColor(nombreUsuario);
   return (
     <div className={`${colorClass} w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-lg`}>
-      {iniciales}
+      {initials}
     </div>
   );
 };
 
-const UsuarioCell = ({ nombre, apellido, email }) => {
-  const nombreCompleto = `${nombre} ${apellido}`;
-  return (
-    <div className="flex items-center gap-3">
-      <AvatarIniciales nombre={nombre} apellido={apellido} />
-      <div className="flex flex-col">
-        <span className="text-text-primary font-medium">{nombreCompleto}</span>
-        <span className="text-text-secondary text-xs">{email}</span>
-      </div>
+const UsuarioCell = ({ nombre_usuario, email }) => (
+  <div className="flex items-center gap-3">
+    <AvatarIniciales nombreUsuario={nombre_usuario} />
+    <div className="flex flex-col">
+      <span className="text-text-primary font-medium">{nombre_usuario}</span>
+      <span className="text-text-secondary text-xs">{email}</span>
     </div>
-  );
-};
+  </div>
+);
 
 const RolBadge = ({ rol }) => {
   const styles = {
-    soporte: "bg-purple-electric/20 text-purple-electric border border-purple-electric/30",
-    responsable: "bg-accent-blue/20 text-accent-blue border border-accent-blue/30",
+    admin: "bg-accent-pink/20 text-accent-pink border border-accent-pink/30",
+    encargado: "bg-accent-blue/20 text-accent-blue border border-accent-blue/30",
+    tecnico: "bg-purple-electric/20 text-purple-electric border border-purple-electric/30",
   };
-  const labels = { soporte: "Soporte", responsable: "Responsable" };
-  const style = styles[rol] || "bg-dark-purple-800 text-text-secondary border border-dark-purple-700";
-  const label = labels[rol] || rol;
-  return <span className={`px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{label}</span>;
-};
 
-const EstadoBadge = ({ estado }) => {
-  const isActivo = estado === "Activo";
-  return <Badge sucursalStatus={isActivo ? "Activa" : "Desactivada"} />;
+  const labels = {
+    admin: "Admin",
+    encargado: "Encargado",
+    tecnico: "Tecnico",
+  };
+
+  return <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[rol]}`}>{labels[rol] || rol}</span>;
 };
 
 export function UsuariosPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-
-  const allUsuarios = useMemo(() => {
-    return dummies.users
-      .map((u) => u.user)
-      .filter((user) => user.rol === "soporte" || user.rol === "responsable");
-  }, []);
+  const [usuariosState, setUsuariosState] = useState(() => mockUsers.map(enrichMockUser));
 
   const usuarios = useMemo(() => {
-    if (!searchQuery) return allUsuarios;
+    if (!searchQuery) return usuariosState;
     const query = searchQuery.toLowerCase();
-    return allUsuarios.filter(
-      (user) =>
-        user.nombre?.toLowerCase().includes(query) ||
-        user.apellido?.toLowerCase().includes(query) ||
-        user.email?.toLowerCase().includes(query) ||
-        user.sucursal?.toLowerCase().includes(query) ||
-        user.area?.toLowerCase().includes(query)
+    return usuariosState.filter((user) =>
+      [user.nombre_usuario, user.email, user.sucursal, user.area]
+        .filter(Boolean)
+        .some((value) => value.toLowerCase().includes(query))
     );
-  }, [searchQuery, allUsuarios]);
+  }, [searchQuery, usuariosState]);
 
-  const COLUMNS = [
+  const toggleSuspension = (row) => {
+    toast("Confirmar suspension de cuenta", {
+      description: row.nombre_usuario,
+      action: {
+        label: row.estado_cuenta === "suspendido" ? "Reactivar" : "Suspender",
+        onClick: () => {
+          setUsuariosState((prev) =>
+            prev.map((user) =>
+              user.id === row.id
+                ? {
+                    ...user,
+                    estado_cuenta: user.estado_cuenta === "suspendido" ? "activo" : "suspendido",
+                  }
+                : user
+            )
+          );
+          toast.success(row.estado_cuenta === "suspendido" ? "Cuenta reactivada" : "Cuenta suspendida");
+        },
+      },
+    });
+  };
+
+  const columns = [
     {
       key: "usuario",
       label: "Usuario",
-      render: (val, row) => <UsuarioCell nombre={row.nombre} apellido={row.apellido} email={row.email} />,
+      render: (val, row) => <UsuarioCell nombre_usuario={row.nombre_usuario} email={row.email} />,
     },
     { key: "rol", label: "Rol", render: (val) => <RolBadge rol={val} /> },
-    { key: "sucursal", label: "Sucursal", render: (val, row) => (
-      <span className={`${val ? 'text-text-primary' : 'text-text-muted italic'}`}>
-        {val || "—"}
-      </span>
-    )},
-    { key: "area", label: "Área", render: (val, row) => (
-      <span className={`${val ? 'text-text-primary' : 'text-text-muted italic'}`}>
-        {val || "—"}
-      </span>
-    )},
-    { key: "estado", label: "Estado", render: (val) => <EstadoBadge estado={val} /> },
+    {
+      key: "sucursal",
+      label: "Sucursal",
+      render: (val) => <span className={val ? "text-text-primary" : "text-text-muted italic"}>{val || "-"}</span>,
+    },
+    {
+      key: "area",
+      label: "Area",
+      render: (val) => <span className={val ? "text-text-primary" : "text-text-muted italic"}>{val || "-"}</span>,
+    },
+    { key: "estado_cuenta", label: "Estado", render: (val) => <Badge accountStatus={val} /> },
     {
       key: "acciones",
       label: "Acciones",
       render: (val, row) => (
         <div className="flex items-center gap-2">
-          <button onClick={() => navigate(`/usuarios/editar/${row.id}`)} className="p-2 text-text-secondary hover:text-purple-electric hover:bg-dark-purple-700 rounded-lg transition-colors duration-200" title="Editar">
+          <button
+            onClick={() => navigate(`/usuarios/editar/${row.id}`)}
+            className="p-2 text-text-secondary hover:text-purple-electric hover:bg-dark-purple-700 rounded-lg transition-colors duration-200"
+            title="Editar"
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </button>
+          <button
+            onClick={() => toggleSuspension(row)}
+            className="p-2 text-text-secondary hover:text-accent-pink hover:bg-dark-purple-700 rounded-lg transition-colors duration-200"
+            title="Suspender cuenta"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-12.728 12.728M6.343 6.343l11.314 11.314" />
             </svg>
           </button>
         </div>
@@ -122,7 +148,7 @@ export function UsuariosPage() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-text-primary">Usuarios</h1>
-          <p className="text-text-secondary mt-1">Gestión de usuarios de soporte y responsables</p>
+          <p className="text-text-secondary mt-1">Gestion de usuarios con contrato listo para backend</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
@@ -154,7 +180,7 @@ export function UsuariosPage() {
         </div>
       ) : (
         <div className="glass-card rounded-2xl overflow-hidden">
-          <Table columns={COLUMNS} data={usuarios} />
+          <Table columns={columns} data={usuarios} />
         </div>
       )}
     </div>

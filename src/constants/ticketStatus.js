@@ -1,6 +1,6 @@
 export const TICKET_STATUS = {
-  ABIERTO: "ABIERTO",
-  EN_PROCESO: "EN_PROCESO",
-  CERRADO: "CERRADO",
-  ANULADO: "ANULADO",
+  ABIERTO: "abierto",
+  EN_PROCESO: "en_proceso",
+  CERRADO: "cerrado",
+  ANULADO: "anulado",
 };

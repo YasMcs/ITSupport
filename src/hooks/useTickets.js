@@ -40,6 +40,6 @@ export function useTickets() {
 
 function filterByRole(tickets, role) {
   if (role === ROLES.ADMIN) return tickets;
-  if (role === ROLES.SOPORTE) return tickets;
+  if (role === ROLES.TECNICO) return tickets;
   return tickets;
 }

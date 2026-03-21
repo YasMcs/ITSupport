@@ -23,13 +23,13 @@ const MENU_ITEMS = {
     { path: "/sucursales", label: "Sucursales", icon: MapPin },
     { path: "/perfil", label: "Perfil", icon: User },
   ],
-  [ROLES.SOPORTE]: [
+  [ROLES.TECNICO]: [
     { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { path: "/tickets", label: "Tickets", icon: Ticket },
     { path: "/estadisticas", label: "Estadísticas", icon: BarChart3 },
     { path: "/perfil", label: "Perfil", icon: User },
   ],
-  [ROLES.RESPONSABLE]: [
+  [ROLES.ENCARGADO]: [
     { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { path: "/tickets", label: "Tickets", icon: Ticket },
     { path: "/estadisticas", label: "Estadísticas", icon: BarChart3 },

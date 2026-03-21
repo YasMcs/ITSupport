@@ -68,7 +68,7 @@ export function FilterBar({
               placeholder="Prioridad"
               className="min-w-[150px] flex-1"
             />
-            {(role === ROLES.ADMIN || role === ROLES.RESPONSABLE) && (
+            {(role === ROLES.ADMIN || role === ROLES.ENCARGADO) && (
               <>
                 <Select
                   value={filters.area}
@@ -95,7 +95,7 @@ export function FilterBar({
                 className="min-w-[150px] flex-1"
               />
             )}
-            {role === ROLES.SOPORTE && (
+            {role === ROLES.TECNICO && (
               <>
                 <Select
                   value={filters.area}
