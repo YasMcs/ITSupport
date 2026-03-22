@@ -53,61 +53,96 @@ export function LoginPage() {
       <div className="login-background">
         <div className="login-gradient-layer" />
         <div className="login-gradient-layer-2" />
+        <div className="login-grid-pattern" />
         <div className="login-orb login-orb-1" />
         <div className="login-orb login-orb-2" />
         <div className="login-orb login-orb-3" />
         <div className="login-orb login-orb-4" />
         <div className="login-orb login-orb-5" />
+        <div className="login-orb login-orb-6" />
         <div className="login-gradient-line login-gradient-line-top" />
         <div className="login-gradient-line login-gradient-line-bottom" />
-        <div className="login-gradient-line login-gradient-line-middle" />
         <div className="login-noise" />
       </div>
 
-      <form onSubmit={handleSubmit} className="login-card">
-        <div className="login-card-header" />
-
-        <div className="login-content">
-          <div className="login-title">
-            <div className="flex flex-col items-center justify-center gap-6">
-              <img src={logoIcono} alt="Logo Icono" className="h-20 w-auto" />
-              <img src={logo} alt="Logo" className="h-12 w-auto" />
+      <div className="login-shell">
+        <section className="login-intro">
+          <div className="login-brand-block">
+            <div className="login-brand-mark">
+              <img src={logoIcono} alt="Logo Icono" className="h-16 w-auto" />
             </div>
-            <p className="mt-4">Inicia sesion para continuar</p>
+            <img src={logo} alt="Logo" className="h-10 w-auto" />
           </div>
 
-          <div className="login-form">
-            <Input
-              label="Email"
-              type="email"
-              placeholder="tu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-            />
-            <Input
-              label="Contrasena"
-              type="password"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
+          <div className="login-copy">
+            <span className="login-eyebrow">Mesa de ayuda corporativa</span>
+            <h1>Gestiona incidencias con una experiencia clara, segura y profesional.</h1>
+            <p>
+              Centraliza tickets, seguimiento y operacion interna en una plataforma pensada para equipos de soporte modernos.
+            </p>
           </div>
 
-          {error && (
-            <div className="login-error">
-              <p>{error}</p>
+          <div className="login-highlights">
+            <div className="login-highlight-card">
+              <span className="login-highlight-dot" />
+              <div>
+                <h2>Seguimiento centralizado</h2>
+                <p>Visualiza el estado de cada incidencia con trazabilidad clara para todo el equipo.</p>
+              </div>
             </div>
-          )}
+            <div className="login-highlight-card">
+              <span className="login-highlight-dot" />
+              <div>
+                <h2>Acceso ordenado por roles</h2>
+                <p>Cada perfil entra a un espacio consistente, enfocado y alineado a sus permisos.</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-          <Button type="submit" variant="primary" className="login-button" disabled={loading}>
-            {loading ? "Entrando..." : "Entrar"}
-          </Button>
-        </div>
-      </form>
+        <form onSubmit={handleSubmit} className="login-card">
+          <div className="login-card-header" />
+
+          <div className="login-content">
+            <div className="login-title">
+              <span className="login-card-tag">Acceso seguro</span>
+              <h2>Inicia sesion</h2>
+              <p>Accede a tu panel para continuar con la operacion del dia.</p>
+            </div>
+
+            <div className="login-form">
+              <Input
+                label="Email"
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+              <Input
+                label="Contrasena"
+                type="password"
+                placeholder="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+              />
+            </div>
+
+            {error && (
+              <div className="login-error">
+                <p>{error}</p>
+              </div>
+            )}
+
+            <Button type="submit" variant="primary" className="login-button" disabled={loading}>
+              {loading ? "Entrando..." : "Entrar"}
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
