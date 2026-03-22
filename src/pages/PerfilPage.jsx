@@ -6,7 +6,7 @@ import { getUserDisplayName, getUserInitial } from "../utils/userDisplay";
 
 function InfoCard({ label, value }) {
   return (
-    <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
+    <div className="glass-card rounded-xl border border-white/5 bg-white/[0.03] p-4 backdrop-blur-lg">
       <p className="mb-2 text-xs uppercase tracking-[0.24em] text-text-muted">{label}</p>
       <p className="font-medium text-text-primary">{value}</p>
     </div>
@@ -27,14 +27,20 @@ export function PerfilPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 bg-[#07070a]">
+    <div className="mx-auto max-w-6xl space-y-8">
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-medium text-purple-electric">Tu espacio personal</span>
+        <h1 className="text-3xl font-bold text-white">Perfil</h1>
+        <p className="text-text-secondary">Consulta tu informacion, preferencias y detalles de acceso en un solo lugar.</p>
+      </div>
+
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.35fr_0.85fr]">
-        <section className="glass-card rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-md">
+        <section className="glass-card rounded-2xl border border-white/5 bg-white/[0.03] p-6 backdrop-blur-lg">
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-5 md:flex-row md:items-center">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-purple-electric/12 blur-2xl" />
-                <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-purple-electric/40 bg-dark-purple-800/80 text-4xl font-bold text-white">
+                <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-purple-electric/30 bg-black/30 text-4xl font-bold text-white backdrop-blur-lg">
                   {getUserInitial(user)}
                 </div>
               </div>
@@ -61,14 +67,14 @@ export function PerfilPage() {
           </div>
         </section>
 
-        <aside className="glass-card rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-md">
+        <aside className="glass-card rounded-2xl border border-white/5 bg-white/[0.03] p-6 backdrop-blur-lg">
           <div className="space-y-5">
             <div>
               <p className="text-xs uppercase tracking-[0.28em] text-purple-electric">Configuracion</p>
               <h2 className="mt-2 text-2xl font-semibold text-text-primary">Preferencias y Seguridad</h2>
             </div>
 
-            <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
+            <div className="glass-card rounded-xl border border-white/5 bg-white/[0.03] p-4 backdrop-blur-lg">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
@@ -93,7 +99,7 @@ export function PerfilPage() {
             </div>
 
             <div className="space-y-3">
-              <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
+              <div className="glass-card rounded-xl border border-white/5 bg-white/[0.03] p-4 backdrop-blur-lg">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
                     <UserRound className="h-5 w-5" />
@@ -105,7 +111,7 @@ export function PerfilPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
+              <div className="glass-card rounded-xl border border-white/5 bg-white/[0.03] p-4 backdrop-blur-lg">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
                     <LockKeyhole className="h-5 w-5" />
