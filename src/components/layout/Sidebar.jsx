@@ -75,20 +75,22 @@ export function Sidebar() {
               <li key={item.path}>
                 <NavLink
                   to={item.path}
-                  className={`group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-3.5 text-sm transition-colors duration-150 ${
+                  className={`group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-3.5 text-sm transition-[background-color,border-color,color,transform] duration-200 ease-out ${
                     active
                       ? "border border-white/10 bg-white/[0.08] text-white"
                       : "text-text-muted hover:bg-white/[0.04] hover:text-text-primary"
                   }`}
                 >
                   <span
-                    className={`absolute inset-y-2 left-0 w-1 rounded-full transition-opacity duration-150 ${
+                    className={`absolute inset-y-2 left-0 w-1 rounded-full transition-all duration-200 ease-out ${
                       active ? "bg-purple-electric opacity-100" : "bg-purple-electric/0 opacity-0 group-hover:opacity-60"
                     }`}
                   />
                   <Icon
                     size={19}
-                    className={active ? "text-purple-electric" : "text-text-muted transition-colors group-hover:text-text-primary"}
+                    className={`transition-colors duration-200 ease-out ${
+                      active ? "text-purple-electric" : "text-text-muted group-hover:text-text-primary"
+                    }`}
                   />
                   <span className="truncate font-medium">{item.label}</span>
                 </NavLink>
