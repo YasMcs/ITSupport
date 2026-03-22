@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #0b0b12;
+  background-color: #0d0a16;
   position: relative;
   overflow: hidden;
   padding: 2rem;
@@ -20,17 +20,17 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 18% 22%, rgba(111, 87, 200, 0.12), transparent 28%),
-    radial-gradient(circle at 78% 18%, rgba(91, 33, 182, 0.10), transparent 22%),
-    radial-gradient(circle at 52% 78%, rgba(76, 29, 149, 0.08), transparent 34%);
+    radial-gradient(circle at 18% 22%, rgba(125, 99, 230, 0.14), transparent 28%),
+    radial-gradient(circle at 78% 18%, rgba(139, 124, 255, 0.10), transparent 22%),
+    radial-gradient(circle at 52% 78%, rgba(76, 29, 149, 0.10), transparent 34%);
 }
 
 .login-gradient-layer-2 {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(145deg, rgba(7, 7, 10, 0.76), rgba(7, 7, 10, 0.28) 40%, rgba(7, 7, 10, 0.82)),
-    linear-gradient(to top left, rgba(19, 16, 29, 0.28), transparent, rgba(48, 24, 79, 0.16));
+    linear-gradient(145deg, rgba(13, 10, 22, 0.78), rgba(13, 10, 22, 0.28) 40%, rgba(13, 10, 22, 0.84)),
+    linear-gradient(to top left, rgba(34, 24, 56, 0.24), transparent, rgba(83, 38, 128, 0.16));
 }
 
 .login-grid-pattern {
@@ -56,7 +56,7 @@
   left: 12%;
   width: 22rem;
   height: 22rem;
-  background: rgba(111, 87, 200, 0.18);
+  background: rgba(125, 99, 230, 0.18);
   animation: pulse-slow 11s ease-in-out infinite;
 }
 
@@ -65,7 +65,7 @@
   right: 10%;
   width: 26rem;
   height: 26rem;
-  background: rgba(76, 29, 149, 0.16);
+  background: rgba(109, 40, 217, 0.14);
   animation: float-slow 15s ease-in-out infinite;
 }
 
@@ -75,7 +75,7 @@
   transform: translate(-50%, -50%);
   width: 34rem;
   height: 34rem;
-  background: rgba(53, 25, 94, 0.14);
+  background: rgba(88, 28, 135, 0.14);
   animation: drift-slow 18s ease-in-out infinite;
 }
 
@@ -84,7 +84,7 @@
   right: 22%;
   width: 14rem;
   height: 14rem;
-  background: rgba(124, 58, 237, 0.14);
+  background: rgba(125, 99, 230, 0.14);
   animation: pulse-slow 13s ease-in-out infinite;
 }
 
@@ -93,7 +93,7 @@
   left: 18%;
   width: 18rem;
   height: 18rem;
-  background: rgba(91, 33, 182, 0.12);
+  background: rgba(167, 139, 250, 0.12);
   animation: float-slow 17s ease-in-out infinite;
 }
 
@@ -102,7 +102,7 @@
   right: 36%;
   width: 12rem;
   height: 12rem;
-  background: rgba(139, 92, 246, 0.12);
+  background: rgba(244, 114, 182, 0.09);
   animation: pulse-slow 14s ease-in-out infinite;
 }
 
@@ -115,13 +115,13 @@
 
 .login-gradient-line-top {
   top: 0;
-  background: linear-gradient(to right, transparent, rgba(111, 87, 200, 0.16), transparent);
+  background: linear-gradient(to right, transparent, rgba(125, 99, 230, 0.18), transparent);
   opacity: 0.7;
 }
 
 .login-gradient-line-bottom {
   bottom: 0;
-  background: linear-gradient(to right, transparent, rgba(111, 87, 200, 0.1), transparent);
+  background: linear-gradient(to right, transparent, rgba(125, 99, 230, 0.12), transparent);
   opacity: 0.4;
 }
 
@@ -175,7 +175,7 @@
 .login-eyebrow {
   display: inline-block;
   margin-bottom: 1rem;
-  color: #8f7be0;
+  color: #9b8cf2;
   font-size: 0.95rem;
   font-weight: 600;
 }
@@ -227,8 +227,8 @@
   border-radius: 999px;
   margin-top: 0.4rem;
   flex-shrink: 0;
-  background: #7f69d8;
-  box-shadow: 0 0 16px rgba(127, 105, 216, 0.35);
+  background: #8f7cf0;
+  box-shadow: 0 0 16px rgba(143, 124, 240, 0.35);
 }
 
 .login-card {
@@ -250,7 +250,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(111, 87, 200, 0.42), transparent);
+  background: linear-gradient(to right, transparent, rgba(125, 99, 230, 0.42), transparent);
 }
 
 .login-content {
@@ -265,7 +265,7 @@
 .login-card-tag {
   display: inline-block;
   margin-bottom: 0.9rem;
-  color: #8f7be0;
+  color: #9b8cf2;
   font-size: 0.88rem;
   font-weight: 600;
 }
@@ -354,8 +354,8 @@
 }
 
 .login-card .input-field:focus {
-  border-color: rgba(111, 87, 200, 0.85);
-  box-shadow: 0 0 0 3px rgba(111, 87, 200, 0.18);
+  border-color: rgba(125, 99, 230, 0.85);
+  box-shadow: 0 0 0 3px rgba(125, 99, 230, 0.18);
 }
 
 .login-card .input-toggle-password {

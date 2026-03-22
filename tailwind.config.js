@@ -8,36 +8,36 @@ export default {
     extend: {
       colors: {
         // Paleta real del proyecto
-        fondo: '#0b0b12',
-        primario: '#7660d8',
+        fondo: '#0d0a16',
+        primario: '#7d63e6',
         texto: '#eae6ff',
         // Dark Purple Premium (compatibilidad)
         'dark-purple': {
-          '900': '#0b0b12', // Fondo principal
-          '800': '#171521', // Superficies/Cards
-          '700': '#221d31', // Hover states
+          '900': '#0d0a16', // Fondo principal
+          '800': '#1a1526', // Superficies/Cards
+          '700': '#261f37', // Hover states
         },
         'purple': {
-          'electric': '#7660d8', // Primario
-          'electric-hover': '#684fca',
+          'electric': '#7d63e6', // Primario
+          'electric-hover': '#6f55d8',
         },
         'accent': {
-          'pink': '#ec4899',
-          'blue': '#60a5fa',
+          'pink': '#f472b6',
+          'blue': '#8b7cff',
           'orange': '#fb923c',
-          'cyan': '#22d3ee',
+          'cyan': '#67e8f9',
         },
         'text': {
           'primary': '#eae6ff', // Texto principal
-          'secondary': '#ded8fb',
-          'muted': '#a79fcf',
+          'secondary': '#e4ddff',
+          'muted': '#b1a6da',
         },
       },
       textColor: {
         'text': {
           'primary': '#eae6ff',
-          'secondary': '#ded8fb',
-          'muted': '#a79fcf',
+          'secondary': '#e4ddff',
+          'muted': '#b1a6da',
         },
       },
       borderRadius: {
