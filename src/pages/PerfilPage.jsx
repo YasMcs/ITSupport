@@ -1,21 +1,14 @@
-import { Bell, Mail, ShieldCheck, User2 } from "lucide-react";
+import { Bell, LockKeyhole, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
 import { getUserDisplayName, getUserInitial } from "../utils/userDisplay";
 
-function InfoCard({ label, value, accent = "purple" }) {
-  const accents = {
-    purple: "border-purple-electric/20 bg-purple-electric/5",
-    blue: "border-accent-blue/20 bg-accent-blue/5",
-    emerald: "border-emerald-400/20 bg-emerald-400/5",
-    pink: "border-accent-pink/20 bg-accent-pink/5",
-  };
-
+function InfoCard({ label, value }) {
   return (
-    <div className={`glass-card rounded-xl border p-4 ${accents[accent]}`}>
-      <p className="text-xs uppercase tracking-[0.24em] text-text-muted mb-2">{label}</p>
-      <p className="text-text-primary font-medium">{value}</p>
+    <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
+      <p className="mb-2 text-xs uppercase tracking-[0.24em] text-text-muted">{label}</p>
+      <p className="font-medium text-text-primary">{value}</p>
     </div>
   );
 }
@@ -34,14 +27,14 @@ export function PerfilPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      <div className="glass-card rounded-2xl border border-white/5 bg-[#0b0f1a] p-6 md:p-8">
-        <div className="grid grid-cols-1 xl:grid-cols-[1.3fr_0.7fr] gap-6">
-          <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center gap-5">
+    <div className="mx-auto max-w-6xl space-y-6 bg-[#0b0f1a]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.35fr_0.85fr]">
+        <section className="glass-card rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-md">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-5 md:flex-row md:items-center">
               <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-purple-electric/15 blur-xl" />
-                <div className="relative w-28 h-28 rounded-full border border-purple-electric/50 bg-dark-purple-800 flex items-center justify-center text-white text-4xl font-bold shadow-[0_0_24px_rgba(124,77,255,0.16)]">
+                <div className="absolute inset-0 rounded-full bg-purple-electric/12 blur-2xl" />
+                <div className="relative flex h-28 w-28 items-center justify-center rounded-full border border-purple-electric/40 bg-dark-purple-800/80 text-4xl font-bold text-white">
                   {getUserInitial(user)}
                 </div>
               </div>
@@ -56,72 +49,76 @@ export function PerfilPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoCard label="Nombre Completo" value={getUserDisplayName(user)} accent="purple" />
-              <InfoCard label="Correo Electronico" value={user?.email || "Sin correo"} accent="blue" />
-              <InfoCard label="Rol" value={getRoleLabel(role)} accent="pink" />
-              <InfoCard
-                label="Estado de Cuenta"
-                value={user?.estado_cuenta === "suspendido" ? "Suspendido" : "Activo"}
-                accent={user?.estado_cuenta === "suspendido" ? "pink" : "emerald"}
-              />
+            <div>
+              <h2 className="mb-4 text-lg font-semibold text-text-primary">Informacion de la cuenta</h2>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <InfoCard label="Nombre Completo" value={getUserDisplayName(user)} />
+                <InfoCard label="Correo Electronico" value={user?.email || "Sin correo"} />
+                <InfoCard label="Rol" value={getRoleLabel(role)} />
+                <InfoCard value={user?.estado_cuenta === "suspendido" ? "Suspendido" : "Activo"} label="Estado de Cuenta" />
+              </div>
             </div>
           </div>
+        </section>
 
-          <div className="glass-card rounded-2xl border border-white/5 bg-white/5 p-5">
-            <h2 className="text-lg font-semibold text-text-primary mb-5">Preferencias</h2>
+        <aside className="glass-card rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-md">
+          <div className="space-y-5">
+            <div>
+              <p className="text-xs uppercase tracking-[0.28em] text-purple-electric">Configuracion</p>
+              <h2 className="mt-2 text-2xl font-semibold text-text-primary">Preferencias y Seguridad</h2>
+            </div>
 
-            <div className="space-y-4">
-              <div className="rounded-xl border border-white/5 bg-dark-purple-700/30 p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/15 text-purple-electric">
-                      <Bell className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-text-primary font-medium">Notificaciones</p>
-                      <p className="text-sm text-text-muted">Recibe avisos sobre actividad y cambios en tus tickets.</p>
-                    </div>
+            <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
+                    <Bell className="h-5 w-5" />
                   </div>
-
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notificaciones}
-                      onChange={(e) => setNotificaciones(e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="h-6 w-11 rounded-full bg-dark-purple-600 transition-colors peer-checked:bg-purple-electric peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-electric/40 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-transform after:content-[''] peer-checked:after:translate-x-full" />
-                  </label>
+                  <div>
+                    <p className="font-medium text-text-primary">Notificaciones</p>
+                    <p className="text-sm text-text-muted">Recibe avisos sobre actividad y cambios en tus tickets.</p>
+                  </div>
                 </div>
+
+                <label className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    checked={notificaciones}
+                    onChange={(e) => setNotificaciones(e.target.checked)}
+                    className="peer sr-only"
+                  />
+                  <div className="h-6 w-11 rounded-full bg-dark-purple-700 transition-colors peer-checked:bg-purple-electric/80 peer-focus:ring-2 peer-focus:ring-purple-electric/30 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-transform after:content-[''] peer-checked:after:translate-x-full" />
+                </label>
               </div>
+            </div>
 
-              <div className="grid grid-cols-1 gap-3">
-                <div className="rounded-xl border border-white/5 bg-dark-purple-700/20 p-4 flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-accent-blue" />
-                  <div>
-                    <p className="text-sm text-text-primary font-medium">Correo de contacto</p>
-                    <p className="text-xs text-text-muted">{user?.email || "Sin correo"}</p>
+            <div className="space-y-3">
+              <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
+                    <UserRound className="h-5 w-5" />
                   </div>
-                </div>
-                <div className="rounded-xl border border-white/5 bg-dark-purple-700/20 p-4 flex items-center gap-3">
-                  <User2 className="h-5 w-5 text-purple-electric" />
                   <div>
-                    <p className="text-sm text-text-primary font-medium">Usuario de acceso</p>
+                    <p className="text-sm font-medium text-text-primary">Usuario de acceso</p>
                     <p className="text-xs text-text-muted">{user?.nombre_usuario || "Sin usuario"}</p>
                   </div>
                 </div>
-                <div className="rounded-xl border border-white/5 bg-dark-purple-700/20 p-4 flex items-center gap-3">
-                  <ShieldCheck className="h-5 w-5 text-emerald-400" />
+              </div>
+
+              <div className="rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
+                    <LockKeyhole className="h-5 w-5" />
+                  </div>
                   <div>
-                    <p className="text-sm text-text-primary font-medium">Seguridad</p>
-                    <p className="text-xs text-text-muted">Tu acceso se gestiona desde el panel administrativo.</p>
+                    <p className="text-sm font-medium text-text-primary">Seguridad</p>
+                    <p className="text-xs text-text-muted">Tu acceso y permisos se administran desde el panel interno.</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

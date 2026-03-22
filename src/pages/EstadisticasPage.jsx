@@ -42,24 +42,9 @@ function getTicketsByPriority(tickets) {
 
   const max = Math.max(counts.alta, counts.media, counts.baja) || 1;
   return [
-    {
-      label: "Alta",
-      count: counts.alta,
-      percentage: (counts.alta / max) * 100,
-      barClass: "bg-gradient-to-r from-accent-pink via-purple-electric to-accent-blue",
-    },
-    {
-      label: "Media",
-      count: counts.media,
-      percentage: (counts.media / max) * 100,
-      barClass: "bg-gradient-to-r from-purple-electric via-indigo-400 to-accent-blue",
-    },
-    {
-      label: "Baja",
-      count: counts.baja,
-      percentage: (counts.baja / max) * 100,
-      barClass: "bg-gradient-to-r from-accent-blue via-sky-400 to-cyan-300",
-    },
+    { label: "Alta", count: counts.alta, percentage: (counts.alta / max) * 100, barClass: "bg-gradient-to-r from-purple-electric/90 to-transparent" },
+    { label: "Media", count: counts.media, percentage: (counts.media / max) * 100, barClass: "bg-gradient-to-r from-purple-electric/70 to-transparent" },
+    { label: "Baja", count: counts.baja, percentage: (counts.baja / max) * 100, barClass: "bg-gradient-to-r from-purple-electric/50 to-transparent" },
   ];
 }
 
@@ -87,8 +72,8 @@ function getStagnantTickets(tickets) {
 
 function KPICard({ title, value, subtitle }) {
   return (
-    <div className="glass-card rounded-xl border border-white/10 bg-[#0b0f1a] p-4">
-      <p className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">{title}</p>
+    <div className="glass-card rounded-xl border border-white/5 bg-white/5 p-4 backdrop-blur-md shadow-none">
+      <p className="mb-1 text-xs font-medium text-text-secondary">{title}</p>
       <p className="text-3xl font-bold text-text-primary">{value}</p>
       {subtitle && <p className="mt-1 text-xs text-text-muted">{subtitle}</p>}
     </div>
@@ -122,7 +107,7 @@ export function EstadisticasPage() {
   const slaPercentage = kpis.total > 0 ? Math.round((kpis.resueltos / kpis.total) * 100) : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-[#0b0f1a]">
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-bold text-text-primary">Estadisticas</h1>
         <p className="mt-1 text-text-secondary">Resumen claro del comportamiento de tickets y equipos de soporte</p>
@@ -136,12 +121,12 @@ export function EstadisticasPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="glass-card rounded-2xl border border-white/5 bg-[#0b0f1a] p-6 shadow-none">
+        <div className="glass-card rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-md shadow-none">
           <h2 className="mb-4 text-xs font-medium uppercase tracking-wider text-text-secondary">Tickets por Prioridad</h2>
           <BarChart data={priorityData} />
         </div>
 
-        <div className="glass-card rounded-2xl border border-white/5 bg-[#0b0f1a] p-6 shadow-none">
+        <div className="glass-card rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-md shadow-none">
           <h2 className="mb-4 text-xs font-medium uppercase tracking-wider text-text-secondary">Areas con Mas Incidencias</h2>
           <div className="space-y-2">
             {topAreas.map((item, index) => (
@@ -157,11 +142,11 @@ export function EstadisticasPage() {
         </div>
       </div>
 
-      <div className="glass-card rounded-2xl border border-white/5 bg-[#0b0f1a] p-6 shadow-none">
+      <div className="glass-card rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-md shadow-none">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xs font-medium uppercase tracking-wider text-text-secondary">Atencion Requerida</h2>
           {stagnantTickets.length > 0 && (
-            <span className="rounded-full bg-accent-orange/20 px-3 py-1 text-xs font-medium text-accent-orange">
+            <span className="rounded-full border border-purple-electric/20 bg-purple-electric/10 px-3 py-1 text-xs font-medium text-purple-electric">
               {stagnantTickets.length} tickets
             </span>
           )}
@@ -182,7 +167,7 @@ export function EstadisticasPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge priority={ticket.prioridad} />
-                  <span className="text-xs font-medium text-accent-orange">48h+</span>
+                  <span className="text-xs font-medium text-purple-electric">48h+</span>
                 </div>
               </Link>
             ))
