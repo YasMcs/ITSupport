@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { UsuarioForm } from "../components/usuarios/UsuarioForm";
 import { mockUsers } from "../utils/mockUsers";
+import { maskSecret } from "../utils/security";
 
 export function NuevoUsuarioPage() {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ export function NuevoUsuarioPage() {
       apellido_materno: payload.apellido_materno,
       nombre_usuario: payload.nombre_usuario,
       email: payload.email,
-      contrasena_hash: payload.contrasena_hash ?? "hash_demo_temporal",
+      contrasena_hash: maskSecret(payload.contrasena_hash) ?? "hash_demo_temporal",
       rol: payload.rol,
       estado_cuenta: payload.estado_cuenta,
       area_id: payload.area_id,

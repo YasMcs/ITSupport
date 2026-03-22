@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
 import { UsuarioForm } from "../components/usuarios/UsuarioForm";
 import { getMockUserById, mockUsers } from "../utils/mockUsers";
+import { maskSecret } from "../utils/security";
 
 export function EditarUsuarioPage() {
   const { id } = useParams();
@@ -14,7 +14,7 @@ export function EditarUsuarioPage() {
       mockUsers[index] = {
         ...mockUsers[index],
         ...payload,
-        contrasena_hash: payload.contrasena_hash || mockUsers[index].contrasena_hash,
+        contrasena_hash: maskSecret(payload.contrasena_hash) || mockUsers[index].contrasena_hash,
       };
     }
     navigate("/usuarios");

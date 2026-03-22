@@ -1,6 +1,7 @@
 import { useAuth } from "../hooks/useAuth";
 import { Button } from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export function HomePage() {
   const { user, logout } = useAuth();
@@ -8,7 +9,11 @@ export function HomePage() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    toast.success("Sesion cerrada", {
+      description: "Se limpio la sesion activa.",
+    });
+    navigate("/login", { replace: true });
+    window.location.replace("/login");
   };
 
   return (

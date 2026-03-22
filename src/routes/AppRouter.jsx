@@ -16,6 +16,7 @@ import { EditarAreaPage } from "../pages/EditarAreaPage";
 import { UsuariosPage } from "../pages/UsuariosPage";
 import { NuevoUsuarioPage } from "../pages/NuevoUsuarioPage";
 import { EditarUsuarioPage } from "../pages/EditarUsuarioPage";
+import { AccesoDenegadoPage } from "../pages/AccesoDenegadoPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { ROLES } from "../constants/roles";
 
@@ -108,6 +109,14 @@ export function AppRouter() {
         element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <EditarUsuarioPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/acceso-denegado"
+        element={
+          <ProtectedRoute>
+            <AccesoDenegadoPage />
           </ProtectedRoute>
         }
       />

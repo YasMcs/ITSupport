@@ -37,7 +37,6 @@ export function AreaForm({ initialData, onSubmit }) {
     }
 
     try {
-      console.log(isEditing ? "Actualizando área:" : "Nueva área:", form);
       if (onSubmit) {
         onSubmit(form);
       }

@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
 import { TicketForm } from "../components/tickets/TicketForm";
 import { mockTickets } from "../utils/mockTickets";
+import { containsForbiddenInput } from "../utils/security";
 
 export function NuevoTicketPage() {
   const navigate = useNavigate();
@@ -15,6 +16,13 @@ export function NuevoTicketPage() {
   }
 
   const handleSubmit = (payload) => {
+    if (containsForbiddenInput(payload.titulo) || containsForbiddenInput(payload.descripcion)) {
+      toast.error("Deteccion de caracteres no permitidos", {
+        description: "El ticket fue bloqueado antes de guardarse en memoria.",
+      });
+      return;
+    }
+
     const newId = String(1029 + mockTickets.length);
 
     mockTickets.push({

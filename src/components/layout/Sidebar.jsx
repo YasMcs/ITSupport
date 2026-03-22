@@ -1,6 +1,7 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROLES } from "../../constants/roles";
+import { toast } from "sonner";
 import {
   LayoutDashboard,
   Ticket,
@@ -61,7 +62,17 @@ function matchesSection(pathname, path) {
 export function Sidebar() {
   const { role, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const menuItems = MENU_ITEMS[role] || [];
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Sesion cerrada", {
+      description: "Se limpio la sesion activa y se bloqueo el acceso a rutas protegidas.",
+    });
+    navigate("/login", { replace: true });
+    window.location.replace("/login");
+  };
 
   return (
     <aside className="flex h-full w-64 flex-col border-r border-white/[0.06] bg-white/[0.04] backdrop-blur-[22px]">
@@ -102,7 +113,7 @@ export function Sidebar() {
 
       <div className="mt-auto mb-6 border-t border-white/[0.06] px-3 py-3">
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-colors duration-150 hover:bg-white/[0.04] hover:text-text-primary"
         >
           <LogOut size={20} />

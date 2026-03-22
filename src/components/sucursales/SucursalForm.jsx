@@ -46,7 +46,6 @@ export function SucursalForm({ initialData, onSubmit }) {
 
     try {
       // Aquí iría la lógica para guardar la sucursal
-      console.log(isEditing ? "Actualizando sucursal:" : "Nueva sucursal:", form);
       if (onSubmit) {
         onSubmit(form);
       }

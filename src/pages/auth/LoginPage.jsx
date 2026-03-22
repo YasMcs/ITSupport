@@ -7,6 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { authService } from "../../services/authService";
 import { ROLES } from "../../constants/roles";
 import { getUserDisplayName } from "../../utils/userDisplay";
+import { containsForbiddenInput, validateEmail, validateRequiredText } from "../../utils/security";
 import "../../styles/LoginPage.css";
 import logoIcono from "../../assets/logo_icono.png";
 import logo from "../../assets/logo.png";
@@ -21,22 +22,56 @@ export function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setError("");
+
+    if (containsForbiddenInput(email) || containsForbiddenInput(password)) {
+      const message = "Deteccion de caracteres no permitidos";
+      setError(message);
+      toast.error(message, {
+        description: "El formulario bloqueo contenido que podia interpretarse como codigo ejecutable.",
+      });
+      return;
+    }
+
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setError(emailError);
+      toast.warning("Validacion de seguridad", {
+        description: emailError,
+      });
+      return;
+    }
+
+    const passwordError = validateRequiredText(password, { min: 6, max: 100 });
+    if (passwordError) {
+      const message = passwordError === "Este campo es obligatorio" ? "La contrasena es obligatoria" : passwordError;
+      setError(message);
+      toast.warning("Validacion de seguridad", {
+        description: message,
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const data = await authService.login({ email, password });
+      const safeEmail = email.trim().toLowerCase();
+      const safePassword = password.trim();
+      const data = await authService.login({ email: safeEmail, password: safePassword });
       const nextUser = data.user ?? {
-        email,
+        email: safeEmail,
         rol: ROLES.TECNICO,
         nombre: "Tecnico",
         apellido_paterno: "Demo",
         apellido_materno: "Temporal",
         nombre_usuario: "tecnico.demo",
       };
+
       login(nextUser);
-      toast.success(`¡Bienvenido de nuevo, ${getUserDisplayName(nextUser)}!`);
-      navigate("/dashboard");
+      toast.success(`Bienvenido de nuevo, ${getUserDisplayName(nextUser)}!`);
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       const message = err.response?.data?.message ?? err.message ?? "Credenciales incorrectas";
       setError(message);
@@ -108,6 +143,7 @@ export function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
+                autoComplete="username"
               />
               <Input
                 label="Contrasena"
@@ -117,6 +153,7 @@ export function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={loading}
+                autoComplete="current-password"
               />
             </div>
 

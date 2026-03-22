@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "../ui/Button";
 import { FormField } from "../ui/FormField";
 import { getAreaDisplay, getSucursalDisplayByAreaId } from "../../utils/mockUsers";
 import { PRIORIDAD, PRIORIDAD_OPTIONS, getPriorityConfig } from "../../constants/ticketPrioridad";
 import { getUserDisplayName } from "../../utils/userDisplay";
+import { containsForbiddenInput, normalizeTextInput, validateRequiredText } from "../../utils/security";
 
 export function TicketForm({ initialValues, onSubmit, user, layout = "default" }) {
   const [form, setForm] = useState({
@@ -14,18 +16,45 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
     prioridad: initialValues?.prioridad || PRIORIDAD.MEDIA,
   });
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (!form.titulo.trim()) {
-      setError("El titulo del ticket es obligatorio");
+  const handleSafeChange = (field, value) => {
+    if (containsForbiddenInput(value)) {
+      setError("Deteccion de caracteres no permitidos");
+      toast.error("Deteccion de caracteres no permitidos", {
+        description: "No se permiten etiquetas HTML ni caracteres que puedan ejecutarse en el navegador.",
+      });
       return;
     }
 
-    if (!form.descripcion.trim()) {
-      setError("La descripcion del problema es obligatoria");
+    setError("");
+    setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (submitting) return;
+
+    setError("");
+
+    if (containsForbiddenInput(form.titulo) || containsForbiddenInput(form.descripcion)) {
+      const message = "Deteccion de caracteres no permitidos";
+      setError(message);
+      toast.error(message, {
+        description: "Se bloquearon etiquetas o atributos que podian ejecutarse en el navegador.",
+      });
+      return;
+    }
+
+    const tituloError = validateRequiredText(form.titulo, { min: 5, max: 120 });
+    if (tituloError) {
+      setError(tituloError === "Este campo es obligatorio" ? "El titulo del ticket es obligatorio" : tituloError);
+      return;
+    }
+
+    const descripcionError = validateRequiredText(form.descripcion, { min: 10, max: 1500 });
+    if (descripcionError) {
+      setError(descripcionError === "Este campo es obligatorio" ? "La descripcion del problema es obligatoria" : descripcionError);
       return;
     }
 
@@ -35,9 +64,10 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
     }
 
     try {
+      setSubmitting(true);
       onSubmit?.({
-        titulo: form.titulo.trim(),
-        descripcion: form.descripcion.trim(),
+        titulo: normalizeTextInput(form.titulo),
+        descripcion: normalizeTextInput(form.descripcion),
         prioridad: form.prioridad,
         estado: initialValues?.estado || "abierto",
         encargado_id: Number(form.encargado_id),
@@ -46,6 +76,8 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
       });
     } catch (err) {
       setError("Error al crear el ticket");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -133,8 +165,9 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
         type="text"
         className="w-full bg-dark-purple-800 border border-dark-purple-700 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/50 focus:ring-2 focus:ring-purple-electric focus:border-purple-electric outline-none transition-all duration-200 hover:border-dark-purple-600"
         value={form.titulo}
-        onChange={(e) => setForm((current) => ({ ...current, titulo: e.target.value }))}
+        onChange={(e) => handleSafeChange("titulo", e.target.value)}
         placeholder="Resumen breve del problema..."
+        maxLength={120}
         required
       />
     </FormField>
@@ -145,9 +178,10 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
       <textarea
         className="w-full bg-dark-purple-800 border border-dark-purple-700 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/50 focus:ring-2 focus:ring-purple-electric focus:border-purple-electric outline-none transition-all duration-200 hover:border-dark-purple-600 resize-none min-h-[250px]"
         value={form.descripcion}
-        onChange={(e) => setForm((current) => ({ ...current, descripcion: e.target.value }))}
+        onChange={(e) => handleSafeChange("descripcion", e.target.value)}
         rows={8}
         placeholder="Describe detalladamente el problema o solicitud..."
+        maxLength={1500}
         required
       />
     </FormField>
@@ -173,8 +207,8 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
             </div>
 
             <div className="flex justify-end mt-6">
-              <Button type="submit" className="px-8 py-3 w-auto">
-                {initialValues ? "Guardar cambios" : "Enviar ticket"}
+              <Button type="submit" className="px-8 py-3 w-auto" disabled={submitting}>
+                {submitting ? "Validando..." : initialValues ? "Guardar cambios" : "Enviar ticket"}
               </Button>
             </div>
           </div>
@@ -217,8 +251,8 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
           {error}
         </div>
       )}
-      <Button type="submit" className="w-full">
-        {initialValues ? "Guardar cambios" : "Enviar ticket"}
+      <Button type="submit" className="w-full" disabled={submitting}>
+        {submitting ? "Validando..." : initialValues ? "Guardar cambios" : "Enviar ticket"}
       </Button>
     </form>
   );

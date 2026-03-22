@@ -3,6 +3,7 @@ import {
   getMockUserById,
   mockUserCredentials,
 } from "../utils/mockUsers";
+import { containsForbiddenInput } from "../utils/security";
 
 /**
  * Busca un usuario mock por email y password
@@ -30,6 +31,10 @@ function findDummyUser(email, password) {
 
 export const authService = {
   async login(credentials) {
+    if (containsForbiddenInput(credentials.email) || containsForbiddenInput(credentials.password)) {
+      return Promise.reject(new Error("Deteccion de caracteres no permitidos"));
+    }
+
     return findDummyUser(credentials.email, credentials.password);
   },
   async logout() {

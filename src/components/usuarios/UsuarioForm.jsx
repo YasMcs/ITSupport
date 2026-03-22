@@ -4,6 +4,14 @@ import { FormField } from "../ui/FormField";
 import { Select } from "../ui/Select";
 import { Button } from "../ui/Button";
 import { mockAreas } from "../../utils/mocks/areas.mock";
+import {
+  containsForbiddenInput,
+  normalizeTextInput,
+  validateEmail,
+  validateName,
+  validateRequiredText,
+  validateUsername,
+} from "../../utils/security";
 
 export const ROL_OPTIONS = [
   { value: "admin", label: "Admin" },
@@ -36,6 +44,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
     area_id: usuario?.area_id ? String(usuario.area_id) : "",
   });
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const isEncargado = formData.rol === "encargado";
   const selectedArea = useMemo(
@@ -54,60 +63,77 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
   };
 
   const validate = () => {
-    if (!formData.nombre.trim()) {
-      setError("El nombre es obligatorio");
-      toast.warning("Informacion incompleta", {
-        description: "Agrega el nombre real del usuario.",
+    const fieldsToCheck = [
+      formData.nombre,
+      formData.apellido_paterno,
+      formData.apellido_materno,
+      formData.nombre_usuario,
+      formData.email,
+      formData.contrasena_hash,
+    ];
+
+    if (fieldsToCheck.some((value) => containsForbiddenInput(value))) {
+      setError("Deteccion de caracteres no permitidos");
+      toast.error("Deteccion de caracteres no permitidos", {
+        description: "Se bloquearon etiquetas HTML o atributos sospechosos antes de guardar.",
       });
       return false;
     }
 
-    if (!formData.apellido_paterno.trim()) {
-      setError("El apellido paterno es obligatorio");
+    const nombreError = validateName(formData.nombre, "El nombre");
+    if (nombreError) {
+      setError(nombreError);
       toast.warning("Informacion incompleta", {
-        description: "Agrega el apellido paterno para continuar.",
+        description: nombreError,
       });
       return false;
     }
 
-    if (!formData.apellido_materno.trim()) {
-      setError("El apellido materno es obligatorio");
+    const apellidoPaternoError = validateName(formData.apellido_paterno, "El apellido paterno");
+    if (apellidoPaternoError) {
+      setError(apellidoPaternoError);
       toast.warning("Informacion incompleta", {
-        description: "Agrega el apellido materno para continuar.",
+        description: apellidoPaternoError,
       });
       return false;
     }
 
-    if (!formData.nombre_usuario.trim()) {
-      setError("El nombre de usuario es obligatorio");
+    const apellidoMaternoError = validateName(formData.apellido_materno, "El apellido materno");
+    if (apellidoMaternoError) {
+      setError(apellidoMaternoError);
       toast.warning("Informacion incompleta", {
-        description: "Necesitamos un nombre de usuario para continuar.",
+        description: apellidoMaternoError,
       });
       return false;
     }
 
-    if (!formData.email.trim()) {
-      setError("El correo electronico es obligatorio");
+    const usernameError = validateUsername(formData.nombre_usuario);
+    if (usernameError) {
+      setError(usernameError);
       toast.warning("Informacion incompleta", {
-        description: "Agrega un correo electronico valido antes de guardar.",
+        description: usernameError,
       });
       return false;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      setError("El correo electronico no es valido");
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      setError(emailError);
       toast.warning("Informacion incompleta", {
-        description: "El formato del correo electronico no es valido.",
+        description: emailError,
       });
       return false;
     }
 
-    if (!isEditing && !formData.contrasena_hash.trim()) {
-      setError("La contrasena es obligatoria");
-      toast.warning("Informacion incompleta", {
-        description: "Define una contrasena temporal para crear el registro.",
-      });
-      return false;
+    if (!isEditing) {
+      const passwordError = validateRequiredText(formData.contrasena_hash, { min: 8, max: 60 });
+      if (passwordError) {
+        setError(passwordError === "Este campo es obligatorio" ? "La contrasena es obligatoria" : passwordError);
+        toast.warning("Informacion incompleta", {
+          description: "Define una contrasena temporal segura de al menos 8 caracteres.",
+        });
+        return false;
+      }
     }
 
     if (!formData.rol) {
@@ -131,25 +157,32 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (submitting) return;
+
     setError("");
 
     if (!validate()) return;
 
-    onSubmit({
-      nombre: formData.nombre.trim(),
-      apellido_paterno: formData.apellido_paterno.trim(),
-      apellido_materno: formData.apellido_materno.trim(),
-      nombre_usuario: formData.nombre_usuario.trim(),
-      email: formData.email.trim().toLowerCase(),
-      contrasena_hash: formData.contrasena_hash.trim() || undefined,
-      rol: formData.rol,
-      estado_cuenta: formData.estado_cuenta,
-      area_id: isEncargado ? Number(formData.area_id) : null,
-    });
+    try {
+      setSubmitting(true);
+      onSubmit({
+        nombre: normalizeTextInput(formData.nombre),
+        apellido_paterno: normalizeTextInput(formData.apellido_paterno),
+        apellido_materno: normalizeTextInput(formData.apellido_materno),
+        nombre_usuario: normalizeTextInput(formData.nombre_usuario),
+        email: normalizeTextInput(formData.email).toLowerCase(),
+        contrasena_hash: formData.contrasena_hash.trim() || undefined,
+        rol: formData.rol,
+        estado_cuenta: formData.estado_cuenta,
+        area_id: isEncargado ? Number(formData.area_id) : null,
+      });
 
-    toast.success("Registro creado exitosamente", {
-      description: isEditing ? "Los cambios ya fueron aplicados." : "La informacion se guardo correctamente.",
-    });
+      toast.success("Registro creado exitosamente", {
+        description: isEditing ? "Los cambios ya fueron aplicados." : "La informacion se guardo correctamente.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -174,6 +207,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
                   value={formData.nombre}
                   onChange={(e) => handleChange("nombre", e.target.value)}
                   placeholder="Joel"
+                  maxLength={60}
                   required
                 />
               </FormField>
@@ -185,6 +219,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
                   value={formData.apellido_paterno}
                   onChange={(e) => handleChange("apellido_paterno", e.target.value)}
                   placeholder="De Coz"
+                  maxLength={60}
                   required
                 />
               </FormField>
@@ -196,6 +231,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
                   value={formData.apellido_materno}
                   onChange={(e) => handleChange("apellido_materno", e.target.value)}
                   placeholder="Fernandez"
+                  maxLength={60}
                   required
                 />
               </FormField>
@@ -207,6 +243,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
                   value={formData.nombre_usuario}
                   onChange={(e) => handleChange("nombre_usuario", e.target.value)}
                   placeholder="ej. jdecoz"
+                  maxLength={30}
                   required
                 />
               </FormField>
@@ -218,6 +255,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
                   placeholder="correo@ejemplo.com"
+                  maxLength={120}
                   required
                 />
               </FormField>
@@ -225,11 +263,13 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
               {!isEditing && (
                 <FormField label="Contrasena Temporal" required>
                   <input
-                    type="text"
+                    type="password"
                     className="w-full bg-dark-purple-800 border border-dark-purple-700 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/50 focus:ring-2 focus:ring-purple-electric focus:border-purple-electric outline-none transition-all duration-200 hover:border-dark-purple-600"
                     value={formData.contrasena_hash}
                     onChange={(e) => handleChange("contrasena_hash", e.target.value)}
                     placeholder="Temporal123"
+                    maxLength={60}
+                    autoComplete="new-password"
                     required
                   />
                 </FormField>
@@ -241,9 +281,9 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
                     Cancelar
                   </Button>
                 )}
-                <Button type="submit" className="px-8 py-3 w-auto">
-                  {isEditing ? "Guardar Cambios" : "Crear Usuario"}
-                </Button>
+                  <Button type="submit" className="px-8 py-3 w-auto" disabled={submitting}>
+                    {submitting ? "Validando..." : isEditing ? "Guardar Cambios" : "Crear Usuario"}
+                  </Button>
               </div>
             </div>
           </div>

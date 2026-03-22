@@ -51,7 +51,7 @@ export function SucursalesPage() {
   };
 
   const handleEditar = (id) => {
-    console.log("Editar sucursal:", id);
+    navigate(`/sucursales/editar/${id}`);
   };
 
   const handleToggleEstado = (id) => {
