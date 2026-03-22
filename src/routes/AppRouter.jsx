@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { HomePage } from "../pages/HomePage";
 import { DashboardPage } from "../pages/DashboardPage";
@@ -19,139 +20,189 @@ import { EditarUsuarioPage } from "../pages/EditarUsuarioPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { ROLES } from "../constants/roles";
 
-export function AppRouter() {
+function RouteTransition({ children }) {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 6 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="h-full"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function AppRouter() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+      <Route path="/login" element={<RouteTransition><LoginPage /></RouteTransition>} />
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/estadisticas"
         element={
-          <ProtectedRoute>
-            <EstadisticasPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute>
+              <EstadisticasPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/sucursales"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <SucursalesPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <SucursalesPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/sucursales/nueva"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <NuevaSucursalPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <NuevaSucursalPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/sucursales/editar/:id"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <EditarSucursalPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <EditarSucursalPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/areas"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <AreasPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <AreasPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/areas/nueva"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <NuevaAreaPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <NuevaAreaPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/areas/editar/:id"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <EditarAreaPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <EditarAreaPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/usuarios"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <UsuariosPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <UsuariosPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/usuarios/nuevo"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <NuevoUsuarioPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <NuevoUsuarioPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/usuarios/editar/:id"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-            <EditarUsuarioPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+              <EditarUsuarioPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/tickets"
         element={
-          <ProtectedRoute>
-            <TicketsPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute>
+              <TicketsPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/tickets/nuevo"
         element={
-          <ProtectedRoute allowedRoles={[ROLES.ENCARGADO]}>
-            <NuevoTicketPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute allowedRoles={[ROLES.ENCARGADO]}>
+              <NuevoTicketPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/tickets/:id"
         element={
-          <ProtectedRoute>
-            <TicketDetailPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute>
+              <TicketDetailPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/perfil"
         element={
-          <ProtectedRoute>
-            <PerfilPage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute>
+              <PerfilPage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route
         path="/"
         element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
+          <RouteTransition>
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          </RouteTransition>
         }
       />
       <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+      </Routes>
+    </AnimatePresence>
   );
 }

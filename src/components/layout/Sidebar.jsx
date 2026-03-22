@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROLES } from "../../constants/roles";
 import {
@@ -38,32 +38,60 @@ const MENU_ITEMS = {
   ],
 };
 
+function matchesSection(pathname, path) {
+  if (path === "/tickets") {
+    return pathname === "/tickets" || /^\/tickets\/\d+$/.test(pathname);
+  }
+
+  if (path === "/usuarios") {
+    return pathname === "/usuarios" || pathname.startsWith("/usuarios/");
+  }
+
+  if (path === "/areas") {
+    return pathname === "/areas" || pathname.startsWith("/areas/");
+  }
+
+  if (path === "/sucursales") {
+    return pathname === "/sucursales" || pathname.startsWith("/sucursales/");
+  }
+
+  return pathname === path;
+}
+
 export function Sidebar() {
   const { role, logout } = useAuth();
   const location = useLocation();
-
-  const isActive = (path) => location.pathname === path;
   const menuItems = MENU_ITEMS[role] || [];
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-white/5 bg-black/20 backdrop-blur-lg">
+    <aside className="flex h-full w-64 flex-col border-r border-white/5 bg-[#0f0f18]/95 backdrop-blur-2xl">
       <nav className="flex-1 px-3 pt-12">
-        <ul className="flex flex-col gap-6">
+        <ul className="flex flex-col gap-4">
           {menuItems.map((item) => {
             const Icon = item.icon;
+            const active = matchesSection(location.pathname, item.path);
+
             return (
               <li key={item.path}>
-                <Link
+                <NavLink
                   to={item.path}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-4 transition-all duration-200 ${
-                    isActive(item.path)
-                      ? "border border-purple-electric/20 bg-purple-electric/12 text-white"
-                      : "text-text-muted hover:bg-white/5 hover:text-text-primary"
+                  className={`group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-3.5 text-sm transition-colors duration-150 ${
+                    active
+                      ? "border border-white/10 bg-white/[0.08] text-white"
+                      : "text-text-muted hover:bg-white/[0.04] hover:text-text-primary"
                   }`}
                 >
-                  <Icon size={20} />
+                  <span
+                    className={`absolute inset-y-2 left-0 w-1 rounded-full transition-opacity duration-150 ${
+                      active ? "bg-purple-electric opacity-100" : "bg-purple-electric/0 opacity-0 group-hover:opacity-60"
+                    }`}
+                  />
+                  <Icon
+                    size={19}
+                    className={active ? "text-purple-electric" : "text-text-muted transition-colors group-hover:text-text-primary"}
+                  />
                   <span className="truncate font-medium">{item.label}</span>
-                </Link>
+                </NavLink>
               </li>
             );
           })}
@@ -73,7 +101,7 @@ export function Sidebar() {
       <div className="mt-auto mb-6 border-t border-white/5 px-3 py-3">
         <button
           onClick={logout}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-all duration-200 hover:bg-white/5 hover:text-text-primary"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-text-muted transition-colors duration-150 hover:bg-white/[0.04] hover:text-text-primary"
         >
           <LogOut size={20} />
           <span className="font-medium">Cerrar sesion</span>

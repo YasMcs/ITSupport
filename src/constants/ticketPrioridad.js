@@ -13,12 +13,36 @@ export const PRIORIDAD_OPTIONS = [
 export const getPriorityConfig = (prioridad) => {
   switch (prioridad) {
     case PRIORIDAD.ALTA:
-      return { color: "text-accent-pink", bg: "bg-accent-pink", label: "Alta" };
+      return {
+        color: "text-red-300",
+        bg: "bg-red-500/90",
+        ring: "ring-red-400/40",
+        dot: "bg-red-400",
+        label: "Alta",
+      };
     case PRIORIDAD.MEDIA:
-      return { color: "text-accent-orange", bg: "bg-accent-orange", label: "Media" };
+      return {
+        color: "text-amber-300",
+        bg: "bg-amber-500/90",
+        ring: "ring-amber-400/40",
+        dot: "bg-amber-400",
+        label: "Media",
+      };
     case PRIORIDAD.BAJA:
-      return { color: "text-text-secondary", bg: "bg-text-secondary", label: "Baja" };
+      return {
+        color: "text-emerald-300",
+        bg: "bg-emerald-500/90",
+        ring: "ring-emerald-400/40",
+        dot: "bg-emerald-400",
+        label: "Baja",
+      };
     default:
-      return { color: "text-text-secondary", bg: "bg-text-secondary", label: "Media" };
+      return {
+        color: "text-amber-300",
+        bg: "bg-amber-500/90",
+        ring: "ring-amber-400/40",
+        dot: "bg-amber-400",
+        label: "Media",
+      };
   }
 };

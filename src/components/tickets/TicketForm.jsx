@@ -110,9 +110,7 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
                 onClick={() => setForm((current) => ({ ...current, prioridad: opt.value }))}
                 className={`flex-1 py-2.5 px-3 rounded-xl text-sm transition-all duration-200 border ${
                   isSelected
-                    ? opt.value === PRIORIDAD.BAJA
-                      ? "bg-dark-purple-800 text-white font-semibold border-gray-400 ring-1 ring-gray-400/50"
-                      : `${config.bg} text-white font-semibold border-transparent ring-1 ${opt.value === PRIORIDAD.MEDIA ? "ring-accent-orange/50" : "ring-accent-pink/50"}`
+                    ? `${config.bg} text-white font-semibold border-transparent ring-1 ${config.ring}`
                     : "bg-transparent border-white/10 text-gray-400 hover:bg-white/5 hover:border-white/20"
                 }`}
               >
@@ -122,7 +120,7 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
           })}
         </div>
         <div className={`text-sm font-medium ${priorityConfig.color} flex items-center gap-2`}>
-          <span className={`w-2 h-2 rounded-full ${priorityConfig.bg}`} />
+          <span className={`w-2 h-2 rounded-full ${priorityConfig.dot}`} />
           Prioridad: {priorityConfig.label}
         </div>
       </div>
