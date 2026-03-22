@@ -34,7 +34,7 @@ export function EditarUsuarioPage() {
         </button>
         <div>
           <h1 className="text-3xl font-bold text-text-primary">Editar Usuario</h1>
-          <p className="text-text-secondary mt-1">Actualiza el mock sin salirte del contrato SQL</p>
+          <p className="text-text-secondary mt-1">Actualiza la informacion del usuario y ajusta sus permisos si es necesario.</p>
         </div>
       </div>
 

@@ -51,7 +51,7 @@ export function KanbanPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1 max-w-md">
           <h1 className="text-3xl font-bold text-text-primary">Vista Kanban</h1>
-          <p className="text-text-secondary mt-1">Arrastra tickets y mantennos alineados con estados SQL en minusculas</p>
+          <p className="text-text-secondary mt-1">Organiza los tickets por estado y da seguimiento visual a su avance.</p>
         </div>
 
         <div className="flex items-center gap-3">

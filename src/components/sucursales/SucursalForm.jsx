@@ -238,8 +238,8 @@ export function SucursalForm({ initialData, onSubmit }) {
               <div className="text-sm text-gray-400 bg-white/5 p-4 rounded-lg mt-6">
                 <p>
                   {isEditing
-                    ? "Los cambios se guardarán inmediatamente en la base de datos."
-                    : "Podrás asignar usuarios y áreas a esta sucursal una vez que sea creada."}
+                    ? "Revisa cuidadosamente la informacion antes de guardar los cambios."
+                    : "Podras completar la configuracion de esta sucursal despues de crearla."}
                 </p>
               </div>
             </div>

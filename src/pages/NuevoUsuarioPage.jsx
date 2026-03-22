@@ -36,7 +36,7 @@ export function NuevoUsuarioPage() {
         </button>
         <div>
           <h1 className="text-3xl font-bold text-text-primary">Nuevo Usuario</h1>
-          <p className="text-text-secondary mt-1">Crea un usuario de prueba listo para Railway y backend SQL</p>
+          <p className="text-text-secondary mt-1">Registra un nuevo usuario y define su acceso a la plataforma.</p>
         </div>
       </div>
 

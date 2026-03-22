@@ -18,7 +18,7 @@ export function NuevoTicketPage() {
   const handleSubmit = (payload) => {
     if (containsForbiddenInput(payload.titulo) || containsForbiddenInput(payload.descripcion)) {
       toast.error("Deteccion de caracteres no permitidos", {
-        description: "El ticket fue bloqueado antes de guardarse en memoria.",
+        description: "El ticket fue bloqueado antes de registrarse.",
       });
       return;
     }
@@ -58,7 +58,7 @@ export function NuevoTicketPage() {
 
         <div>
           <h1 className="text-3xl font-bold text-text-primary">Nuevo Ticket</h1>
-          <p className="text-text-secondary mt-1">Crea un ticket usando el contrato exacto del backend</p>
+          <p className="text-text-secondary mt-1">Registra una nueva solicitud para que el equipo de soporte pueda atenderla.</p>
         </div>
       </div>
 

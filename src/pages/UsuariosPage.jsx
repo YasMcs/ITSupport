@@ -169,7 +169,7 @@ export function UsuariosPage() {
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-text-primary">Usuarios</h1>
-          <p className="text-text-secondary mt-1">Gestion de usuarios con contrato listo para backend</p>
+          <p className="text-text-secondary mt-1">Administra cuentas, roles y estado de acceso del personal.</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative">
