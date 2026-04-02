@@ -18,9 +18,7 @@ export function SucursalForm({ initialData, onSubmit }) {
     nombre: initialData?.nombre || "",
     zona: initialData?.zona || "",
     direccion: initialData?.direccion || "",
-    contacto: initialData?.contacto || "",
     telefono: initialData?.telefono || "",
-    extension: initialData?.extension || "",
     horaApertura: initialData?.horaApertura || "",
     horaCierre: initialData?.horaCierre || "",
     estado: initialData?.estado || "Activa",
@@ -131,17 +129,6 @@ export function SucursalForm({ initialData, onSubmit }) {
               </FormField>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField label="Contacto Local">
-                  <input
-                    type="text"
-                    className="w-full bg-dark-purple-800 border border-dark-purple-700 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/50 focus:ring-2 focus:ring-purple-electric focus:border-purple-electric outline-none transition-all duration-200 hover:border-dark-purple-600"
-                    value={form.contacto}
-                    onChange={(e) => handleChange("contacto", e.target.value)}
-                    placeholder="Nombre del encargado"
-                    disabled={isEditing}
-                  />
-                </FormField>
-
                 <FormField label="Telefono Directo / Movil">
                   <input
                     type="text"
@@ -149,19 +136,6 @@ export function SucursalForm({ initialData, onSubmit }) {
                     value={form.telefono}
                     onChange={(e) => handleChange("telefono", e.target.value)}
                     placeholder="Para emergencias si cae la red"
-                    disabled={isEditing}
-                  />
-                </FormField>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField label="Extension Interna">
-                  <input
-                    type="text"
-                    className="w-full bg-dark-purple-800 border border-dark-purple-700 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/50 focus:ring-2 focus:ring-purple-electric focus:border-purple-electric outline-none transition-all duration-200 hover:border-dark-purple-600"
-                    value={form.extension}
-                    onChange={(e) => handleChange("extension", e.target.value)}
-                    placeholder="Ext. 105"
                     disabled={isEditing}
                   />
                 </FormField>
