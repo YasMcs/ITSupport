@@ -1,12 +1,8 @@
-import { Bell, LockKeyhole, PencilLine, UserRound } from "lucide-react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { Bell, LockKeyhole, UserRound } from "lucide-react";
+import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
 import { getUserDisplayName, getUserInitial } from "../utils/userDisplay";
-import { Button } from "../components/ui/Button";
-import { userService } from "../services/userService";
-import { containsForbiddenInput, normalizeTextInput, validateUsername } from "../utils/security";
 
 function InfoCard({ label, value }) {
   return (
@@ -18,14 +14,8 @@ function InfoCard({ label, value }) {
 }
 
 export function PerfilPage() {
-  const { user, role, updateUser } = useAuth();
+  const { user, role } = useAuth();
   const [notificaciones, setNotificaciones] = useState(true);
-  const [nombreUsuario, setNombreUsuario] = useState(user?.nombre_usuario || "");
-  const [savingProfile, setSavingProfile] = useState(false);
-
-  useEffect(() => {
-    setNombreUsuario(user?.nombre_usuario || "");
-  }, [user?.nombre_usuario]);
 
   const getRoleLabel = (rol) => {
     const labels = {
@@ -34,46 +24,6 @@ export function PerfilPage() {
       [ROLES.ENCARGADO]: "Encargado",
     };
     return labels[rol] || rol;
-  };
-
-  const handleProfileSave = async () => {
-    const cleanUsername = normalizeTextInput(nombreUsuario);
-
-    if (containsForbiddenInput(nombreUsuario)) {
-      toast.error("Deteccion de caracteres no permitidos", {
-        description: "El nombre de usuario contiene contenido no permitido.",
-      });
-      return;
-    }
-
-    const usernameError = validateUsername(cleanUsername);
-    if (usernameError) {
-      toast.warning("No pudimos actualizar el perfil", {
-        description: usernameError,
-      });
-      return;
-    }
-
-    if (cleanUsername === user?.nombre_usuario) {
-      toast.info("No hay cambios por guardar");
-      return;
-    }
-
-    setSavingProfile(true);
-
-    try {
-      const updatedUser = await userService.updateMe({ nombre_usuario: cleanUsername });
-      updateUser(updatedUser);
-      toast.success("Perfil actualizado", {
-        description: "Tu nombre de usuario ya fue actualizado.",
-      });
-    } catch (error) {
-      toast.error("No pudimos actualizar el perfil", {
-        description: error.response?.data?.message ?? "Intenta nuevamente en unos segundos.",
-      });
-    } finally {
-      setSavingProfile(false);
-    }
   };
 
   return (
@@ -149,40 +99,13 @@ export function PerfilPage() {
 
             <div className="space-y-3">
               <div className="glass-card rounded-xl p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
-                      <UserRound className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">Usuario de acceso</p>
-                      <p className="text-xs text-text-muted">Puedes editar tu nombre de usuario personal</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
+                    <UserRound className="h-5 w-5" />
                   </div>
-
-                  <div className="space-y-3">
-                    <label className="text-xs uppercase tracking-wider text-text-muted">Nombre de usuario</label>
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-electric/12 text-purple-electric">
-                        <PencilLine className="h-5 w-5" />
-                      </div>
-                      <input
-                        type="text"
-                        value={nombreUsuario}
-                        onChange={(e) => setNombreUsuario(e.target.value)}
-                        maxLength={30}
-                        className="w-full rounded-xl border border-dark-purple-700 bg-dark-purple-800 px-4 py-3 text-sm text-text-primary outline-none transition-all focus:border-purple-electric focus:ring-1 focus:ring-purple-electric"
-                        placeholder="Tu usuario"
-                      />
-                    </div>
-                    <Button
-                      type="button"
-                      onClick={handleProfileSave}
-                      disabled={savingProfile}
-                      className="w-full"
-                    >
-                      {savingProfile ? "Guardando..." : "Guardar perfil"}
-                    </Button>
+                  <div>
+                    <p className="text-sm font-medium text-text-primary">Usuario de acceso</p>
+                    <p className="text-xs text-text-muted">{user?.nombre_usuario || "Sin usuario"}</p>
                   </div>
                 </div>
               </div>

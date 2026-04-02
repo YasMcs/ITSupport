@@ -21,22 +21,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => getStoredUser());
   const role = user?.rol ?? null;
 
-  const persistUser = (userData) => {
+  const login = (userData, token) => {
     const safeUser = sanitizeSessionUser(userData);
     setUser(safeUser);
     window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(safeUser));
-  };
-
-  const login = (userData, token) => {
-    persistUser(userData);
     setAuthToken(token);
-  };
-
-  const updateUser = (userData) => {
-    persistUser({
-      ...user,
-      ...userData,
-    });
   };
 
   const logout = () => {
@@ -46,7 +35,7 @@ export function AuthProvider({ children }) {
   };
 
   const isAuthenticated = user !== null;
-  const value = useMemo(() => ({ user, role, isAuthenticated, login, updateUser, logout }), [user, role, isAuthenticated]);
+  const value = useMemo(() => ({ user, role, isAuthenticated, login, logout }), [user, role, isAuthenticated]);
 
   return (
     <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
