@@ -125,7 +125,7 @@ export function buildUserPayload(payload = {}) {
     nombreUsuario: payload.nombre_usuario,
     email: payload.email,
     contrasena: payload.contrasena_hash,
-    rol: String(payload.rol || "").toUpperCase(),
+    rol: String(payload.rol || "").toLowerCase(),
     areaId: payload.area_id,
   };
 }
