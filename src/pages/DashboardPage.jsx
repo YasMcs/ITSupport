@@ -24,9 +24,6 @@ export function DashboardPage() {
         if (!cancelled) setTickets(Array.isArray(data) ? data : []);
       } catch (error) {
         if (!cancelled) {
-          toast.error("No pudimos cargar el dashboard", {
-            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
-          });
           setTickets([]);
         }
       } finally {

@@ -35,9 +35,6 @@ export function TicketsPage() {
         if (!cancelled) setTickets(filterTicketsByRole(data, role, user));
       } catch (error) {
         if (!cancelled) {
-          toast.error("No pudimos cargar los tickets", {
-            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
-          });
           setTickets([]);
         }
       } finally {

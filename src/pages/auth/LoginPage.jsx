@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useAuth } from "../../hooks/useAuth";
@@ -28,18 +27,12 @@ export function LoginPage() {
     if (containsForbiddenInput(email) || containsForbiddenInput(password)) {
       const message = "Deteccion de caracteres no permitidos";
       setError(message);
-      toast.error(message, {
-        description: "El formulario bloqueo contenido que podia interpretarse como codigo ejecutable.",
-      });
       return;
     }
 
     const emailError = validateEmail(email);
     if (emailError) {
       setError(emailError);
-      toast.warning("Validacion de seguridad", {
-        description: emailError,
-      });
       return;
     }
 
@@ -47,9 +40,6 @@ export function LoginPage() {
     if (passwordError) {
       const message = passwordError === "Este campo es obligatorio" ? "La contrasena es obligatoria" : passwordError;
       setError(message);
-      toast.warning("Validacion de seguridad", {
-        description: message,
-      });
       return;
     }
 
@@ -62,14 +52,10 @@ export function LoginPage() {
       const nextUser = data.user;
 
       login(nextUser, data.token);
-      toast.success(`Bienvenido de nuevo, ${getUserDisplayName(nextUser)}!`);
       navigate("/dashboard", { replace: true });
     } catch (err) {
       const message = err.response?.data?.message ?? err.message ?? "Credenciales incorrectas";
       setError(message);
-      toast.error("Credenciales incorrectas", {
-        description: "Verifica tu email y contrasena para continuar.",
-      });
     } finally {
       setLoading(false);
     }

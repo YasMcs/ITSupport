@@ -1,7 +1,6 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { ROLES } from "../../constants/roles";
-import { toast } from "sonner";
 import {
   LayoutDashboard,
   Ticket,
@@ -67,9 +66,6 @@ export function Sidebar() {
 
   const handleLogout = () => {
     logout();
-    toast.success("Sesion cerrada", {
-      description: "Se limpio la sesion activa y se bloqueo el acceso a rutas protegidas.",
-    });
     navigate("/login", { replace: true });
   };
 

@@ -26,17 +26,14 @@ export function AreasPage() {
   const loadAreas = async (cancelled = false) => {
     setLoading(true);
 
-    try {
-      const data = await areaService.getAll();
-      if (!cancelled) setAreas(data);
-    } catch (error) {
-      if (!cancelled) {
-        toast.error("No pudimos cargar las areas", {
-          description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
-        });
-        setAreas([]);
-      }
-    } finally {
+      try {
+        const data = await areaService.getAll();
+        if (!cancelled) setAreas(data);
+      } catch (error) {
+        if (!cancelled) {
+          setAreas([]);
+        }
+      } finally {
       if (!cancelled) setLoading(false);
     }
   };

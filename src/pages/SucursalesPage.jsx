@@ -26,17 +26,14 @@ export function SucursalesPage() {
   const loadSucursales = async (cancelled = false) => {
     setLoading(true);
 
-    try {
-      const data = await sucursalService.getAll();
-      if (!cancelled) setSucursales(data);
-    } catch (error) {
-      if (!cancelled) {
-        toast.error("No pudimos cargar las sucursales", {
-          description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
-        });
-        setSucursales([]);
-      }
-    } finally {
+      try {
+        const data = await sucursalService.getAll();
+        if (!cancelled) setSucursales(data);
+      } catch (error) {
+        if (!cancelled) {
+          setSucursales([]);
+        }
+      } finally {
       if (!cancelled) setLoading(false);
     }
   };

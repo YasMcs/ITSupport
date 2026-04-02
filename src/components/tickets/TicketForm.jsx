@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { toast } from "sonner";
 import { Button } from "../ui/Button";
 import { FormField } from "../ui/FormField";
 import { PRIORIDAD, PRIORIDAD_OPTIONS, getPriorityConfig } from "../../constants/ticketPrioridad";
@@ -20,9 +19,6 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default", 
   const handleSafeChange = (field, value) => {
     if (containsForbiddenInput(value)) {
       setError("Deteccion de caracteres no permitidos");
-      toast.error("Deteccion de caracteres no permitidos", {
-        description: "No se permiten etiquetas HTML ni caracteres que puedan ejecutarse en el navegador.",
-      });
       return;
     }
 
@@ -39,9 +35,6 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default", 
     if (containsForbiddenInput(form.titulo) || containsForbiddenInput(form.descripcion)) {
       const message = "Deteccion de caracteres no permitidos";
       setError(message);
-      toast.error(message, {
-        description: "Se bloquearon etiquetas o atributos que podian ejecutarse en el navegador.",
-      });
       return;
     }
 

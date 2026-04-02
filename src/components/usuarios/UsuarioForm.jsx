@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
 import { FormField } from "../ui/FormField";
 import { Select } from "../ui/Select";
 import { Button } from "../ui/Button";
@@ -72,54 +71,36 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
 
     if (fieldsToCheck.some((value) => containsForbiddenInput(value))) {
       setError("Deteccion de caracteres no permitidos");
-      toast.error("Deteccion de caracteres no permitidos", {
-        description: "Se bloquearon etiquetas HTML o atributos sospechosos antes de guardar.",
-      });
       return false;
     }
 
     const nombreError = validateName(formData.nombre, "El nombre");
     if (nombreError) {
       setError(nombreError);
-      toast.warning("Informacion incompleta", {
-        description: nombreError,
-      });
       return false;
     }
 
     const apellidoPaternoError = validateName(formData.apellido_paterno, "El apellido paterno");
     if (apellidoPaternoError) {
       setError(apellidoPaternoError);
-      toast.warning("Informacion incompleta", {
-        description: apellidoPaternoError,
-      });
       return false;
     }
 
     const apellidoMaternoError = validateName(formData.apellido_materno, "El apellido materno");
     if (apellidoMaternoError) {
       setError(apellidoMaternoError);
-      toast.warning("Informacion incompleta", {
-        description: apellidoMaternoError,
-      });
       return false;
     }
 
     const usernameError = validateUsername(formData.nombre_usuario);
     if (usernameError) {
       setError(usernameError);
-      toast.warning("Informacion incompleta", {
-        description: usernameError,
-      });
       return false;
     }
 
     const emailError = validateEmail(formData.email);
     if (emailError) {
       setError(emailError);
-      toast.warning("Informacion incompleta", {
-        description: emailError,
-      });
       return false;
     }
 
@@ -127,26 +108,17 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
       const passwordError = validateRequiredText(formData.contrasena_hash, { min: 8, max: 60 });
       if (passwordError) {
         setError(passwordError === "Este campo es obligatorio" ? "La contrasena es obligatoria" : passwordError);
-        toast.warning("Informacion incompleta", {
-          description: "Define una contrasena temporal segura de al menos 8 caracteres.",
-        });
         return false;
       }
     }
 
     if (!formData.rol) {
       setError("El rol es obligatorio");
-      toast.warning("Informacion incompleta", {
-        description: "Selecciona un rol para el usuario.",
-      });
       return false;
     }
 
     if (isEncargado && !formData.area_id) {
       setError("El area asignada es obligatoria");
-      toast.warning("Informacion incompleta", {
-        description: "Selecciona el area asignada para el encargado.",
-      });
       return false;
     }
 

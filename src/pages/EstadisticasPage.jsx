@@ -113,9 +113,6 @@ export function EstadisticasPage() {
         if (!cancelled) setSourceTickets(Array.isArray(data) ? data : []);
       } catch (error) {
         if (!cancelled) {
-          toast.error("No pudimos cargar las estadisticas", {
-            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
-          });
           setSourceTickets([]);
         }
       } finally {
