@@ -1,22 +1,49 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { UsuarioForm } from "../components/usuarios/UsuarioForm";
-import { getMockUserById, mockUsers } from "../utils/mockUsers";
-import { maskSecret } from "../utils/security";
+import { areaService } from "../services/areaService";
+import { userService } from "../services/userService";
 
 export function EditarUsuarioPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const usuario = getMockUserById(id);
+  const [usuario, setUsuario] = useState(null);
+  const [areas, setAreas] = useState([]);
 
-  const handleSubmit = (payload) => {
-    const index = mockUsers.findIndex((user) => user.id === Number(id));
-    if (index >= 0) {
-      mockUsers[index] = {
-        ...mockUsers[index],
-        ...payload,
-        contrasena_hash: maskSecret(payload.contrasena_hash) || mockUsers[index].contrasena_hash,
-      };
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      try {
+        const [userData, areaData] = await Promise.all([
+          userService.getById(id),
+          areaService.getAll(),
+        ]);
+
+        if (!cancelled) {
+          setUsuario(userData);
+          setAreas(areaData);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar el usuario", {
+            description: error.response?.data?.message ?? "El backend no expone una actualizacion administrativa completa para este recurso.",
+          });
+        }
+      }
     }
+
+    loadData();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const handleSubmit = async () => {
+    toast.info("La API documentada no incluye una ruta para editar usuarios arbitrarios", {
+      description: "Deje esta vista conectada a lectura real, pero la escritura administrativa requiere soporte adicional en backend.",
+    });
     navigate("/usuarios");
   };
 
@@ -43,6 +70,7 @@ export function EditarUsuarioPage() {
         onSubmit={handleSubmit}
         onCancel={() => navigate("/usuarios")}
         isEditing
+        areaOptions={areas}
       />
     </div>
   );

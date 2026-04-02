@@ -1,14 +1,48 @@
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL ?? "";
+import { api, extractData } from "./api";
+import { buildUserPayload, normalizeUser } from "../utils/apiMappers";
 
 export const userService = {
   async getAll() {
-    const { data } = await axios.get(`${API_URL}/users`);
-    return data;
+    const response = await api.get("/usuarios");
+    const users = extractData(response);
+    return (Array.isArray(users) ? users : []).map(normalizeUser);
   },
+
   async getById(id) {
-    const { data } = await axios.get(`${API_URL}/users/${id}`);
-    return data;
+    const response = await api.get(`/usuarios/${id}`);
+    return normalizeUser(extractData(response));
+  },
+
+  async create(payload) {
+    const response = await api.post("/usuarios/registro", buildUserPayload(payload));
+    return normalizeUser(extractData(response));
+  },
+
+  async getMe() {
+    const response = await api.get("/usuarios/me");
+    return normalizeUser(extractData(response));
+  },
+
+  async updateMe(payload) {
+    const response = await api.put("/usuarios/me", {
+      nombreUsuario: payload.nombre_usuario,
+    });
+    return normalizeUser(extractData(response));
+  },
+
+  async suspend(id) {
+    const response = await api.put(`/usuarios/${id}/suspender`);
+    return normalizeUser(extractData(response));
+  },
+
+  async activate(id) {
+    const response = await api.put(`/usuarios/${id}/activar`);
+    return normalizeUser(extractData(response));
+  },
+
+  async getActiveTechnicians() {
+    const response = await api.get("/usuarios/tecnicos-activos");
+    const users = extractData(response);
+    return (Array.isArray(users) ? users : []).map(normalizeUser);
   },
 };

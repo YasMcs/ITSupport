@@ -1,22 +1,62 @@
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL ?? "";
+import { api, extractData } from "./api";
+import { buildTicketPayload, normalizeTicket } from "../utils/apiMappers";
+import { ROLES } from "../constants/roles";
 
 export const ticketService = {
   async getAll() {
-    const { data } = await axios.get(`${API_URL}/tickets`);
-    return data;
+    const response = await api.get("/tickets");
+    const tickets = extractData(response);
+    return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
   },
+
   async getById(id) {
-    const { data } = await axios.get(`${API_URL}/tickets/${id}`);
-    return data;
+    const response = await api.get(`/tickets/${id}`);
+    return normalizeTicket(extractData(response));
   },
+
   async create(payload) {
-    const { data } = await axios.post(`${API_URL}/tickets`, payload);
-    return data;
+    const response = await api.post("/tickets", buildTicketPayload(payload));
+    return normalizeTicket(extractData(response));
   },
-  async update(id, payload) {
-    const { data } = await axios.put(`${API_URL}/tickets/${id}`, payload);
-    return data;
+
+  async getAvailable() {
+    const response = await api.get("/tickets/disponibles");
+    const tickets = extractData(response);
+    return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
+  },
+
+  async getMineAssigned() {
+    const response = await api.get("/tickets/mis-tickets");
+    const tickets = extractData(response);
+    return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
+  },
+
+  async getMineCreated() {
+    const response = await api.get("/tickets/mis-creados");
+    const tickets = extractData(response);
+    return (Array.isArray(tickets) ? tickets : []).map(normalizeTicket);
+  },
+
+  async getScoped(role) {
+    if (role === ROLES.TECNICO) return this.getMineAssigned();
+    if (role === ROLES.ENCARGADO) return this.getMineCreated();
+    return this.getAll();
+  },
+
+  async assign(payload) {
+    const response = await api.post("/tickets/asignar", payload);
+    return normalizeTicket(extractData(response));
+  },
+
+  async close(id, tecnicoId) {
+    const response = await api.put(`/tickets/${id}/cerrar`, null, {
+      params: { tecnicoId },
+    });
+    return normalizeTicket(extractData(response));
+  },
+
+  async autoAssign() {
+    const response = await api.post("/tickets/asignacion-automatica");
+    return extractData(response);
   },
 };

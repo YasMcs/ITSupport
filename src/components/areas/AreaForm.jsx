@@ -3,14 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/Button";
 import { FormField } from "../ui/FormField";
 import { Select } from "../ui/Select";
-import { SUCURSAL_OPTIONS } from "../../utils/mocks/areas.mock";
 
 const ESTADO_FORM_OPTIONS = [
   { value: "Activa", label: "Activa" },
   { value: "Inactiva", label: "Inactiva" },
 ];
 
-export function AreaForm({ initialData, onSubmit }) {
+export function AreaForm({ initialData, onSubmit, sucursalOptions = [] }) {
   const navigate = useNavigate();
   const isEditing = !!initialData;
   
@@ -22,7 +21,7 @@ export function AreaForm({ initialData, onSubmit }) {
 
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -38,11 +37,11 @@ export function AreaForm({ initialData, onSubmit }) {
 
     try {
       if (onSubmit) {
-        onSubmit(form);
+        await Promise.resolve(onSubmit(form));
       }
       navigate("/areas");
     } catch (err) {
-      setError(isEditing ? "Error al actualizar el área" : "Error al crear el área");
+      setError(err.response?.data?.message ?? (isEditing ? "Error al actualizar el area" : "Error al crear el area"));
     }
   };
 
@@ -106,7 +105,7 @@ export function AreaForm({ initialData, onSubmit }) {
                 <Select
                   value={form.sucursalId}
                   onChange={(value) => handleChange("sucursalId", value)}
-                  options={SUCURSAL_OPTIONS}
+                  options={sucursalOptions}
                   placeholder="Seleccionar sucursal"
                   className="w-full"
                 />

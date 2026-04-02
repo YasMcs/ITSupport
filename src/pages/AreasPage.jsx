@@ -1,20 +1,54 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
 import { AreaTable } from "../components/areas/AreaTable";
-import { mockAreas, ESTADO_OPTIONS } from "../utils/mocks/areas.mock";
+import { areaService } from "../services/areaService";
+
+const ESTADO_OPTIONS = [
+  { value: "", label: "Todos" },
+  { value: "Activa", label: "Activa" },
+  { value: "Inactiva", label: "Inactiva" },
+];
 
 export function AreasPage() {
   const navigate = useNavigate();
-  const [areas, setAreas] = useState(mockAreas);
+  const [areas, setAreas] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     estado: "",
   });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAreas() {
+      setLoading(true);
+
+      try {
+        const data = await areaService.getAll();
+        if (!cancelled) setAreas(data);
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar las areas", {
+            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+          });
+          setAreas([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadAreas();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredAreas = useMemo(() => {
     let filtered = [...areas];
@@ -57,7 +91,8 @@ export function AreasPage() {
     const area = areas.find((item) => item.id === id);
     if (!area) return;
 
-    const nextEstado = area.estado === "Activa" ? "Inactiva" : "Activa";
+    const isActive = area.estado === "Activa";
+    const nextEstado = isActive ? "Inactiva" : "Activa";
     const actionLabel = nextEstado === "Inactiva" ? "desactivar" : "activar";
 
     setConfirmAction({
@@ -65,14 +100,22 @@ export function AreasPage() {
       actionLabel,
       targetName: area.nombreArea,
       confirmText: nextEstado === "Inactiva" ? "Desactivar area" : "Activar area",
-      onConfirm: () => {
-        setAreas((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, estado: nextEstado } : item))
-        );
-        setConfirmAction(null);
-        toast.success(nextEstado === "Inactiva" ? "Area desactivada" : "Area activada", {
-          description: area.nombreArea,
-        });
+      onConfirm: async () => {
+        try {
+          const updatedArea = isActive
+            ? await areaService.deactivate(id)
+            : await areaService.activate(id);
+          setAreas((prev) => prev.map((item) => (item.id === id ? updatedArea : item)));
+          toast.success(nextEstado === "Inactiva" ? "Area desactivada" : "Area activada", {
+            description: area.nombreArea,
+          });
+        } catch (error) {
+          toast.error("No pudimos actualizar el area", {
+            description: error.response?.data?.message ?? "Intenta nuevamente en unos segundos.",
+          });
+        } finally {
+          setConfirmAction(null);
+        }
       },
     });
   };
@@ -148,7 +191,11 @@ export function AreasPage() {
         )}
       </div>
 
-      {filteredAreas.length === 0 ? (
+      {loading ? (
+        <div className="glass-card rounded-2xl p-12 text-center">
+          <p className="text-text-secondary text-lg">Cargando areas...</p>
+        </div>
+      ) : filteredAreas.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
           <div className="flex flex-col items-center gap-3">
             <svg className="w-16 h-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">

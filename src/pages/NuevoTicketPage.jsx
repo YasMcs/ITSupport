@@ -1,21 +1,49 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
 import { TicketForm } from "../components/tickets/TicketForm";
-import { mockTickets } from "../utils/mockTickets";
 import { containsForbiddenInput } from "../utils/security";
+import { areaService } from "../services/areaService";
+import { ticketService } from "../services/ticketService";
 
 export function NuevoTicketPage() {
   const navigate = useNavigate();
   const { user, role } = useAuth();
+  const [areas, setAreas] = useState(user?.area_id ? [{
+    id: user.area_id,
+    nombreArea: user.area,
+    nombreSucursal: user.sucursal,
+    estado: "Activa",
+  }] : []);
+
+  useEffect(() => {
+    if (role !== ROLES.ADMIN) return undefined;
+
+    let cancelled = false;
+
+    async function loadAreas() {
+      try {
+        const data = await areaService.getAll();
+        if (!cancelled) setAreas(data);
+      } catch {
+        if (!cancelled) setAreas([]);
+      }
+    }
+
+    loadAreas();
+    return () => {
+      cancelled = true;
+    };
+  }, [role]);
 
   if (role !== ROLES.ENCARGADO) {
     navigate("/tickets");
     return null;
   }
 
-  const handleSubmit = (payload) => {
+  const handleSubmit = async (payload) => {
     if (containsForbiddenInput(payload.titulo) || containsForbiddenInput(payload.descripcion)) {
       toast.error("Deteccion de caracteres no permitidos", {
         description: "El ticket fue bloqueado antes de registrarse.",
@@ -23,25 +51,18 @@ export function NuevoTicketPage() {
       return;
     }
 
-    const newId = String(1029 + mockTickets.length);
-
-    mockTickets.push({
-      id: newId,
-      titulo: payload.titulo,
-      descripcion: payload.descripcion,
-      prioridad: payload.prioridad,
-      estado: "abierto",
-      encargado_id: payload.encargado_id,
-      tecnico_id: null,
-      area_id: payload.area_id,
-      fecha_creacion: new Date().toISOString().split("T")[0],
-      historial: [{ fecha: new Date().toISOString().split("T")[0], accion: "Ticket creado", tecnico_id: null }],
-      comentarios: [],
-    });
-    toast.success("Registro creado exitosamente", {
-      description: "El ticket ya esta disponible en tu bandeja.",
-    });
-    navigate("/tickets");
+    try {
+      await ticketService.create(payload);
+      toast.success("Registro creado exitosamente", {
+        description: "El ticket ya esta disponible en tu bandeja.",
+      });
+      navigate("/tickets");
+    } catch (error) {
+      toast.error("No pudimos registrar el ticket", {
+        description: error.response?.data?.message ?? "Revisa la informacion e intenta nuevamente.",
+      });
+      throw error;
+    }
   };
 
   return (
@@ -65,6 +86,7 @@ export function NuevoTicketPage() {
       <TicketForm
         onSubmit={handleSubmit}
         layout="split"
+        areaOptions={areas}
         user={{
           id: user?.id,
           nombre: user?.nombre,
@@ -72,6 +94,8 @@ export function NuevoTicketPage() {
           apellido_materno: user?.apellido_materno,
           nombre_usuario: user?.nombre_usuario || "",
           area_id: user?.area_id,
+          area: user?.area,
+          sucursal: user?.sucursal,
         }}
       />
     </div>

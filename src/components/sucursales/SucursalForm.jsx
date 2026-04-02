@@ -30,7 +30,7 @@ export function SucursalForm({ initialData, onSubmit }) {
 
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -47,11 +47,11 @@ export function SucursalForm({ initialData, onSubmit }) {
     try {
       // Aquí iría la lógica para guardar la sucursal
       if (onSubmit) {
-        onSubmit(form);
+        await Promise.resolve(onSubmit(form));
       }
       navigate("/sucursales");
     } catch (err) {
-      setError(isEditing ? "Error al actualizar la sucursal" : "Error al crear la sucursal");
+      setError(err.response?.data?.message ?? (isEditing ? "Error al actualizar la sucursal" : "Error al crear la sucursal"));
     }
   };
 

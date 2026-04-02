@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { CheckCircle2, Pencil, XCircle } from "lucide-react";
@@ -7,8 +7,8 @@ import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
 import { useAuth } from "../hooks/useAuth";
-import { enrichMockUser, mockUsers } from "../utils/mockUsers";
 import { getUserDisplayName } from "../utils/userDisplay";
+import { userService } from "../services/userService";
 
 const avatarColors = [
   "bg-purple-electric",
@@ -72,8 +72,38 @@ export function UsuariosPage() {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [usuariosState, setUsuariosState] = useState(() => mockUsers.map(enrichMockUser));
+  const [usuariosState, setUsuariosState] = useState([]);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadUsers() {
+      setLoading(true);
+
+      try {
+        const users = await userService.getAll();
+        if (!cancelled) {
+          setUsuariosState(users);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar los usuarios", {
+            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+          });
+          setUsuariosState([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadUsers();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const usuarios = useMemo(() => {
     const usersWithoutCurrentAdmin = usuariosState.filter((row) => row.id !== currentUser?.id);
@@ -96,21 +126,34 @@ export function UsuariosPage() {
       actionLabel: isSuspended ? "reactivar" : "suspender",
       targetName: getUserDisplayName(row),
       confirmText: isSuspended ? "Reactivar cuenta" : "Suspender cuenta",
-      onConfirm: () => {
-        setUsuariosState((prev) =>
-          prev.map((user) =>
-            user.id === row.id
-              ? {
-                  ...user,
-                  estado_cuenta: user.estado_cuenta === "suspendido" ? "activo" : "suspendido",
-                }
-              : user
-          )
-        );
-        setConfirmAction(null);
-        toast.success(isSuspended ? "Cuenta reactivada" : "Cuenta suspendida", {
-          description: getUserDisplayName(row),
-        });
+      onConfirm: async () => {
+        try {
+          if (isSuspended) {
+            await userService.activate(row.id);
+          } else {
+            await userService.suspend(row.id);
+          }
+
+          setUsuariosState((prev) =>
+            prev.map((user) =>
+              user.id === row.id
+                ? {
+                    ...user,
+                    estado_cuenta: user.estado_cuenta === "suspendido" ? "activo" : "suspendido",
+                  }
+                : user
+            )
+          );
+          toast.success(isSuspended ? "Cuenta reactivada" : "Cuenta suspendida", {
+            description: getUserDisplayName(row),
+          });
+        } catch (error) {
+          toast.error("No pudimos actualizar la cuenta", {
+            description: error.response?.data?.message ?? "Intenta de nuevo en unos segundos.",
+          });
+        } finally {
+          setConfirmAction(null);
+        }
       },
     });
   };
@@ -190,7 +233,11 @@ export function UsuariosPage() {
         </div>
       </div>
 
-      {usuarios.length === 0 ? (
+      {loading ? (
+        <div className="glass-card rounded-2xl p-12 text-center">
+          <p className="text-text-secondary text-lg">Cargando usuarios...</p>
+        </div>
+      ) : usuarios.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
           <div className="flex flex-col items-center gap-3">
             <svg className="w-16 h-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,21 +1,20 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
-import { getEnrichedMockTickets } from "../utils/mockTickets";
 import { TicketTable, COLUMN_KEYS } from "../components/tickets/TicketTable";
 import { KanbanBoard } from "../components/tickets/KanbanBoard";
 import { Button } from "../components/ui/Button";
 import { FilterBar } from "../components/ui/FilterBar";
+import { ticketService } from "../services/ticketService";
 
 export function TicketsPage() {
   const { user, role } = useAuth();
   const navigate = useNavigate();
-  const allTickets = useMemo(() => getEnrichedMockTickets(), []);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     estado: "",
     prioridad: "",
@@ -23,7 +22,34 @@ export function TicketsPage() {
     sucursal: "",
     tecnico: "",
   });
-  const [tickets, setTickets] = useState(() => filterTicketsByRole(allTickets, role, user));
+  const [tickets, setTickets] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTickets() {
+      setLoading(true);
+
+      try {
+        const data = await ticketService.getScoped(role);
+        if (!cancelled) setTickets(filterTicketsByRole(data, role, user));
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar los tickets", {
+            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+          });
+          setTickets([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadTickets();
+    return () => {
+      cancelled = true;
+    };
+  }, [role, user]);
 
   const handleTicketMove = (ticketId, newStatus) => {
     setTickets((prev) =>
@@ -33,7 +59,7 @@ export function TicketsPage() {
   };
 
   const filteredTickets = useMemo(() => {
-    let currentTickets = role === ROLES.TECNICO ? tickets : filterTicketsByRole(allTickets, role, user);
+    let currentTickets = [...tickets];
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -52,7 +78,7 @@ export function TicketsPage() {
       if (filters.tecnico && ticket.tecnico !== filters.tecnico) return false;
       return true;
     });
-  }, [allTickets, filters, role, searchQuery, tickets, user]);
+  }, [filters, role, searchQuery, tickets]);
 
   const getColumns = () => {
     if (role === ROLES.ADMIN) {
@@ -69,6 +95,9 @@ export function TicketsPage() {
 
   const clearFilters = () => setFilters({ estado: "", prioridad: "", area: "", sucursal: "", tecnico: "" });
   const hasActiveFilters = Object.values(filters).some((value) => value !== "");
+  const areaOptions = [...new Set(tickets.map((ticket) => ticket.area).filter(Boolean))];
+  const sucursalOptions = [...new Set(tickets.map((ticket) => ticket.sucursal).filter(Boolean))];
+  const tecnicoOptions = [...new Set(tickets.map((ticket) => ticket.tecnicoAsignado || ticket.tecnico).filter(Boolean))];
 
   const getEmptyMessage = () => {
     if (role === ROLES.TECNICO) return "No tienes tickets asignados";
@@ -124,9 +153,16 @@ export function TicketsPage() {
         onToggleFilters={() => setShowFilters((current) => !current)}
         hideStatus={role === ROLES.TECNICO}
         role={role}
+        areaOptions={areaOptions}
+        sucursalOptions={sucursalOptions}
+        tecnicoOptions={tecnicoOptions}
       />
 
-      {filteredTickets.length === 0 ? (
+      {loading ? (
+        <div className="glass-card rounded-2xl p-12 text-center">
+          <p className="text-text-secondary text-lg">Cargando tickets...</p>
+        </div>
+      ) : filteredTickets.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
           <div className="flex flex-col items-center gap-3">
             <svg className="w-16 h-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,7 +184,7 @@ export function TicketsPage() {
 
 function filterTicketsByRole(tickets, role, user) {
   if (role === ROLES.ADMIN) return tickets;
-  if (role === ROLES.TECNICO) return tickets.filter((ticket) => ticket.tecnico_id === user?.id);
-  if (role === ROLES.ENCARGADO) return tickets.filter((ticket) => ticket.encargado_id === user?.id);
+  if (role === ROLES.TECNICO) return tickets.filter((ticket) => Number(ticket.tecnico_id) === Number(user?.id));
+  if (role === ROLES.ENCARGADO) return tickets.filter((ticket) => Number(ticket.encargado_id) === Number(user?.id));
   return [];
 }

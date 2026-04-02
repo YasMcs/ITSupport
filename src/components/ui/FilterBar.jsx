@@ -2,7 +2,6 @@ import { Select } from "./Select";
 import { ROLES } from "../../constants/roles";
 import { TICKET_STATUS } from "../../constants/ticketStatus";
 import { PRIORIDAD } from "../../constants/ticketPrioridad";
-import { AREAS, SUCURSALES, TECNICOS } from "../../utils/mockTickets";
 
 const ESTADO_OPTIONS = [
   { value: "", label: "Todos" },
@@ -18,34 +17,37 @@ const PRIORIDAD_OPTIONS = [
   { value: PRIORIDAD.BAJA, label: "Baja" },
 ];
 
-export function FilterBar({ 
-  filters, 
-  onFilterChange, 
-  onClearFilters, 
+export function FilterBar({
+  filters,
+  onFilterChange,
+  onClearFilters,
   hasActiveFilters,
   showFilters,
   onToggleFilters,
   hideStatus = false,
-  role 
+  role,
+  areaOptions = [],
+  sucursalOptions = [],
+  tecnicoOptions = [],
 }) {
   return (
-    <div className="w-full mb-4">
-      <div className="flex flex-wrap items-center gap-3 w-full">
+    <div className="mb-4 w-full">
+      <div className="flex w-full flex-wrap items-center gap-3">
         <button
           onClick={onToggleFilters}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${
+          className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${
             showFilters || hasActiveFilters
-              ? "bg-dark-purple-800 border-dark-purple-700"
-              : "bg-dark-purple-800/50 border-dark-purple-700"
+              ? "border-dark-purple-700 bg-dark-purple-800"
+              : "border-dark-purple-700 bg-dark-purple-800/50"
           }`}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
           <span className="text-sm text-text-secondary">Filtros</span>
           {hasActiveFilters && (
-            <span className="bg-purple-electric text-white text-xs px-1.5 py-0.5 rounded-full">
-              {Object.values(filters).filter(v => v !== "").length}
+            <span className="rounded-full bg-purple-electric px-1.5 py-0.5 text-xs text-white">
+              {Object.values(filters).filter((value) => value !== "").length}
             </span>
           )}
         </button>
@@ -55,72 +57,55 @@ export function FilterBar({
             {!hideStatus && (
               <Select
                 value={filters.estado}
-                onChange={(val) => onFilterChange("estado", val)}
+                onChange={(value) => onFilterChange("estado", value)}
                 options={ESTADO_OPTIONS}
                 placeholder="Estado"
                 className="min-w-[150px] flex-1"
               />
             )}
+
             <Select
               value={filters.prioridad}
-              onChange={(val) => onFilterChange("prioridad", val)}
+              onChange={(value) => onFilterChange("prioridad", value)}
               options={PRIORIDAD_OPTIONS}
               placeholder="Prioridad"
               className="min-w-[150px] flex-1"
             />
-            {(role === ROLES.ADMIN || role === ROLES.ENCARGADO) && (
-              <>
-                <Select
-                  value={filters.area}
-                  onChange={(val) => onFilterChange("area", val)}
-                  options={AREAS.map(a => ({ value: a, label: a }))}
-                  placeholder="Área"
-                  className="min-w-[150px] flex-1"
-                />
-                <Select
-                  value={filters.sucursal}
-                  onChange={(val) => onFilterChange("sucursal", val)}
-                  options={SUCURSALES.map(s => ({ value: s, label: s }))}
-                  placeholder="Sucursal"
-                  className="min-w-[150px] flex-1"
-                />
-              </>
-            )}
-            {role === ROLES.ADMIN && (
+
+            {(role === ROLES.ADMIN || role === ROLES.ENCARGADO || role === ROLES.TECNICO) && (
               <Select
-                value={filters.tecnico}
-                onChange={(val) => onFilterChange("tecnico", val)}
-                options={TECNICOS.map(t => ({ value: t.nombre, label: t.nombre }))}
-                placeholder="Técnico"
+                value={filters.area}
+                onChange={(value) => onFilterChange("area", value)}
+                options={areaOptions.map((area) => ({ value: area, label: area }))}
+                placeholder="Area"
                 className="min-w-[150px] flex-1"
               />
             )}
-            {role === ROLES.TECNICO && (
-              <>
-                <Select
-                  value={filters.area}
-                  onChange={(val) => onFilterChange("area", val)}
-                  options={AREAS.map(a => ({ value: a, label: a }))}
-                  placeholder="Área"
-                  className="min-w-[150px] flex-1"
-                />
-                <Select
-                  value={filters.sucursal}
-                  onChange={(val) => onFilterChange("sucursal", val)}
-                  options={SUCURSALES.map(s => ({ value: s, label: s }))}
-                  placeholder="Sucursal"
-                  className="min-w-[150px] flex-1"
-                />
-              </>
+
+            {(role === ROLES.ADMIN || role === ROLES.ENCARGADO || role === ROLES.TECNICO) && (
+              <Select
+                value={filters.sucursal}
+                onChange={(value) => onFilterChange("sucursal", value)}
+                options={sucursalOptions.map((sucursal) => ({ value: sucursal, label: sucursal }))}
+                placeholder="Sucursal"
+                className="min-w-[150px] flex-1"
+              />
+            )}
+
+            {role === ROLES.ADMIN && (
+              <Select
+                value={filters.tecnico}
+                onChange={(value) => onFilterChange("tecnico", value)}
+                options={tecnicoOptions.map((tecnico) => ({ value: tecnico, label: tecnico }))}
+                placeholder="Tecnico"
+                className="min-w-[150px] flex-1"
+              />
             )}
           </>
         )}
 
         {hasActiveFilters && (
-          <button
-            onClick={onClearFilters}
-            className="text-sm text-accent-pink"
-          >
+          <button onClick={onClearFilters} className="text-sm text-accent-pink">
             Limpiar
           </button>
         )}

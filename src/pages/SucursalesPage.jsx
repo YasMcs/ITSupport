@@ -1,20 +1,54 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../components/ui/Button";
 import { Modal } from "../components/ui/Modal";
 import { SucursalTable } from "../components/sucursales/SucursalTable";
-import { mockSucursales, ESTADO_OPTIONS } from "../utils/mocks/sucursales.mock";
+import { sucursalService } from "../services/sucursalService";
+
+const ESTADO_OPTIONS = [
+  { value: "", label: "Todos" },
+  { value: "Activa", label: "Activa" },
+  { value: "Desactivada", label: "Desactivada" },
+];
 
 export function SucursalesPage() {
   const navigate = useNavigate();
-  const [sucursales, setSucursales] = useState(mockSucursales);
+  const [sucursales, setSucursales] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     estado: "",
   });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSucursales() {
+      setLoading(true);
+
+      try {
+        const data = await sucursalService.getAll();
+        if (!cancelled) setSucursales(data);
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar las sucursales", {
+            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+          });
+          setSucursales([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadSucursales();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredSucursales = useMemo(() => {
     let filtered = [...sucursales];
@@ -58,7 +92,8 @@ export function SucursalesPage() {
     const sucursal = sucursales.find((item) => item.id === id);
     if (!sucursal) return;
 
-    const nextEstado = sucursal.estado === "Activa" ? "Desactivada" : "Activa";
+    const isActive = sucursal.estado === "Activa";
+    const nextEstado = isActive ? "Desactivada" : "Activa";
     const actionLabel = nextEstado === "Desactivada" ? "desactivar" : "activar";
 
     setConfirmAction({
@@ -66,14 +101,22 @@ export function SucursalesPage() {
       actionLabel,
       targetName: sucursal.nombre,
       confirmText: nextEstado === "Desactivada" ? "Desactivar sede" : "Activar sede",
-      onConfirm: () => {
-        setSucursales((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, estado: nextEstado } : item))
-        );
-        setConfirmAction(null);
-        toast.success(nextEstado === "Desactivada" ? "Sede desactivada" : "Sede activada", {
-          description: sucursal.nombre,
-        });
+      onConfirm: async () => {
+        try {
+          const updatedSucursal = isActive
+            ? await sucursalService.deactivate(id)
+            : await sucursalService.activate(id);
+          setSucursales((prev) => prev.map((item) => (item.id === id ? updatedSucursal : item)));
+          toast.success(nextEstado === "Desactivada" ? "Sucursal desactivada" : "Sucursal activada", {
+            description: sucursal.nombre,
+          });
+        } catch (error) {
+          toast.error("No pudimos actualizar la sucursal", {
+            description: error.response?.data?.message ?? "Intenta nuevamente en unos segundos.",
+          });
+        } finally {
+          setConfirmAction(null);
+        }
       },
     });
   };
@@ -149,7 +192,11 @@ export function SucursalesPage() {
         )}
       </div>
 
-      {filteredSucursales.length === 0 ? (
+      {loading ? (
+        <div className="glass-card rounded-2xl p-12 text-center">
+          <p className="text-text-secondary text-lg">Cargando sucursales...</p>
+        </div>
+      ) : filteredSucursales.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
           <div className="flex flex-col items-center gap-3">
             <svg className="w-16 h-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,25 +1,42 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { UsuarioForm } from "../components/usuarios/UsuarioForm";
-import { mockUsers } from "../utils/mockUsers";
-import { maskSecret } from "../utils/security";
+import { areaService } from "../services/areaService";
+import { userService } from "../services/userService";
 
 export function NuevoUsuarioPage() {
   const navigate = useNavigate();
+  const [areas, setAreas] = useState([]);
 
-  const handleSubmit = (payload) => {
-    mockUsers.push({
-      id: mockUsers.length + 1,
-      nombre: payload.nombre,
-      apellido_paterno: payload.apellido_paterno,
-      apellido_materno: payload.apellido_materno,
-      nombre_usuario: payload.nombre_usuario,
-      email: payload.email,
-      contrasena_hash: maskSecret(payload.contrasena_hash) ?? "hash_demo_temporal",
-      rol: payload.rol,
-      estado_cuenta: payload.estado_cuenta,
-      area_id: payload.area_id,
-    });
-    navigate("/usuarios");
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAreas() {
+      try {
+        const data = await areaService.getAll();
+        if (!cancelled) setAreas(data);
+      } catch {
+        if (!cancelled) setAreas([]);
+      }
+    }
+
+    loadAreas();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleSubmit = async (payload) => {
+    try {
+      await userService.create(payload);
+      navigate("/usuarios");
+    } catch (error) {
+      toast.error("No pudimos registrar el usuario", {
+        description: error.response?.data?.message ?? "Revisa la informacion e intenta nuevamente.",
+      });
+      throw error;
+    }
   };
 
   return (
@@ -40,7 +57,7 @@ export function NuevoUsuarioPage() {
         </div>
       </div>
 
-      <UsuarioForm onSubmit={handleSubmit} onCancel={() => navigate("/usuarios")} />
+      <UsuarioForm onSubmit={handleSubmit} onCancel={() => navigate("/usuarios")} areaOptions={areas} />
     </div>
   );
 }

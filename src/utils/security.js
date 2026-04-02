@@ -93,7 +93,6 @@ export function sanitizeSessionUser(user) {
   const {
     contrasena_hash,
     password,
-    token,
     accessToken,
     refreshToken,
     ...safeUser

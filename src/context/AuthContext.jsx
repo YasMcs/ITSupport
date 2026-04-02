@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
+import { clearAuthToken, setAuthToken } from "../services/api";
 import { sanitizeSessionUser } from "../utils/security";
 
 const AuthContext = createContext(null);
@@ -20,15 +21,17 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => getStoredUser());
   const role = user?.rol ?? null;
 
-  const login = (userData) => {
+  const login = (userData, token) => {
     const safeUser = sanitizeSessionUser(userData);
     setUser(safeUser);
     window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(safeUser));
+    setAuthToken(token);
   };
 
   const logout = () => {
     setUser(null);
     window.sessionStorage.removeItem(SESSION_KEY);
+    clearAuthToken();
   };
 
   const isAuthenticated = user !== null;

@@ -1,33 +1,6 @@
-import {
-  enrichMockUser,
-  getMockUserById,
-  mockUserCredentials,
-} from "../utils/mockUsers";
+import { api, clearAuthToken, extractData, setAuthToken } from "./api";
+import { normalizeUser } from "../utils/apiMappers";
 import { containsForbiddenInput } from "../utils/security";
-
-/**
- * Busca un usuario mock por email y password
- */
-function findDummyUser(email, password) {
-  const credentials = mockUserCredentials.find(
-    (item) => item.email === email && item.password === password
-  );
-
-  if (credentials) {
-    const user = enrichMockUser(getMockUserById(credentials.user_id));
-
-    // Simular delay de red
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          user,
-          token: `dummy-token-${user.id}`,
-        });
-      }, 500);
-    });
-  }
-  return Promise.reject(new Error("Credenciales inválidas"));
-}
 
 export const authService = {
   async login(credentials) {
@@ -35,9 +8,54 @@ export const authService = {
       return Promise.reject(new Error("Deteccion de caracteres no permitidos"));
     }
 
-    return findDummyUser(credentials.email, credentials.password);
+    const response = await api.post("/auth/login", {
+      email: credentials.email,
+      correo: credentials.email,
+      password: credentials.password,
+      contrasena: credentials.password,
+    });
+
+    const payload = extractData(response) ?? response?.data ?? {};
+    const userPayload = payload.user ?? payload.usuario ?? payload;
+    const token = payload.token ?? payload.accessToken ?? payload.jwt ?? null;
+    let normalizedUser = normalizeUser(userPayload);
+
+    if (token) {
+      setAuthToken(token);
+
+      try {
+        const meResponse = await api.get("/usuarios/me");
+        normalizedUser = normalizeUser({
+          ...userPayload,
+          ...(extractData(meResponse) ?? {}),
+        });
+      } catch {
+        normalizedUser = normalizeUser(userPayload);
+      }
+    }
+
+    return {
+      user: normalizedUser,
+      token,
+    };
   },
+
+  async changePassword({ userId, currentPassword, newPassword }) {
+    const response = await api.put(`/usuarios/${userId}/contrasena`, null, {
+      params: {
+        contrasenaActual: currentPassword,
+        contrasenaNueva: newPassword,
+      },
+    });
+    return extractData(response);
+  },
+
+  async getCurrentUser() {
+    const response = await api.get("/usuarios/me");
+    return normalizeUser(extractData(response));
+  },
+
   async logout() {
-    // Implementar según backend
+    clearAuthToken();
   },
 };

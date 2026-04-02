@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
 import { TICKET_STATUS } from "../constants/ticketStatus";
-import { getEnrichedMockTickets } from "../utils/mockTickets";
 import { Badge } from "../components/ui/Badge";
+import { ticketService } from "../services/ticketService";
 
 function filterTicketsByRole(tickets, role, user) {
   if (role === ROLES.ADMIN) return tickets;
@@ -98,7 +99,37 @@ function BarChart({ data }) {
 
 export function EstadisticasPage() {
   const { user, role } = useAuth();
-  const tickets = useMemo(() => filterTicketsByRole(getEnrichedMockTickets(), role, user), [role, user]);
+  const [sourceTickets, setSourceTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTickets() {
+      setLoading(true);
+
+      try {
+        const data = await ticketService.getScoped(role);
+        if (!cancelled) setSourceTickets(Array.isArray(data) ? data : []);
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar las estadisticas", {
+            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+          });
+          setSourceTickets([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadTickets();
+    return () => {
+      cancelled = true;
+    };
+  }, [role]);
+
+  const tickets = useMemo(() => filterTicketsByRole(sourceTickets, role, user), [sourceTickets, role, user]);
   const kpis = useMemo(() => calculateKPIs(tickets), [tickets]);
   const priorityData = useMemo(() => getTicketsByPriority(tickets), [tickets]);
   const topAreas = useMemo(() => getTopAreas(tickets), [tickets]);
@@ -117,7 +148,7 @@ export function EstadisticasPage() {
         <KPICard title="Tickets Pendientes" value={pendientes} subtitle={`${kpis.enProceso} en proceso`} />
         <KPICard title="Tiempo de Respuesta" value={kpis.avgResponse ? `${kpis.avgResponse}h` : "N/A"} subtitle="Promedio hasta primer comentario" />
         <KPICard title="SLA de Resolucion" value={`${slaPercentage}%`} subtitle={`${kpis.resueltos} cerrados`} />
-        <KPICard title="Anulados" value={kpis.anulado} subtitle={`${kpis.total} tickets totales`} />
+        <KPICard title="Anulados" value={loading ? "..." : kpis.anulado} subtitle={`${kpis.total} tickets totales`} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

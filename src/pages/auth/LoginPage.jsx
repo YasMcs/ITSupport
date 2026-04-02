@@ -5,7 +5,6 @@ import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useAuth } from "../../hooks/useAuth";
 import { authService } from "../../services/authService";
-import { ROLES } from "../../constants/roles";
 import { getUserDisplayName } from "../../utils/userDisplay";
 import { containsForbiddenInput, validateEmail, validateRequiredText } from "../../utils/security";
 import "../../styles/LoginPage.css";
@@ -60,16 +59,9 @@ export function LoginPage() {
       const safeEmail = email.trim().toLowerCase();
       const safePassword = password.trim();
       const data = await authService.login({ email: safeEmail, password: safePassword });
-      const nextUser = data.user ?? {
-        email: safeEmail,
-        rol: ROLES.TECNICO,
-        nombre: "Tecnico",
-        apellido_paterno: "Demo",
-        apellido_materno: "Temporal",
-        nombre_usuario: "tecnico.demo",
-      };
+      const nextUser = data.user;
 
-      login(nextUser);
+      login(nextUser, data.token);
       toast.success(`Bienvenido de nuevo, ${getUserDisplayName(nextUser)}!`);
       navigate("/dashboard", { replace: true });
     } catch (err) {

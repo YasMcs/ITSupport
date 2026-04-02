@@ -3,7 +3,6 @@ import { toast } from "sonner";
 import { FormField } from "../ui/FormField";
 import { Select } from "../ui/Select";
 import { Button } from "../ui/Button";
-import { mockAreas } from "../../utils/mocks/areas.mock";
 import {
   containsForbiddenInput,
   normalizeTextInput,
@@ -24,14 +23,7 @@ export const ESTADO_OPTIONS = [
   { value: "suspendido", label: "Suspendido" },
 ];
 
-const AREA_OPTIONS = mockAreas
-  .filter((area) => area.estado === "Activa")
-  .map((area) => ({
-    value: String(area.id),
-    label: `${area.nombreArea} - ${area.nombreSucursal}`,
-  }));
-
-export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) {
+export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, areaOptions = [] }) {
   const [formData, setFormData] = useState({
     nombre: usuario?.nombre || "",
     apellido_paterno: usuario?.apellido_paterno || "",
@@ -45,11 +37,17 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
   });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const normalizedAreaOptions = areaOptions
+    .filter((area) => area.estado === "Activa")
+    .map((area) => ({
+      value: String(area.id),
+      label: area.nombreSucursal ? `${area.nombreArea} - ${area.nombreSucursal}` : area.nombreArea,
+    }));
 
   const isEncargado = formData.rol === "encargado";
   const selectedArea = useMemo(
-    () => AREA_OPTIONS.find((option) => option.value === formData.area_id),
-    [formData.area_id]
+    () => normalizedAreaOptions.find((option) => option.value === formData.area_id),
+    [formData.area_id, normalizedAreaOptions]
   );
 
   const handleChange = (field, value) => {
@@ -155,7 +153,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
     return true;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
 
@@ -165,7 +163,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
 
     try {
       setSubmitting(true);
-      onSubmit({
+      await Promise.resolve(onSubmit?.({
         nombre: normalizeTextInput(formData.nombre),
         apellido_paterno: normalizeTextInput(formData.apellido_paterno),
         apellido_materno: normalizeTextInput(formData.apellido_materno),
@@ -175,11 +173,13 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
         rol: formData.rol,
         estado_cuenta: formData.estado_cuenta,
         area_id: isEncargado ? Number(formData.area_id) : null,
-      });
+      }));
 
       toast.success("Registro creado exitosamente", {
         description: isEditing ? "Los cambios ya fueron aplicados." : "La informacion se guardo correctamente.",
       });
+    } catch (error) {
+      setError(error.response?.data?.message ?? "No pudimos guardar la informacion del usuario");
     } finally {
       setSubmitting(false);
     }
@@ -317,7 +317,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false }) 
                   <Select
                     value={formData.area_id}
                     onChange={(value) => handleChange("area_id", value)}
-                    options={AREA_OPTIONS}
+                    options={normalizedAreaOptions}
                     placeholder="Selecciona un area"
                     className="w-full"
                   />

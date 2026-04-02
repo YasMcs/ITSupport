@@ -2,12 +2,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/Button";
 import { FormField } from "../ui/FormField";
-import { getAreaDisplay, getSucursalDisplayByAreaId } from "../../utils/mockUsers";
 import { PRIORIDAD, PRIORIDAD_OPTIONS, getPriorityConfig } from "../../constants/ticketPrioridad";
 import { getUserDisplayName } from "../../utils/userDisplay";
 import { containsForbiddenInput, normalizeTextInput, validateRequiredText } from "../../utils/security";
 
-export function TicketForm({ initialValues, onSubmit, user, layout = "default" }) {
+export function TicketForm({ initialValues, onSubmit, user, layout = "default", areaOptions = [] }) {
   const [form, setForm] = useState({
     encargado_id: initialValues?.encargado_id || user?.id || "",
     area_id: initialValues?.area_id || user?.area_id || "",
@@ -31,7 +30,7 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
     setForm((current) => ({ ...current, [field]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
 
@@ -65,7 +64,7 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
 
     try {
       setSubmitting(true);
-      onSubmit?.({
+      await Promise.resolve(onSubmit?.({
         titulo: normalizeTextInput(form.titulo),
         descripcion: normalizeTextInput(form.descripcion),
         prioridad: form.prioridad,
@@ -73,15 +72,16 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
         encargado_id: Number(form.encargado_id),
         tecnico_id: initialValues?.tecnico_id ?? null,
         area_id: Number(form.area_id),
-      });
+      }));
     } catch (err) {
-      setError("Error al crear el ticket");
+      setError(err.response?.data?.message ?? "Error al crear el ticket");
     } finally {
       setSubmitting(false);
     }
   };
 
   const priorityConfig = getPriorityConfig(form.prioridad);
+  const selectedArea = areaOptions.find((area) => Number(area.id) === Number(form.area_id));
 
   const ReadOnlyField = ({ value, icon }) => (
     <div className="flex items-center gap-3 bg-dark-purple-900/50 border border-dark-purple-700 rounded-xl px-4 py-3">
@@ -105,7 +105,7 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
 
       <FormField label="Area">
         <ReadOnlyField
-          value={getAreaDisplay(form.area_id)}
+          value={selectedArea?.nombreArea || user?.area || "-"}
           icon={
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -116,7 +116,7 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
 
       <FormField label="Sucursal">
         <ReadOnlyField
-          value={getSucursalDisplayByAreaId(form.area_id)}
+          value={selectedArea?.nombreSucursal || user?.sucursal || "-"}
           icon={
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -234,11 +234,11 @@ export function TicketForm({ initialValues, onSubmit, user, layout = "default" }
           <ReadOnlyField value={getUserDisplayName(user)} />
         </FormField>
         <FormField label="Area">
-          <ReadOnlyField value={getAreaDisplay(form.area_id)} />
+          <ReadOnlyField value={selectedArea?.nombreArea || user?.area || "-"} />
         </FormField>
       </div>
       <FormField label="Sucursal">
-        <ReadOnlyField value={getSucursalDisplayByAreaId(form.area_id)} />
+        <ReadOnlyField value={selectedArea?.nombreSucursal || user?.sucursal || "-"} />
       </FormField>
       {renderTitleField()}
       {renderDescriptionField()}

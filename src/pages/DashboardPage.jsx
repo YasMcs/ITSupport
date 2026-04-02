@@ -1,13 +1,54 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import { Badge } from "../components/ui/Badge";
-import { MOCK_STATS, MOCK_RECENT_TICKETS } from "../utils/mockDashboard";
 import { PRIORIDAD } from "../constants/ticketPrioridad";
 import { getUserDisplayName } from "../utils/userDisplay";
+import { ticketService } from "../services/ticketService";
+import { formatDate } from "../utils/formatDate";
 
 export function DashboardPage() {
   const { user, role } = useAuth();
-  const stats = MOCK_STATS[role]?.slice(0, 3) || [];
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadDashboard() {
+      setLoading(true);
+
+      try {
+        const data = await ticketService.getScoped(role);
+        if (!cancelled) setTickets(Array.isArray(data) ? data : []);
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar el dashboard", {
+            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+          });
+          setTickets([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadDashboard();
+    return () => {
+      cancelled = true;
+    };
+  }, [role]);
+
+  const stats = useMemo(() => buildDashboardStats(tickets, role), [tickets, role]);
+  const recentTickets = useMemo(
+    () => [...tickets].sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion)).slice(0, 4),
+    [tickets]
+  );
+  const criticalTickets = useMemo(
+    () => recentTickets.filter((ticket) => ticket.prioridad === PRIORIDAD.ALTA).slice(0, 3),
+    [recentTickets]
+  );
 
   const getTrendIcon = (trend) => {
     if (trend === "up") {
@@ -30,8 +71,6 @@ export function DashboardPage() {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   );
-
-  const criticalTickets = MOCK_RECENT_TICKETS.filter((ticket) => ticket.priority === PRIORIDAD.ALTA).slice(0, 3);
 
   return (
     <div className="space-y-8">
@@ -57,7 +96,7 @@ export function DashboardPage() {
                   <span>{stat.change}</span>
                 </div>
               </div>
-              <p className="text-3xl font-bold text-text-primary">{stat.value}</p>
+              <p className="text-3xl font-bold text-text-primary">{loading ? "..." : stat.value}</p>
             </div>
           </div>
         ))}
@@ -78,7 +117,11 @@ export function DashboardPage() {
           </div>
 
           <div className="space-y-3">
-            {MOCK_RECENT_TICKETS.slice(0, 4).map((ticket) => (
+            {loading ? (
+              <p className="text-sm text-text-muted">Cargando tickets...</p>
+            ) : recentTickets.length === 0 ? (
+              <p className="text-sm text-text-muted">No hay tickets recientes</p>
+            ) : recentTickets.map((ticket) => (
               <Link
                 key={ticket.id}
                 to={`/tickets/${ticket.id}`}
@@ -86,15 +129,15 @@ export function DashboardPage() {
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-text-primary">
-                    #{ticket.id} - {ticket.titulo ?? ticket.title}
+                    #{ticket.id} - {ticket.titulo}
                   </p>
                   <p className="mt-1 text-sm text-text-secondary">
-                    {ticket.area} - Hace {ticket.time}
+                    {ticket.area || "Sin area"} - {formatDate(ticket.fechaCreacion)}
                   </p>
                 </div>
                 <div className="ml-4 flex items-center gap-2">
-                  <Badge priority={ticket.priority} />
-                  <Badge status={ticket.status} />
+                  <Badge priority={ticket.prioridad} />
+                  <Badge status={ticket.estado} />
                 </div>
               </Link>
             ))}
@@ -110,7 +153,9 @@ export function DashboardPage() {
               Tickets criticos
             </h2>
             <div className="space-y-3">
-              {criticalTickets.length > 0 ? (
+              {loading ? (
+                <p className="text-sm text-text-muted">Cargando tickets criticos...</p>
+              ) : criticalTickets.length > 0 ? (
                 criticalTickets.map((ticket) => (
                   <Link
                     key={ticket.id}
@@ -120,7 +165,7 @@ export function DashboardPage() {
                     <span className="h-2 w-2 flex-shrink-0 rounded-full bg-purple-electric/80"></span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-text-primary">#{ticket.id}</p>
-                      <p className="truncate text-xs text-text-secondary">{ticket.titulo ?? ticket.title}</p>
+                      <p className="truncate text-xs text-text-secondary">{ticket.titulo}</p>
                     </div>
                   </Link>
                 ))
@@ -133,4 +178,33 @@ export function DashboardPage() {
       </div>
     </div>
   );
+}
+
+function buildDashboardStats(tickets, role) {
+  const abiertos = tickets.filter((ticket) => ticket.estado === "abierto").length;
+  const enProceso = tickets.filter((ticket) => ticket.estado === "en_proceso").length;
+  const cerrados = tickets.filter((ticket) => ticket.estado === "cerrado").length;
+  const vencidos = tickets.filter((ticket) => ticket.esVencido).length;
+
+  if (role === "tecnico") {
+    return [
+      { id: "assigned", label: "Asignados", value: tickets.length, trend: "up", change: `${enProceso} en proceso` },
+      { id: "open", label: "Pendientes", value: abiertos, trend: abiertos > 0 ? "up" : "down", change: `${abiertos} abiertos` },
+      { id: "closed", label: "Cerrados", value: cerrados, trend: "up", change: "Historial personal" },
+    ];
+  }
+
+  if (role === "encargado") {
+    return [
+      { id: "created", label: "Creados", value: tickets.length, trend: "up", change: "Tus solicitudes" },
+      { id: "open", label: "Abiertos", value: abiertos, trend: abiertos > 0 ? "up" : "down", change: `${enProceso} en proceso` },
+      { id: "closed", label: "Resueltos", value: cerrados, trend: "up", change: `${vencidos} vencidos` },
+    ];
+  }
+
+  return [
+    { id: "total", label: "Total tickets", value: tickets.length, trend: "up", change: "Vision global" },
+    { id: "open", label: "Abiertos", value: abiertos, trend: abiertos > 0 ? "up" : "down", change: `${enProceso} en proceso` },
+    { id: "closed", label: "Cerrados", value: cerrados, trend: "up", change: `${vencidos} vencidos` },
+  ];
 }

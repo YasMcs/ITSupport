@@ -1,14 +1,40 @@
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { SucursalForm } from "../components/sucursales/SucursalForm";
-import { mockSucursales } from "../utils/mocks/sucursales.mock";
+import { sucursalService } from "../services/sucursalService";
 
 export function EditarSucursalPage() {
   const { id } = useParams();
-  
-  // Buscar la sucursal por ID, si no existe usar mockSucursales[0] como datos de prueba
-  const sucursalData = id 
-    ? mockSucursales.find(s => s.id === parseInt(id)) 
-    : mockSucursales[0];
-  
-  return <SucursalForm initialData={sucursalData} />;
+  const navigate = useNavigate();
+  const [sucursalData, setSucursalData] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSucursal() {
+      try {
+        const data = await sucursalService.getById(id);
+        if (!cancelled) setSucursalData(data);
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar la sucursal", {
+            description: error.response?.data?.message ?? "Intenta nuevamente.",
+          });
+        }
+      }
+    }
+
+    loadSucursal();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  const handleSubmit = async (payload) => {
+    await sucursalService.update(id, payload);
+    navigate("/sucursales");
+  };
+
+  return <SucursalForm initialData={sucursalData} onSubmit={handleSubmit} />;
 }

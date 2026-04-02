@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../hooks/useAuth";
-import { getEnrichedMockTickets } from "../utils/mockTickets";
+import { commentService } from "../services/commentService";
+import { ticketService } from "../services/ticketService";
 import { containsForbiddenInput, normalizeTextInput, validateRequiredText } from "../utils/security";
 import { getUserDisplayName } from "../utils/userDisplay";
 
@@ -12,12 +13,58 @@ export function TicketDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-
-  const ticket = useMemo(() => getEnrichedMockTickets().find((item) => item.id === id), [id]);
-  const [comentarios, setComentarios] = useState(() => ticket?.comentarios || []);
+  const [ticket, setTicket] = useState(null);
+  const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState("");
-  const [estadoActual, setEstadoActual] = useState(ticket?.estado ?? "abierto");
+  const [estadoActual, setEstadoActual] = useState("abierto");
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTicket() {
+      setLoading(true);
+
+      try {
+        const [ticketData, commentsData] = await Promise.all([
+          ticketService.getById(id),
+          commentService.getByTicket(id),
+        ]);
+
+        if (!cancelled) {
+          setTicket(ticketData);
+          setEstadoActual(ticketData?.estado ?? "abierto");
+          setComentarios(commentsData);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          toast.error("No pudimos cargar el ticket", {
+            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+          });
+          setTicket(null);
+          setComentarios([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadTicket();
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="glass-card rounded-2xl p-12 text-center">
+          <p className="text-text-secondary text-lg">Cargando ticket...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!ticket) {
     return (
@@ -51,7 +98,7 @@ export function TicketDetailPage() {
     return <Navigate to="/acceso-denegado" replace state={{ from: `/tickets/${id}` }} />;
   }
 
-  const handleAgregarComentario = () => {
+  const handleAgregarComentario = async () => {
     if (!canComment || submittingComment) return;
 
     if (containsForbiddenInput(nuevoComentario)) {
@@ -70,17 +117,28 @@ export function TicketDetailPage() {
     setSubmittingComment(true);
 
     try {
+      const payload = {
+        contenido: normalizeTextInput(nuevoComentario),
+        ticket_id: Number(id),
+        usuario_id: Number(user?.id),
+      };
+
+      const createdComment = await commentService.create(payload);
       setComentarios((prev) => [
         {
-          autor: getUserDisplayName(user),
-          fecha: new Date().toISOString().split("T")[0],
-          texto: normalizeTextInput(nuevoComentario),
+          ...createdComment,
+          autor: createdComment.autor || getUserDisplayName(user),
+          texto: createdComment.texto || payload.contenido,
         },
         ...prev,
       ]);
       setNuevoComentario("");
       toast.success("Comentario agregado", {
         description: "Tu actualizacion ya es visible en el historial.",
+      });
+    } catch (error) {
+      toast.error("No pudimos guardar el comentario", {
+        description: error.response?.data?.message ?? "Intenta nuevamente en unos segundos.",
       });
     } finally {
       setSubmittingComment(false);
@@ -101,8 +159,22 @@ export function TicketDetailPage() {
   const handleChangeStatus = (nextStatus) => {
     if (!canChangeStatus) return;
 
-    setEstadoActual(nextStatus);
-    toast.info(`Estado actualizado a ${formatStatus(nextStatus)}`);
+    if (nextStatus !== "cerrado") {
+      toast.info("El backend actual solo expone el cierre del ticket desde esta vista");
+      return;
+    }
+
+    ticketService.close(id, user?.id)
+      .then((updatedTicket) => {
+        setTicket(updatedTicket);
+        setEstadoActual(updatedTicket.estado);
+        toast.success(`Estado actualizado a ${formatStatus(updatedTicket.estado)}`);
+      })
+      .catch((error) => {
+        toast.error("No pudimos actualizar el estado", {
+          description: error.response?.data?.message ?? "Intenta nuevamente en unos segundos.",
+        });
+      });
   };
 
   return (
