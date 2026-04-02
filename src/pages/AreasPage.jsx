@@ -23,26 +23,26 @@ export function AreasPage() {
     estado: "",
   });
 
+  const loadAreas = async (cancelled = false) => {
+    setLoading(true);
+
+    try {
+      const data = await areaService.getAll();
+      if (!cancelled) setAreas(data);
+    } catch (error) {
+      if (!cancelled) {
+        toast.error("No pudimos cargar las areas", {
+          description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+        });
+        setAreas([]);
+      }
+    } finally {
+      if (!cancelled) setLoading(false);
+    }
+  };
+
   useEffect(() => {
     let cancelled = false;
-
-    async function loadAreas() {
-      setLoading(true);
-
-      try {
-        const data = await areaService.getAll();
-        if (!cancelled) setAreas(data);
-      } catch (error) {
-        if (!cancelled) {
-          toast.error("No pudimos cargar las areas", {
-            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
-          });
-          setAreas([]);
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
 
     loadAreas();
     return () => {
@@ -102,10 +102,12 @@ export function AreasPage() {
       confirmText: nextEstado === "Inactiva" ? "Desactivar area" : "Activar area",
       onConfirm: async () => {
         try {
-          const updatedArea = isActive
-            ? await areaService.deactivate(id)
-            : await areaService.activate(id);
-          setAreas((prev) => prev.map((item) => (item.id === id ? updatedArea : item)));
+          if (isActive) {
+            await areaService.deactivate(id);
+          } else {
+            await areaService.activate(id);
+          }
+          await loadAreas();
           toast.success(nextEstado === "Inactiva" ? "Area desactivada" : "Area activada", {
             description: area.nombreArea,
           });

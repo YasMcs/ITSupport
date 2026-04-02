@@ -12,7 +12,7 @@ const ESTADO_FORM_OPTIONS = [
 export function AreaForm({ initialData, onSubmit, sucursalOptions = [] }) {
   const navigate = useNavigate();
   const isEditing = !!initialData;
-  
+
   const [form, setForm] = useState({
     nombreArea: initialData?.nombreArea || "",
     sucursalId: initialData?.sucursalId || "",
@@ -26,7 +26,7 @@ export function AreaForm({ initialData, onSubmit, sucursalOptions = [] }) {
     setError("");
 
     if (!form.nombreArea.trim()) {
-      setError("El nombre del área es obligatorio");
+      setError("El nombre del area es obligatorio");
       return;
     }
 
@@ -46,12 +46,11 @@ export function AreaForm({ initialData, onSubmit, sucursalOptions = [] }) {
   };
 
   const handleChange = (field, value) => {
-    setForm((f) => ({ ...f, [field]: value }));
+    setForm((current) => ({ ...current, [field]: value }));
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <button
           type="button"
@@ -64,15 +63,14 @@ export function AreaForm({ initialData, onSubmit, sucursalOptions = [] }) {
         </button>
         <div>
           <h1 className="text-3xl font-bold text-text-primary">
-            {isEditing ? "Editar Área" : "Nueva Área"}
+            {isEditing ? "Editar Area" : "Nueva Area"}
           </h1>
           <p className="text-text-secondary mt-1">
-            {isEditing ? "Modifica los datos del área" : "Registra una nueva área operativa"}
+            {isEditing ? "Modifica los datos del area" : "Registra una nueva area operativa"}
           </p>
         </div>
       </div>
 
-      {/* Formulario */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
           <div className="bg-accent-pink/20 border border-accent-pink/30 text-accent-pink px-4 py-3 rounded-xl">
@@ -81,26 +79,23 @@ export function AreaForm({ initialData, onSubmit, sucursalOptions = [] }) {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Columna Izquierda: Datos del Área */}
           <div className="lg:col-span-2 space-y-6">
             <div className="glass-card rounded-2xl p-6 space-y-5">
               <h3 className="text-lg font-semibold text-text-primary mb-4">
-                Información del Área
+                Informacion del Area
               </h3>
 
-              {/* Nombre del Área */}
-              <FormField label="Nombre del Área" required>
+              <FormField label="Nombre del Area" required>
                 <input
                   type="text"
                   className="w-full bg-dark-purple-800 border border-dark-purple-700 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/50 focus:ring-2 focus:ring-purple-electric focus:border-purple-electric outline-none transition-all"
                   value={form.nombreArea}
                   onChange={(e) => handleChange("nombreArea", e.target.value)}
-                  placeholder="Ej: Recepción, Almacén, Producción"
+                  placeholder="Ej: Recepcion, Almacen, Produccion"
                   required
                 />
               </FormField>
 
-              {/* Sucursal */}
               <FormField label="Sucursal" required>
                 <Select
                   value={form.sucursalId}
@@ -108,39 +103,39 @@ export function AreaForm({ initialData, onSubmit, sucursalOptions = [] }) {
                   options={sucursalOptions}
                   placeholder="Seleccionar sucursal"
                   className="w-full"
+                  disabled={isEditing}
                 />
               </FormField>
 
-              {/* Botón Guardar */}
               <div className="flex justify-end mt-6">
                 <Button type="submit" className="px-8 py-3 w-auto">
-                  {isEditing ? "Guardar Cambios" : "Crear Área"}
+                  {isEditing ? "Guardar Cambios" : "Crear Area"}
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Columna Derecha: Configuración */}
           <div className="lg:col-span-1 space-y-6 h-fit">
             <div className="glass-card rounded-2xl p-6 space-y-5 h-fit">
               <h3 className="text-lg font-semibold text-text-primary mb-4">
-                Configuración
+                Configuracion
               </h3>
-              
+
               <FormField label="Estado">
                 <Select
                   value={form.estado}
                   onChange={(value) => handleChange("estado", value)}
                   options={ESTADO_FORM_OPTIONS}
                   className="w-full"
+                  disabled={isEditing}
                 />
               </FormField>
 
               <div className="text-sm text-gray-400 bg-white/5 p-4 rounded-lg mt-6">
                 <p>
                   {isEditing
-                    ? "Los cambios se guardarán al hacer clic en Guardar."
-                    : "Podrás asignar tickets a esta área una vez creada."}
+                    ? "Por ahora el backend solo permite actualizar el nombre del area desde esta vista."
+                    : "Podras asignar tickets a esta area una vez creada."}
                 </p>
               </div>
             </div>

@@ -23,26 +23,26 @@ export function SucursalesPage() {
     estado: "",
   });
 
+  const loadSucursales = async (cancelled = false) => {
+    setLoading(true);
+
+    try {
+      const data = await sucursalService.getAll();
+      if (!cancelled) setSucursales(data);
+    } catch (error) {
+      if (!cancelled) {
+        toast.error("No pudimos cargar las sucursales", {
+          description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
+        });
+        setSucursales([]);
+      }
+    } finally {
+      if (!cancelled) setLoading(false);
+    }
+  };
+
   useEffect(() => {
     let cancelled = false;
-
-    async function loadSucursales() {
-      setLoading(true);
-
-      try {
-        const data = await sucursalService.getAll();
-        if (!cancelled) setSucursales(data);
-      } catch (error) {
-        if (!cancelled) {
-          toast.error("No pudimos cargar las sucursales", {
-            description: error.response?.data?.message ?? "Verifica la conexion con el backend.",
-          });
-          setSucursales([]);
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
 
     loadSucursales();
     return () => {
@@ -103,10 +103,12 @@ export function SucursalesPage() {
       confirmText: nextEstado === "Desactivada" ? "Desactivar sede" : "Activar sede",
       onConfirm: async () => {
         try {
-          const updatedSucursal = isActive
-            ? await sucursalService.deactivate(id)
-            : await sucursalService.activate(id);
-          setSucursales((prev) => prev.map((item) => (item.id === id ? updatedSucursal : item)));
+          if (isActive) {
+            await sucursalService.deactivate(id);
+          } else {
+            await sucursalService.activate(id);
+          }
+          await loadSucursales();
           toast.success(nextEstado === "Desactivada" ? "Sucursal desactivada" : "Sucursal activada", {
             description: sucursal.nombre,
           });

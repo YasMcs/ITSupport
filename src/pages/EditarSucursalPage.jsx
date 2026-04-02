@@ -8,6 +8,7 @@ export function EditarSucursalPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [sucursalData, setSucursalData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -22,6 +23,8 @@ export function EditarSucursalPage() {
             description: error.response?.data?.message ?? "Intenta nuevamente.",
           });
         }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
 
@@ -35,6 +38,14 @@ export function EditarSucursalPage() {
     await sucursalService.update(id, payload);
     navigate("/sucursales");
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-text-secondary">Cargando sucursal...</p>
+      </div>
+    );
+  }
 
   return <SucursalForm initialData={sucursalData} onSubmit={handleSubmit} />;
 }
