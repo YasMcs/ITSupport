@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "../pages/auth/LoginPage";
-import { HomePage } from "../pages/HomePage";
 import { DashboardPage } from "../pages/DashboardPage";
 import { EstadisticasPage } from "../pages/EstadisticasPage";
 import { TicketsPage } from "../pages/TicketsPage";
@@ -154,11 +153,7 @@ export function AppRouter() {
       />
       <Route
         path="/"
-        element={
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/login" replace />}
       />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
