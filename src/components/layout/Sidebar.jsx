@@ -71,7 +71,6 @@ export function Sidebar() {
       description: "Se limpio la sesion activa y se bloqueo el acceso a rutas protegidas.",
     });
     navigate("/login", { replace: true });
-    window.location.replace("/login");
   };
 
   return (
