@@ -54,7 +54,7 @@ export function KanbanBoard({ tickets, onTicketMove }) {
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex gap-6 h-full min-h-[calc(100vh-200px)]">
+      <div className="flex gap-6">
         {Object.values(COLUMN_CONFIG).map((column) => (
           <div
             key={column.id}
@@ -87,7 +87,7 @@ export function KanbanBoard({ tickets, onTicketMove }) {
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                   className={`
-                    flex-1 flex flex-col gap-3 p-3 rounded-2xl
+                    flex min-h-[18rem] flex-col gap-3 p-3 rounded-2xl
                     bg-dark-purple-900/50 border border-dark-purple-700
                     transition-colors duration-200
                     ${snapshot.isDraggingOver ? "bg-dark-purple-800/50" : ""}
