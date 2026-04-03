@@ -139,16 +139,28 @@ export function TicketsPage() {
     }
   };
 
+  const headerTitle =
+    role === ROLES.TECNICO
+      ? tecnicoView === "available"
+        ? "Tickets Disponibles"
+        : "Mis Tickets"
+      : "Tickets";
+
+  const headerDescription =
+    role === ROLES.ADMIN
+      ? "Gestiona todos los tickets del sistema"
+      : role === ROLES.ENCARGADO
+        ? "Tus tickets registrados"
+        : tecnicoView === "available"
+          ? "Explora la bandeja abierta y toma un ticket cuando tengas capacidad."
+          : "Consulta y organiza los tickets que ya forman parte de tu flujo de trabajo.";
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1 max-w-md">
-          <h1 className="text-3xl font-bold text-text-primary">Tickets</h1>
-          <p className="text-text-secondary mt-1">
-            {role === ROLES.ADMIN && "Gestiona todos los tickets del sistema"}
-            {role === ROLES.TECNICO && "Tickets asignados a ti"}
-            {role === ROLES.ENCARGADO && "Tus tickets registrados"}
-          </p>
+          <h1 className="text-3xl font-bold text-text-primary">{headerTitle}</h1>
+          <p className="text-text-secondary mt-1">{headerDescription}</p>
         </div>
 
         <div className="flex-1 max-w-md">
