@@ -88,9 +88,9 @@ export function KanbanBoard({ tickets, onTicketMove }) {
                   {...provided.droppableProps}
                   className={`
                     flex min-h-[18rem] flex-col gap-3 p-3 rounded-2xl
-                    bg-dark-purple-900/50 border border-dark-purple-700
+                    bg-dark-purple-900/22 border border-white/8 backdrop-blur-sm
                     transition-colors duration-200
-                    ${snapshot.isDraggingOver ? "bg-dark-purple-800/50" : ""}
+                    ${snapshot.isDraggingOver ? "bg-dark-purple-800/35 border-purple-electric/20" : ""}
                     overflow-y-auto
                   `}
                 >
