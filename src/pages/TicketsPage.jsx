@@ -13,6 +13,7 @@ import { ticketService } from "../services/ticketService";
 export function TicketsPage() {
   const { user, role } = useAuth();
   const navigate = useNavigate();
+  const [tecnicoView, setTecnicoView] = useState("assigned");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -197,77 +198,117 @@ export function TicketsPage() {
         </div>
       ) : role === ROLES.TECNICO ? (
         <div className="space-y-6">
-          <section className="rounded-3xl border border-white/8 bg-white/[0.03] p-6 backdrop-blur-sm">
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-xl font-semibold text-text-primary">Tickets Disponibles</h2>
-                <p className="mt-1 text-sm text-text-secondary">
-                  Toma un ticket cuando tengas capacidad y se agregara automaticamente a tu tablero.
-                </p>
+          <section className="rounded-3xl border border-white/8 bg-white/[0.03] p-3 backdrop-blur-sm">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTecnicoView("assigned")}
+                  className={`rounded-2xl px-4 py-2.5 text-sm font-medium transition-all ${
+                    tecnicoView === "assigned"
+                      ? "bg-purple-electric/90 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
+                      : "border border-white/10 bg-dark-purple-900/35 text-text-secondary hover:bg-dark-purple-800/45 hover:text-text-primary"
+                  }`}
+                >
+                  Mis tickets
+                  <span className="ml-2 text-xs opacity-80">{filteredTickets.length}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTecnicoView("available")}
+                  className={`rounded-2xl px-4 py-2.5 text-sm font-medium transition-all ${
+                    tecnicoView === "available"
+                      ? "bg-purple-electric/90 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
+                      : "border border-white/10 bg-dark-purple-900/35 text-text-secondary hover:bg-dark-purple-800/45 hover:text-text-primary"
+                  }`}
+                >
+                  Disponibles
+                  <span className="ml-2 text-xs opacity-80">{filteredAvailableTickets.length}</span>
+                </button>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-dark-purple-900/35 px-4 py-3 text-right backdrop-blur-sm">
-                <p className="text-xs uppercase tracking-wide text-text-muted">Disponibles</p>
-                <p className="text-2xl font-semibold text-text-primary">{filteredAvailableTickets.length}</p>
-              </div>
+              <p className="px-2 text-sm text-text-secondary">
+                {tecnicoView === "assigned"
+                  ? "Organiza y consulta tu bandeja personal de trabajo."
+                  : "Toma un ticket cuando tengas capacidad y se agregara automaticamente a tu tablero."}
+              </p>
             </div>
-
-            {filteredAvailableTickets.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-dark-purple-900/20 px-6 py-10 text-center">
-                <p className="text-text-secondary">No hay tickets disponibles por tomar en este momento.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                {filteredAvailableTickets.map((ticket) => (
-                  <article key={ticket.id} className="rounded-2xl border border-white/10 bg-dark-purple-900/30 p-5 backdrop-blur-sm">
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-mono text-text-muted">#{ticket.id}</p>
-                        <h3 className="mt-1 text-base font-semibold text-text-primary">{ticket.titulo}</h3>
-                      </div>
-                      <Badge priority={ticket.prioridad} />
-                    </div>
-
-                    <p className="line-clamp-2 text-sm text-text-secondary">{ticket.descripcion}</p>
-
-                    <div className="mt-4 flex flex-wrap gap-2 text-xs text-text-muted">
-                      <span className="rounded-full border border-white/10 bg-dark-purple-800/55 px-3 py-1">
-                        {ticket.area || "Sin area"}
-                      </span>
-                      <span className="rounded-full border border-white/10 bg-dark-purple-800/55 px-3 py-1">
-                        {ticket.sucursal || "Sin sucursal"}
-                      </span>
-                    </div>
-
-                    <div className="mt-5 flex items-center justify-between gap-3">
-                      <span className="text-xs text-text-muted">
-                        Creado el {ticket.fechaCreacion ? new Date(ticket.fechaCreacion).toLocaleDateString("es-MX") : "sin fecha"}
-                      </span>
-                      <Button
-                        type="button"
-                        onClick={() => handleTakeTicket(ticket.id)}
-                        disabled={takingTicketId === ticket.id}
-                        className="w-auto px-5 py-2.5"
-                      >
-                        {takingTicketId === ticket.id ? "Tomando..." : "Tomar ticket"}
-                      </Button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
           </section>
 
-          {filteredTickets.length === 0 ? (
-            <div className="glass-card rounded-2xl p-12 text-center">
-              <div className="flex flex-col items-center gap-3">
-                <svg className="w-16 h-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <p className="text-text-secondary text-lg">{getEmptyMessage()}</p>
+          {tecnicoView === "available" ? (
+            <section className="rounded-3xl border border-white/8 bg-white/[0.03] p-6 backdrop-blur-sm">
+              <div className="mb-5 flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-text-primary">Tickets Disponibles</h2>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Selecciona un ticket libre para incorporarlo a tu flujo de trabajo.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-dark-purple-900/35 px-4 py-3 text-right backdrop-blur-sm">
+                  <p className="text-xs uppercase tracking-wide text-text-muted">Disponibles</p>
+                  <p className="text-2xl font-semibold text-text-primary">{filteredAvailableTickets.length}</p>
+                </div>
               </div>
-            </div>
+
+              {filteredAvailableTickets.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/10 bg-dark-purple-900/20 px-6 py-10 text-center">
+                  <p className="text-text-secondary">No hay tickets disponibles por tomar en este momento.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                  {filteredAvailableTickets.map((ticket) => (
+                    <article key={ticket.id} className="rounded-2xl border border-white/10 bg-dark-purple-900/30 p-5 backdrop-blur-sm">
+                      <div className="mb-3 flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs font-mono text-text-muted">#{ticket.id}</p>
+                          <h3 className="mt-1 text-base font-semibold text-text-primary">{ticket.titulo}</h3>
+                        </div>
+                        <Badge priority={ticket.prioridad} />
+                      </div>
+
+                      <p className="line-clamp-2 text-sm text-text-secondary">{ticket.descripcion}</p>
+
+                      <div className="mt-4 flex flex-wrap gap-2 text-xs text-text-muted">
+                        <span className="rounded-full border border-white/10 bg-dark-purple-800/55 px-3 py-1">
+                          {ticket.area || "Sin area"}
+                        </span>
+                        <span className="rounded-full border border-white/10 bg-dark-purple-800/55 px-3 py-1">
+                          {ticket.sucursal || "Sin sucursal"}
+                        </span>
+                      </div>
+
+                      <div className="mt-5 flex items-center justify-between gap-3">
+                        <span className="text-xs text-text-muted">
+                          Creado el {ticket.fechaCreacion ? new Date(ticket.fechaCreacion).toLocaleDateString("es-MX") : "sin fecha"}
+                        </span>
+                        <Button
+                          type="button"
+                          onClick={() => handleTakeTicket(ticket.id)}
+                          disabled={takingTicketId === ticket.id}
+                          className="w-auto px-5 py-2.5"
+                        >
+                          {takingTicketId === ticket.id ? "Tomando..." : "Tomar ticket"}
+                        </Button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
           ) : (
-            <KanbanBoard tickets={filteredTickets} onTicketMove={handleTicketMove} />
+            <>
+              {filteredTickets.length === 0 ? (
+                <div className="glass-card rounded-2xl p-12 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <svg className="w-16 h-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p className="text-text-secondary text-lg">{getEmptyMessage()}</p>
+                  </div>
+                </div>
+              ) : (
+                <KanbanBoard tickets={filteredTickets} onTicketMove={handleTicketMove} />
+              )}
+            </>
           )}
         </div>
       ) : filteredTickets.length === 0 ? (
