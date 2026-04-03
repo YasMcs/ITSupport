@@ -114,7 +114,7 @@ export function UsuariosPage() {
 
     const query = searchQuery.toLowerCase();
     return visibleUsers.filter((row) =>
-      [getUserDisplayName(row), row.nombre_usuario, row.email, row.area]
+      [getUserDisplayName(row), row.nombre, row.email, row.area]
         .filter(Boolean)
         .some((value) => value.toLowerCase().includes(query))
     );

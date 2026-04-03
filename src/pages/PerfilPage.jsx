@@ -104,8 +104,8 @@ export function PerfilPage() {
                     <UserRound className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-text-primary">Usuario de acceso</p>
-                    <p className="text-xs text-text-muted">{user?.nombre_usuario || "Sin usuario"}</p>
+                    <p className="text-sm font-medium text-text-primary">Nombre registrado</p>
+                    <p className="text-xs text-text-muted">{getUserDisplayName(user)}</p>
                   </div>
                 </div>
               </div>

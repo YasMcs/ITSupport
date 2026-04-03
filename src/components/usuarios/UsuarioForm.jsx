@@ -25,10 +25,9 @@ export const ESTADO_OPTIONS = [
 
 export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, areaOptions = [] }) {
   const [formData, setFormData] = useState({
-    nombre: usuario?.nombre || "",
+    nombre: usuario?.nombre || usuario?.nombre_usuario || "",
     apellido_paterno: usuario?.apellido_paterno || "",
     apellido_materno: usuario?.apellido_materno || "",
-    nombre_usuario: usuario?.nombre_usuario || "",
     email: usuario?.email || "",
     contrasena_hash: "",
     rol: usuario?.rol || "",
@@ -52,10 +51,9 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
 
   useEffect(() => {
     setFormData({
-      nombre: usuario?.nombre || "",
+      nombre: usuario?.nombre || usuario?.nombre_usuario || "",
       apellido_paterno: usuario?.apellido_paterno || "",
       apellido_materno: usuario?.apellido_materno || "",
-      nombre_usuario: usuario?.nombre_usuario || "",
       email: usuario?.email || "",
       contrasena_hash: "",
       rol: usuario?.rol || "",
@@ -75,10 +73,10 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
   };
 
   const validate = () => {
-    const fieldsToCheck = [formData.nombre_usuario, formData.email, formData.contrasena_hash];
+    const fieldsToCheck = [formData.nombre, formData.email, formData.contrasena_hash];
 
     if (!isEditing) {
-      fieldsToCheck.unshift(formData.nombre, formData.apellido_paterno, formData.apellido_materno);
+      fieldsToCheck.push(formData.apellido_paterno, formData.apellido_materno);
     }
 
     if (fieldsToCheck.some((value) => containsForbiddenInput(value))) {
@@ -106,9 +104,9 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
       }
     }
 
-    const usernameError = validateUsername(formData.nombre_usuario);
-    if (usernameError) {
-      setError(usernameError);
+    const nombreError = validateUsername(formData.nombre);
+    if (nombreError) {
+      setError(nombreError);
       return false;
     }
 
@@ -151,7 +149,6 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
         nombre: normalizeTextInput(formData.nombre),
         apellido_paterno: normalizeTextInput(formData.apellido_paterno),
         apellido_materno: normalizeTextInput(formData.apellido_materno),
-        nombre_usuario: normalizeTextInput(formData.nombre_usuario),
         email: normalizeTextInput(formData.email).toLowerCase(),
         contrasena_hash: formData.contrasena_hash.trim() || undefined,
         rol: formData.rol,
@@ -184,16 +181,15 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div className="glass-card rounded-2xl p-6 space-y-5">
-              <FormField label="Nombre(s)" required>
+              <FormField label="Nombre" required>
                 <input
                   type="text"
                   className="w-full bg-dark-purple-800 border border-dark-purple-700 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/50 focus:ring-2 focus:ring-purple-electric focus:border-purple-electric outline-none transition-all duration-200 hover:border-dark-purple-600"
                   value={formData.nombre}
                   onChange={(e) => handleChange("nombre", e.target.value)}
-                  placeholder="Joel"
+                  placeholder="Nombre registrado"
                   maxLength={60}
-                  required={!isEditing}
-                  disabled={isEditing}
+                  required
                 />
               </FormField>
 
@@ -220,18 +216,6 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
                   maxLength={60}
                   required={!isEditing}
                   disabled={isEditing}
-                />
-              </FormField>
-
-              <FormField label="Nombre de Usuario" required>
-                <input
-                  type="text"
-                  className="w-full bg-dark-purple-800 border border-dark-purple-700 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/50 focus:ring-2 focus:ring-purple-electric focus:border-purple-electric outline-none transition-all duration-200 hover:border-dark-purple-600"
-                  value={formData.nombre_usuario}
-                  onChange={(e) => handleChange("nombre_usuario", e.target.value)}
-                  placeholder="ej. jdecoz"
-                  maxLength={30}
-                  required
                 />
               </FormField>
 

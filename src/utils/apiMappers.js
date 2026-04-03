@@ -133,7 +133,7 @@ export function normalizeTicket(ticket = {}) {
 
 export function buildUserPayload(payload = {}) {
   return {
-    nombreUsuario: payload.nombre_usuario,
+    nombreUsuario: payload.nombre ?? payload.nombre_usuario,
     email: payload.email,
     contrasena: payload.contrasena_hash,
     rol: String(payload.rol || "").toLowerCase(),

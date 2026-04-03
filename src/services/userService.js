@@ -25,14 +25,14 @@ export const userService = {
 
   async updateMe(payload) {
     const response = await api.put("/usuarios/me", {
-      nombreUsuario: payload.nombre_usuario,
+      nombreUsuario: payload.nombre ?? payload.nombre_usuario,
     });
     return normalizeUser(extractData(response));
   },
 
   async updateByAdmin(id, payload) {
     const response = await api.put(`/usuarios/admin/${id}`, {
-      nombreUsuario: payload.nombre_usuario,
+      nombreUsuario: payload.nombre ?? payload.nombre_usuario,
       email: payload.email,
       contrasena: payload.contrasena_hash,
       rol: String(payload.rol || "").toLowerCase(),
