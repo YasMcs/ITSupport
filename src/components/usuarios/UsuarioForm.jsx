@@ -9,7 +9,6 @@ import {
   validateEmail,
   validateName,
   validateRequiredText,
-  validateUsername,
 } from "../../utils/security";
 
 export const ROL_OPTIONS = [
@@ -101,12 +100,6 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
     const apellidoMaternoError = validateName(formData.apellido_materno, "El apellido materno");
     if (apellidoMaternoError) {
       setError(apellidoMaternoError);
-      return false;
-    }
-
-    const usernameLikeError = validateUsername(formData.nombre);
-    if (usernameLikeError) {
-      setError(usernameLikeError);
       return false;
     }
 
