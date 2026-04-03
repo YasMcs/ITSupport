@@ -30,10 +30,11 @@ export function normalizeRole(role) {
 export function normalizeUser(user = {}) {
   return {
     id: firstDefined(user.id, user.usuarioId),
-    nombre: firstDefined(user.nombre, user.nombres, user.firstName, user.nombreUsuario, ""),
+    nombre: firstDefined(user.nombre, user.nombreUsuario, user.nombres, user.firstName, ""),
     apellido_paterno: firstDefined(user.apellido_paterno, user.apellidoPaterno, user.apellido1, ""),
     apellido_materno: firstDefined(user.apellido_materno, user.apellidoMaterno, user.apellido2, ""),
     nombre_usuario: firstDefined(user.nombre_usuario, user.nombreUsuario, user.username, ""),
+    nombre_completo: firstDefined(user.nombreCompleto, user.nombre_completo, ""),
     email: firstDefined(user.email, user.correo, ""),
     rol: normalizeRole(firstDefined(user.rol, user.role)),
     estado_cuenta: normalizeAccountState(firstDefined(user.estado_cuenta, user.estadoCuenta, user.estado, "activo")),
@@ -132,13 +133,20 @@ export function normalizeTicket(ticket = {}) {
 }
 
 export function buildUserPayload(payload = {}) {
-  return {
+  const userPayload = {
     nombreUsuario: payload.nombre ?? payload.nombre_usuario,
+    apellidoPaterno: payload.apellido_paterno,
+    apellidoMaterno: payload.apellido_materno,
     email: payload.email,
     contrasena: payload.contrasena_hash,
     rol: String(payload.rol || "").toLowerCase(),
-    areaId: payload.area_id,
   };
+
+  if (payload.area_id !== undefined && payload.area_id !== null && payload.area_id !== "") {
+    userPayload.areaId = payload.area_id;
+  }
+
+  return userPayload;
 }
 
 export function buildAreaPayload(payload = {}) {

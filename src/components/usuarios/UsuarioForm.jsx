@@ -73,40 +73,40 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
   };
 
   const validate = () => {
-    const fieldsToCheck = [formData.nombre, formData.email, formData.contrasena_hash];
-
-    if (!isEditing) {
-      fieldsToCheck.push(formData.apellido_paterno, formData.apellido_materno);
-    }
+    const fieldsToCheck = [
+      formData.nombre,
+      formData.apellido_paterno,
+      formData.apellido_materno,
+      formData.email,
+      formData.contrasena_hash,
+    ];
 
     if (fieldsToCheck.some((value) => containsForbiddenInput(value))) {
       setError("Deteccion de caracteres no permitidos");
       return false;
     }
 
-    if (!isEditing) {
-      const nombreError = validateName(formData.nombre, "El nombre");
-      if (nombreError) {
-        setError(nombreError);
-        return false;
-      }
-
-      const apellidoPaternoError = validateName(formData.apellido_paterno, "El apellido paterno");
-      if (apellidoPaternoError) {
-        setError(apellidoPaternoError);
-        return false;
-      }
-
-      const apellidoMaternoError = validateName(formData.apellido_materno, "El apellido materno");
-      if (apellidoMaternoError) {
-        setError(apellidoMaternoError);
-        return false;
-      }
-    }
-
-    const nombreError = validateUsername(formData.nombre);
+    const nombreError = validateName(formData.nombre, "El nombre");
     if (nombreError) {
       setError(nombreError);
+      return false;
+    }
+
+    const apellidoPaternoError = validateName(formData.apellido_paterno, "El apellido paterno");
+    if (apellidoPaternoError) {
+      setError(apellidoPaternoError);
+      return false;
+    }
+
+    const apellidoMaternoError = validateName(formData.apellido_materno, "El apellido materno");
+    if (apellidoMaternoError) {
+      setError(apellidoMaternoError);
+      return false;
+    }
+
+    const usernameLikeError = validateUsername(formData.nombre);
+    if (usernameLikeError) {
+      setError(usernameLikeError);
       return false;
     }
 
@@ -116,7 +116,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
       return false;
     }
 
-    const passwordError = validateRequiredText(formData.contrasena_hash, { min: 8, max: 60 });
+    const passwordError = validateRequiredText(formData.contrasena_hash, { min: 6, max: 60 });
     if (passwordError) {
       setError(passwordError === "Este campo es obligatorio" ? "La contrasena es obligatoria" : passwordError);
       return false;
@@ -201,8 +201,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
                   onChange={(e) => handleChange("apellido_paterno", e.target.value)}
                   placeholder="De Coz"
                   maxLength={60}
-                  required={!isEditing}
-                  disabled={isEditing}
+                  required
                 />
               </FormField>
 
@@ -214,8 +213,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
                   onChange={(e) => handleChange("apellido_materno", e.target.value)}
                   placeholder="Fernandez"
                   maxLength={60}
-                  required={!isEditing}
-                  disabled={isEditing}
+                  required
                 />
               </FormField>
 
