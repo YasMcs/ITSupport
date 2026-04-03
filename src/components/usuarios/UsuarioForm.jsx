@@ -295,6 +295,12 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
                 </div>
               )}
 
+              {!isEditing && (
+                <div className="text-sm text-gray-400 bg-white/5 p-4 rounded-lg mt-6">
+                  <p>El cargo se define al crear el usuario y despues ya no se modifica desde la edicion por seguridad.</p>
+                </div>
+              )}
+
               {isEditing && (
                 <div className="text-sm text-gray-400 bg-white/5 p-4 rounded-lg mt-6">
                   <p>Por ahora la edicion administrativa actualiza nombre, apellidos, correo y contrasena. El cargo queda bloqueado hasta contar con la asignacion de area correspondiente.</p>
