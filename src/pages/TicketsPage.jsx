@@ -6,6 +6,7 @@ import { ROLES } from "../constants/roles";
 import { TicketTable, COLUMN_KEYS } from "../components/tickets/TicketTable";
 import { KanbanBoard } from "../components/tickets/KanbanBoard";
 import { Button } from "../components/ui/Button";
+import { Badge } from "../components/ui/Badge";
 import { FilterBar } from "../components/ui/FilterBar";
 import { ticketService } from "../services/ticketService";
 
