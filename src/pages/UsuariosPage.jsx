@@ -112,7 +112,7 @@ export function UsuariosPage() {
 
     const query = searchQuery.toLowerCase();
     return usersWithoutCurrentAdmin.filter((row) =>
-      [getUserDisplayName(row), row.nombre_usuario, row.email, row.sucursal, row.area]
+      [getUserDisplayName(row), row.nombre_usuario, row.email, row.area]
         .filter(Boolean)
         .some((value) => value.toLowerCase().includes(query))
     );
@@ -166,14 +166,12 @@ export function UsuariosPage() {
     },
     { key: "rol", label: "Rol", render: (val) => <RolBadge rol={val} /> },
     {
-      key: "sucursal",
-      label: "Sucursal",
-      render: (val) => <span className={val ? "text-text-primary" : "text-text-muted italic"}>{val || "-"}</span>,
-    },
-    {
       key: "area",
       label: "Area",
-      render: (val) => <span className={val ? "text-text-primary" : "text-text-muted italic"}>{val || "-"}</span>,
+      render: (val, row) => {
+        const fallback = row.rol === "encargado" ? "Sin area asignada" : "No requiere area";
+        return <span className={val ? "text-text-primary" : "text-text-muted italic"}>{val || fallback}</span>;
+      },
     },
     { key: "estado_cuenta", label: "Estado", render: (val) => <Badge accountStatus={val} /> },
     {
