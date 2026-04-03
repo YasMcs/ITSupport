@@ -12,7 +12,7 @@ import { getUserDisplayName } from "../utils/userDisplay";
 export function TicketDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [ticket, setTicket] = useState(null);
   const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState("");
@@ -56,6 +56,22 @@ export function TicketDetailPage() {
     };
   }, [id]);
 
+  const isAdmin = role === "admin";
+  const isCreator = ticket ? Number(user?.id) === Number(ticket.encargado_id) : false;
+  const isAssignedTechnician = ticket ? Number(user?.id) === Number(ticket.tecnico_id) : false;
+  const canViewTicket = ticket ? isAdmin || isCreator || isAssignedTechnician : false;
+  const canChangeStatus = !isAdmin && role === "tecnico" && isAssignedTechnician;
+  const canComment = !isAdmin && (isCreator || isAssignedTechnician);
+
+  useEffect(() => {
+    if (!ticket || canViewTicket) return;
+
+    toast.error("No tienes permisos para realizar esta accion", {
+      description: "La apertura directa por URL fue bloqueada para este ticket.",
+      id: `ticket-denied:${id}`,
+    });
+  }, [canViewTicket, id, ticket]);
+
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl space-y-6">
@@ -77,22 +93,6 @@ export function TicketDetailPage() {
       </div>
     );
   }
-
-  const isAdmin = user?.rol === "admin";
-  const isCreator = Number(user?.id) === Number(ticket.encargado_id);
-  const isAssignedTechnician = Number(user?.id) === Number(ticket.tecnico_id);
-  const canViewTicket = isAdmin || isCreator || isAssignedTechnician;
-  const canChangeStatus = !isAdmin && user?.rol === "tecnico" && isAssignedTechnician;
-  const canComment = !isAdmin && (isCreator || isAssignedTechnician);
-
-  useEffect(() => {
-    if (!canViewTicket) {
-      toast.error("No tienes permisos para realizar esta accion", {
-        description: "La apertura directa por URL fue bloqueada para este ticket.",
-        id: `ticket-denied:${id}`,
-      });
-    }
-  }, [canViewTicket, id]);
 
   if (!canViewTicket) {
     return <Navigate to="/acceso-denegado" replace state={{ from: `/tickets/${id}` }} />;
@@ -234,7 +234,7 @@ export function TicketDetailPage() {
               </div>
             )}
 
-            {!canChangeStatus && !isAdmin && user?.rol === "tecnico" && (
+            {!canChangeStatus && !isAdmin && role === "tecnico" && (
               <div className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-muted">
                 Solo el tecnico asignado puede actualizar el estado de este ticket.
               </div>
