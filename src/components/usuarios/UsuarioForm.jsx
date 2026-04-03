@@ -303,7 +303,7 @@ export function UsuarioForm({ usuario, onSubmit, onCancel, isEditing = false, ar
 
               {isEditing && (
                 <div className="text-sm text-gray-400 bg-white/5 p-4 rounded-lg mt-6">
-                  <p>Por ahora la edicion administrativa actualiza nombre, apellidos, correo y contrasena. El cargo queda bloqueado hasta contar con la asignacion de area correspondiente.</p>
+                  <p>En esta vista puedes actualizar nombre, apellidos, correo y contrasena. El cargo se mantiene fijo por seguridad.</p>
                 </div>
               )}
             </div>
