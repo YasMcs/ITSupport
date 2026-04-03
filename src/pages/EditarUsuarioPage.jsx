@@ -11,6 +11,7 @@ export function EditarUsuarioPage() {
   const [usuario, setUsuario] = useState(null);
   const [areas, setAreas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -25,9 +26,11 @@ export function EditarUsuarioPage() {
         if (!cancelled) {
           setUsuario(userData);
           setAreas(areaData);
+          setLoadError("");
         }
       } catch (error) {
         if (!cancelled) {
+          setLoadError(error.response?.data?.message ?? "No pudimos cargar el usuario seleccionado.");
           toast.error("No pudimos cargar el usuario", {
             description: error.response?.data?.message ?? "Intenta nuevamente.",
           });
@@ -52,6 +55,32 @@ export function EditarUsuarioPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-text-secondary">Cargando usuario...</p>
+      </div>
+    );
+  }
+
+  if (loadError || !usuario) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4 mb-8">
+          <button
+            type="button"
+            onClick={() => navigate("/usuarios")}
+            className="p-2 rounded-xl bg-dark-purple-800 border border-dark-purple-700 text-text-secondary hover:text-text-primary hover:border-purple-electric transition-all"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary">Editar Usuario</h1>
+            <p className="text-text-secondary mt-1">No fue posible recuperar el registro solicitado.</p>
+          </div>
+        </div>
+
+        <div className="glass-card rounded-2xl p-6">
+          <p className="text-accent-pink">{loadError || "No encontramos informacion para este usuario."}</p>
+        </div>
       </div>
     );
   }
