@@ -6,6 +6,7 @@ export function TicketCard({ ticket }) {
   return (
     <Link
       to={`/tickets/${ticket.id}`}
+      state={{ ticket }}
       className="block p-5 glass-card rounded-2xl hover:bg-dark-purple-700 hover:border-purple-electric/30 transition-all duration-200 hover:shadow-lg hover:shadow-purple-electric/10"
     >
       <div className="flex justify-between items-start mb-2">

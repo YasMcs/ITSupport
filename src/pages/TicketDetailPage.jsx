@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
@@ -12,9 +12,10 @@ import { getUserDisplayName } from "../utils/userDisplay";
 
 export function TicketDetailPage() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { user, role } = useAuth();
-  const [ticket, setTicket] = useState(null);
+  const [ticket, setTicket] = useState(() => location.state?.ticket ?? null);
   const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState("");
   const [estadoActual, setEstadoActual] = useState("abierto");
@@ -28,7 +29,11 @@ export function TicketDetailPage() {
       setLoading(true);
 
       try {
-        const ticketData = await ticketService.getById(id);
+        const ticketData = await loadTicketForRole({
+          id,
+          role,
+          prefetchedTicket: location.state?.ticket,
+        });
         let commentsData = [];
 
         try {
@@ -59,7 +64,7 @@ export function TicketDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, role, location.state]);
 
   const isAdmin = role === "admin";
   const isCreator = ticket ? Number(user?.id) === Number(ticket.encargado_id) : false;
@@ -359,4 +364,22 @@ export function TicketDetailPage() {
 function formatStatus(status) {
   if (status === "en_proceso") return "En proceso";
   return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+async function loadTicketForRole({ id, role, prefetchedTicket }) {
+  if (prefetchedTicket && String(prefetchedTicket.id) === String(id)) {
+    return prefetchedTicket;
+  }
+
+  if (role === "encargado") {
+    const tickets = await ticketService.getMineCreated();
+    return tickets.find((ticket) => String(ticket.id) === String(id)) ?? null;
+  }
+
+  if (role === "tecnico") {
+    const tickets = await ticketService.getMineAssigned();
+    return tickets.find((ticket) => String(ticket.id) === String(id)) ?? null;
+  }
+
+  return ticketService.getById(id);
 }

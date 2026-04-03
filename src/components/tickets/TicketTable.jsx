@@ -30,11 +30,13 @@ const DEFAULT_COLUMNS = [
 ];
 
 export function TicketTable({ tickets, columnas = [] }) {
-  const columns = columnaKeysToColumns(columnas);
+  const columns = columnaKeysToColumns(columnas, tickets);
   return <Table columns={columns} data={tickets} />;
 }
 
-function columnaKeysToColumns(columnas) {
+function columnaKeysToColumns(columnas, tickets = []) {
+  const ticketsById = new Map(tickets.map((ticket) => [String(ticket.id), ticket]));
+
   if (columnas.length === 0) {
     return DEFAULT_COLUMNS;
   }
@@ -67,6 +69,7 @@ function columnaKeysToColumns(columnas) {
             render: (id) => (
               <Link
                 to={`/tickets/${id}`}
+                state={{ ticket: ticketsById.get(String(id)) }}
                 className="text-purple-electric hover:text-purple-electric-hover font-medium transition-colors duration-200"
               >
                 Ver detalle

@@ -28,7 +28,7 @@ export function KanbanCard({ ticket, index }) {
             snapshot.isDragging ? "bg-dark-purple-700 shadow-lg shadow-purple-electric/20 rotate-2" : ""
           }`}
         >
-          <Link to={`/tickets/${ticket.id}`} className="block">
+          <Link to={`/tickets/${ticket.id}`} state={{ ticket }} className="block">
             <div className="flex items-start justify-between mb-3">
               <span className="text-xs font-mono text-text-muted">#{ticket.id}</span>
             </div>
