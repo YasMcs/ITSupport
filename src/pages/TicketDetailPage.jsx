@@ -206,11 +206,19 @@ export function TicketDetailPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-text-muted">Situacion:</span>
-          <Badge status={estadoActual} />
-          <span className="text-sm text-text-muted">Prioridad:</span>
-          <Badge priority={ticket.prioridad} />
+        <div className="flex flex-col items-end gap-3">
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-text-muted">Situacion:</span>
+            <Badge status={estadoActual} />
+            <span className="text-sm text-text-muted">Prioridad:</span>
+            <Badge priority={ticket.prioridad} />
+          </div>
+
+          {canCloseTicket && (
+            <Button type="button" onClick={handleCloseTicket} className="w-auto px-5 py-2.5">
+              Cerrar ticket
+            </Button>
+          )}
         </div>
       </div>
 
@@ -292,39 +300,6 @@ export function TicketDetailPage() {
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="glass-card rounded-2xl p-5">
-            <h3 className="mb-4 text-lg font-semibold text-text-primary">Acciones</h3>
-
-            {canCloseTicket && (
-              <div className="space-y-4">
-                <p className="text-sm text-text-secondary">
-                  Cuando confirmes que la atencion termino correctamente, puedes cerrar este ticket.
-                </p>
-                <Button type="button" onClick={handleCloseTicket} className="w-full justify-center py-3">
-                  Cerrar ticket
-                </Button>
-              </div>
-            )}
-
-            {!isAdmin && role === "tecnico" && isAssignedTechnician && estadoActual === "cerrado" && (
-              <div className="rounded-xl bg-white/5 px-4 py-3 text-sm text-text-muted">
-                Este ticket ya se encuentra cerrado.
-              </div>
-            )}
-
-            {!canCloseTicket && !isAdmin && role === "tecnico" && !isAssignedTechnician && (
-              <div className="rounded-xl bg-white/5 px-4 py-3 text-sm text-text-muted">
-                Solo el tecnico asignado puede cerrar este ticket.
-              </div>
-            )}
-
-            {isAdmin && (
-              <div className="rounded-xl bg-white/5 px-4 py-3 text-sm text-text-muted">
-                El administrador solo puede supervisar este ticket.
-              </div>
-            )}
-          </div>
-
           <div className="glass-card rounded-2xl p-5">
             <h3 className="mb-4 text-lg font-semibold text-text-primary">Resumen operativo</h3>
             <div className="space-y-3 text-sm">
