@@ -72,7 +72,6 @@ export function TicketDetailPage() {
   const canViewTicket = ticket ? isAdmin || isCreator || isAssignedTechnician : false;
   const canCloseTicket = !isAdmin && role === "tecnico" && isAssignedTechnician && estadoActual !== "cerrado";
   const canComment = !isAdmin && (isCreator || isAssignedTechnician);
-  const hasHistory = Array.isArray(ticket?.historial) && ticket.historial.length > 0;
 
   useEffect(() => {
     if (!ticket || canViewTicket) return;
@@ -367,21 +366,6 @@ export function TicketDetailPage() {
               </div>
             </div>
           </div>
-
-          {hasHistory && (
-            <div className="glass-card rounded-2xl p-5">
-              <h2 className="mb-4 text-lg font-semibold text-text-primary">Historial</h2>
-              <div className="relative ml-3 space-y-6 border-l border-dark-purple-700">
-                {ticket.historial.slice().reverse().map((item, index) => (
-                  <div key={index} className="relative pl-6">
-                    <span className="absolute -left-[5px] top-1.5 h-2.5 w-2.5 rounded-full bg-purple-electric ring-4 ring-dark-purple-900" />
-                    <p className="text-sm text-text-secondary">{item.accion}</p>
-                    <span className="text-xs text-text-muted">{formatDate(item.fecha) || item.fecha || "Sin fecha"}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
