@@ -206,7 +206,7 @@ const cerrados = tickets.filter((ticket) => ticket.estado === TICKET_STATUS.CERR
 
   return [
     { id: "total", label: "Total tickets", value: tickets.length, trend: "up", change: "Vision global" },
-    { id: "open", label: "Abiertos", value: abiertos, trend: abiertos > 0 ? "up" : "down", change: `${enProceso} en proceso` },
+    { id: "open", label: "En Proceso", value: enProceso, trend: enProceso > 0 ? "up" : "down", change: `${enProceso} en proceso` },
     { id: "closed", label: "Cerrados", value: cerrados, trend: "up", change: `${vencidos} vencidos` },
   ];
 }
