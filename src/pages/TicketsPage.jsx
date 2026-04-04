@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import { ROLES } from "../constants/roles";
 import { TicketTable, COLUMN_KEYS } from "../components/tickets/TicketTable";
-import { KanbanBoard } from "../components/tickets/KanbanBoard";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { FilterBar } from "../components/ui/FilterBar";
@@ -69,13 +68,6 @@ export function TicketsPage() {
     };
   }, [role, user]);
 
-  const handleTicketMove = (ticketId, newStatus) => {
-    setTickets((prev) =>
-      prev.map((ticket) => (ticket.id === ticketId ? { ...ticket, estado: newStatus } : ticket))
-    );
-    toast.success(`Estado actualizado a ${newStatus}`);
-  };
-
   const filteredTickets = useMemo(
     () => applyTicketFilters(tickets, { filters, role, searchQuery }),
     [filters, role, searchQuery, tickets]
@@ -91,7 +83,7 @@ export function TicketsPage() {
       return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.RESPONSABLE, COLUMN_KEYS.TECNICO, COLUMN_KEYS.FECHA, COLUMN_KEYS.ACCIONES];
     }
     if (role === ROLES.TECNICO) {
-      return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.RESPONSABLE, COLUMN_KEYS.FECHA, COLUMN_KEYS.ACCIONES];
+      return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.TITULO, COLUMN_KEYS.AREA, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.FECHA, COLUMN_KEYS.ACCIONES];
     }
     if (role === ROLES.ENCARGADO) {
       return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.FECHA, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.TECNICO, COLUMN_KEYS.ACCIONES];
@@ -316,7 +308,24 @@ export function TicketsPage() {
                   </div>
                 </div>
               ) : (
-                <KanbanBoard tickets={filteredTickets} onTicketMove={handleTicketMove} />
+                <section className="space-y-4">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <h2 className="text-xl font-semibold text-text-primary">Bandeja de trabajo</h2>
+                      <p className="mt-1 text-sm text-text-secondary">
+                        Consulta tus tickets activos y entra al detalle para dar seguimiento o cerrarlos.
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-dark-purple-900/35 px-4 py-3 text-right backdrop-blur-sm">
+                      <p className="text-xs uppercase tracking-wide text-text-muted">Asignados</p>
+                      <p className="text-2xl font-semibold text-text-primary">{filteredTickets.length}</p>
+                    </div>
+                  </div>
+
+                  <div className="glass-card overflow-hidden rounded-2xl">
+                    <TicketTable tickets={filteredTickets} columnas={getColumns()} />
+                  </div>
+                </section>
               )}
             </>
           )}
