@@ -218,13 +218,7 @@ export function TicketsPage() {
         <div className="space-y-6">
           {tecnicoView === "available" ? (
             <section className="rounded-3xl bg-white/[0.03] p-6 backdrop-blur-sm">
-              <div className="mb-5 flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-text-primary">Tickets Disponibles</h2>
-                  <p className="mt-1 text-sm text-text-secondary">
-                    Selecciona un ticket libre para incorporarlo a tu flujo de trabajo.
-                  </p>
-                </div>
+              <div className="mb-5 flex items-center justify-end gap-4">
                 <div className="rounded-2xl bg-dark-purple-900/35 px-4 py-3 text-right backdrop-blur-sm">
                   <p className="text-xs uppercase tracking-wide text-text-muted">Disponibles</p>
                   <p className="text-2xl font-semibold text-text-primary">{filteredAvailableTickets.length}</p>
@@ -288,20 +282,7 @@ export function TicketsPage() {
                   </div>
                 </div>
               ) : (
-                <section className="space-y-4">
-                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    <div>
-                      <h2 className="text-xl font-semibold text-text-primary">Bandeja de trabajo</h2>
-                      <p className="mt-1 text-sm text-text-secondary">
-                        Consulta tus tickets activos y entra al detalle para dar seguimiento o cerrarlos.
-                      </p>
-                    </div>
-                    <div className="rounded-2xl bg-dark-purple-900/35 px-4 py-3 text-right backdrop-blur-sm">
-                      <p className="text-xs uppercase tracking-wide text-text-muted">Asignados</p>
-                      <p className="text-2xl font-semibold text-text-primary">{filteredTickets.length}</p>
-                    </div>
-                  </div>
-
+                <section>
                   <div className="glass-card overflow-hidden rounded-2xl">
                     <TicketTable tickets={filteredTickets} columnas={getColumns()} />
                   </div>

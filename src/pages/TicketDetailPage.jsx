@@ -70,7 +70,7 @@ export function TicketDetailPage() {
   const isCreator = ticket ? Number(user?.id) === Number(ticket.encargado_id) : false;
   const isAssignedTechnician = ticket ? Number(user?.id) === Number(ticket.tecnico_id) : false;
   const canViewTicket = ticket ? isAdmin || isCreator || isAssignedTechnician : false;
-  const canChangeStatus = !isAdmin && role === "tecnico" && isAssignedTechnician;
+  const canCloseTicket = !isAdmin && role === "tecnico" && isAssignedTechnician && estadoActual !== "cerrado";
   const canComment = !isAdmin && (isCreator || isAssignedTechnician);
 
   useEffect(() => {
@@ -166,22 +166,19 @@ export function TicketDetailPage() {
     setNuevoComentario(value);
   };
 
-  const handleChangeStatus = (nextStatus) => {
-    if (!canChangeStatus) return;
-
-    if (nextStatus !== "cerrado") {
-      toast.info("El backend actual solo expone el cierre del ticket desde esta vista");
-      return;
-    }
+  const handleCloseTicket = () => {
+    if (!canCloseTicket) return;
 
     ticketService.close(id, user?.id)
       .then((updatedTicket) => {
         setTicket(updatedTicket);
         setEstadoActual(updatedTicket.estado);
-        toast.success(`Estado actualizado a ${formatStatus(updatedTicket.estado)}`);
+        toast.success("Ticket cerrado", {
+          description: "El ticket fue marcado como cerrado correctamente.",
+        });
       })
       .catch((error) => {
-        toast.error("No pudimos actualizar el estado", {
+        toast.error("No pudimos cerrar el ticket", {
           description: error.response?.data?.message ?? "Intenta nuevamente en unos segundos.",
         });
       });
@@ -209,7 +206,7 @@ export function TicketDetailPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-sm text-text-muted">Estado:</span>
+          <span className="text-sm text-text-muted">Situacion:</span>
           <Badge status={estadoActual} />
           <span className="text-sm text-text-muted">Prioridad:</span>
           <Badge priority={ticket.prioridad} />
@@ -221,32 +218,31 @@ export function TicketDetailPage() {
           <div className="glass-card rounded-2xl p-5">
             <h3 className="mb-4 text-lg font-semibold text-text-primary">Descripcion</h3>
 
-            {canChangeStatus && (
-              <div className="mb-4 flex flex-wrap gap-2">
-                {[
-                  { value: "abierto", label: "Abierto" },
-                  { value: "en_proceso", label: "En proceso" },
-                  { value: "cerrado", label: "Cerrado" },
-                ].map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => handleChangeStatus(option.value)}
-                    className={`rounded-xl border px-3 py-2 text-sm transition-colors ${
-                      estadoActual === option.value
-                        ? "border-purple-electric/40 bg-purple-electric/20 text-purple-electric"
-                        : "border-white/10 bg-white/5 text-text-secondary hover:bg-white/10"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+            {canCloseTicket && (
+              <div className="mb-4 flex flex-col gap-3 rounded-2xl bg-white/5 p-4">
+                <div>
+                  <p className="text-sm font-medium text-text-primary">Accion disponible</p>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Cuando termines la atencion de este ticket, puedes marcarlo como cerrado desde aqui.
+                  </p>
+                </div>
+                <div>
+                  <Button type="button" onClick={handleCloseTicket} className="w-auto px-5 py-2.5">
+                    Cerrar ticket
+                  </Button>
+                </div>
               </div>
             )}
 
-            {!canChangeStatus && !isAdmin && role === "tecnico" && (
+            {!isAdmin && role === "tecnico" && isAssignedTechnician && estadoActual === "cerrado" && (
               <div className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-muted">
-                Solo el tecnico asignado puede actualizar el estado de este ticket.
+                Este ticket ya se encuentra cerrado.
+              </div>
+            )}
+
+            {!canCloseTicket && !isAdmin && role === "tecnico" && !isAssignedTechnician && (
+              <div className="mb-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-text-muted">
+                Solo el tecnico asignado puede cerrar este ticket.
               </div>
             )}
 
@@ -359,11 +355,6 @@ export function TicketDetailPage() {
       </div>
     </div>
   );
-}
-
-function formatStatus(status) {
-  if (status === "en_proceso") return "En proceso";
-  return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
 async function loadTicketForRole({ id, role, prefetchedTicket }) {
