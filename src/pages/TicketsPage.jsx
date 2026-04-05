@@ -232,12 +232,19 @@ export function TicketsPage() {
 
           {tecnicoView === "available" ? (
             <section className="rounded-3xl bg-white/[0.03] p-6 backdrop-blur-sm">
-              <div className="mb-2 flex items-center justify-end gap-3">  
-                <div className="rounded-xl bg-dark-purple-900/40 px-3 py-2 text-right backdrop-blur-sm">  
-                  <p className="text-xs uppercase tracking-wide text-text-muted/80">Disponibles</p>
-                  <p className="text-lg font-semibold text-text-primary">{filteredAvailableTickets.length}</p> 
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-[0.24em] text-text-muted/70">
+                    Bandeja abierta
+                  </p>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Tickets libres para tomar cuando tengas capacidad.
+                  </p>
                 </div>
-              </div>  
+                <div className="shrink-0 rounded-full bg-dark-purple-900/45 px-3 py-1.5 text-sm font-medium text-text-primary backdrop-blur-sm">
+                  {filteredAvailableTickets.length} disponible{filteredAvailableTickets.length === 1 ? "" : "s"}
+                </div>
+              </div>
 
               {filteredAvailableTickets.length === 0 ? (
                 <div className="rounded-2xl bg-dark-purple-900/20 px-6 py-10 text-center">
