@@ -311,7 +311,7 @@ export function TicketDetailPage() {
         </div>
 
         <aside className="min-h-0 xl:h-full">
-          <div className="flex h-full min-h-0 flex-col overflow-y-hidden rounded-[2rem] bg-[#0f0c1d] px-5 py-4 shadow-[0_24px_70px_rgba(9,6,23,0.28)] backdrop-blur-xl">
+          <div className="flex h-full min-h-0 flex-col overflow-y-hidden rounded-[2rem] bg-white/[0.03] px-5 py-3 shadow-[0_24px_70px_rgba(9,6,23,0.28)] backdrop-blur-xl">
             <div className="pb-3">
               <div>
                 <h3 className="text-base font-semibold text-text-primary">Bitacora de Resolucion</h3>
@@ -331,10 +331,10 @@ export function TicketDetailPage() {
               </div>
             </div>
 
-            <div className="mt-2 flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className="mt-1 flex min-h-0 flex-1 flex-col overflow-hidden">
               <div
                 ref={chatScrollRef}
-                className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4"
+                className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3"
               >
                 {comentariosVisibles.length === 0 ? (
                   <div className="flex min-h-full items-center justify-center rounded-2xl bg-white/[0.03] px-6 py-10 text-center">
@@ -379,7 +379,7 @@ export function TicketDetailPage() {
                 )}
               </div>
 
-              <div className="mt-auto border-t border-white/6 px-4 py-4">
+              <div className="mt-auto border-t border-white/6 px-4 py-3">
               {canComment ? (
                 <div className="space-y-3">
                   <textarea
@@ -389,7 +389,7 @@ export function TicketDetailPage() {
                     onKeyDown={handleCommentKeyDown}
                     rows={1}
                     maxLength={600}
-                    className="max-h-[160px] min-h-[40px] w-full resize-none overflow-y-auto rounded-2xl bg-dark-purple-900/80 px-4 py-2 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:ring-1 focus:ring-purple-electric"
+                    className="max-h-[150px] min-h-[38px] w-full resize-none overflow-y-auto rounded-2xl bg-dark-purple-900/80 px-4 py-2 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:ring-1 focus:ring-purple-electric"
                     placeholder="Escribe un comentario..."
                   />
                   <div className="flex justify-end">
@@ -397,7 +397,7 @@ export function TicketDetailPage() {
                       variant="secondary"
                       onClick={handleAgregarComentario}
                       disabled={!nuevoComentario.trim() || submittingComment}
-                      className="w-auto px-4 py-2.5"
+                      className="w-auto px-3.5 py-2"
                     >
                       {submittingComment ? "Validando..." : "Enviar"}
                     </Button>
