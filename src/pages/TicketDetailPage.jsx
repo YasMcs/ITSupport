@@ -25,6 +25,7 @@ export function TicketDetailPage() {
   const [submittingComment, setSubmittingComment] = useState(false);
   const [loading, setLoading] = useState(true);
   const chatScrollRef = useRef(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -108,6 +109,15 @@ export function TicketDetailPage() {
       container.scrollTop = container.scrollHeight;
     });
   }, [comentariosVisibles.length]);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    textarea.style.height = "0px";
+    const nextHeight = Math.min(textarea.scrollHeight, 220);
+    textarea.style.height = `${nextHeight}px`;
+  }, [nuevoComentario]);
 
   if (loading) {
     return (
@@ -385,15 +395,16 @@ export function TicketDetailPage() {
                 )}
               </div>
 
-              <div className="border-t border-white/6 px-4 py-4">
+              <div className="px-4 py-4">
               {canComment ? (
                 <div className="space-y-3">
                   <textarea
+                    ref={textareaRef}
                     value={nuevoComentario}
                     onChange={(e) => handleCommentChange(e.target.value)}
-                    rows={4}
+                    rows={1}
                     maxLength={600}
-                    className="min-h-[108px] w-full resize-none rounded-2xl bg-dark-purple-900/80 p-3 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:ring-1 focus:ring-purple-electric"
+                    className="max-h-[220px] min-h-[52px] w-full resize-none overflow-y-auto rounded-2xl bg-dark-purple-900/80 px-4 py-3 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:ring-1 focus:ring-purple-electric"
                     placeholder="Escribe un comentario..."
                   />
                   <div className="flex justify-end">
