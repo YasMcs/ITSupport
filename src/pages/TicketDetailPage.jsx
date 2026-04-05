@@ -262,51 +262,43 @@ export function TicketDetailPage() {
             <p className="whitespace-pre-wrap leading-relaxed text-text-secondary">{ticket.descripcion}</p>
           </div>
 
-          <div className="rounded-3xl bg-white/[0.03] p-6 shadow-[0_18px_45px_rgba(9,6,23,0.16)]">
-            <div className="space-y-6">
-              <section>
-                <h3 className="mb-4 text-lg font-semibold text-text-primary">Contexto del ticket</h3>
-                <div className="space-y-5">
-                  <InfoItem label="Folio" value={`#${ticket.id}`} mono />
-                  <InfoItem label="Creado" value={formatDate(ticket.fechaCreacion) || "Sin fecha"} />
-                  <InfoItem
-                    label="Situacion"
-                    value={<Badge status={estadoActual} />}
-                  />
-                  <InfoItem
-                    label="Prioridad"
-                    value={<Badge priority={ticket.prioridad} />}
-                  />
-                  {ticket.fechaCierre && (
-                    <InfoItem label="Cerrado" value={formatDate(ticket.fechaCierre) || "Sin fecha"} />
-                  )}
-                </div>
-              </section>
-
-              <section>
-                <h3 className="mb-4 text-lg font-semibold text-text-primary">Ubicacion y contacto</h3>
-                <div className="space-y-5">
-                  <InfoItem label="Sucursal" value={ticket.sucursal || "Sin dato"} />
-                  <InfoItem label="Area" value={ticket.area || "Sin dato"} />
-                  <InfoItem label="Encargado" value={ticket.encargado} />
-                  <InfoItem label="Tecnico" value={ticket.tecnico || "Sin asignar"} />
-                  {role === ROLES.TECNICO && (
-                    <InfoItem
-                      label="Contacto del encargado del area"
-                      value={ticket.contacto || "Sin dato disponible"}
-                    />
-                  )}
-                </div>
-              </section>
-
-              <div className="pt-2">
-                {canCloseTicket && (
-                  <Button type="button" onClick={handleCloseTicket} className="w-full sm:w-auto">
-                    Cerrar ticket
-                  </Button>
+          <div className="space-y-4">
+            <section className="rounded-3xl bg-white/[0.03] p-6 shadow-[0_18px_45px_rgba(9,6,23,0.16)]">
+              <h3 className="mb-5 text-lg font-semibold text-text-primary">Contexto del ticket</h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <InfoRow label="Folio" value={`#${ticket.id}`} mono />
+                <InfoRow label="Creado" value={formatDate(ticket.fechaCreacion) || "Sin fecha"} />
+                <InfoRow label="Situacion" value={<Badge status={estadoActual} />} />
+                <InfoRow label="Prioridad" value={<Badge priority={ticket.prioridad} />} />
+                {ticket.fechaCierre && (
+                  <InfoRow label="Cerrado" value={formatDate(ticket.fechaCierre) || "Sin fecha"} />
                 )}
               </div>
-            </div>
+            </section>
+
+            <section className="rounded-3xl bg-white/[0.045] p-6 shadow-[0_18px_45px_rgba(9,6,23,0.16)]">
+              <h3 className="mb-5 text-lg font-semibold text-text-primary">Ubicacion y contacto</h3>
+              <div className="grid gap-4">
+                <InfoRow label="Sucursal" value={ticket.sucursal || "Sin dato"} />
+                <InfoRow label="Area" value={ticket.area || "Sin dato"} />
+                <InfoRow label="Encargado" value={ticket.encargado} />
+                <InfoRow label="Tecnico" value={ticket.tecnico || "Sin asignar"} />
+                {role === ROLES.TECNICO && (
+                  <InfoRow
+                    label="Contacto"
+                    value={ticket.contacto || "Sin dato disponible"}
+                  />
+                )}
+              </div>
+            </section>
+
+            {canCloseTicket && (
+              <div className="flex justify-end pt-1">
+                <Button type="button" onClick={handleCloseTicket} className="w-full sm:w-auto">
+                  Cerrar ticket
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -461,13 +453,17 @@ function isAssignmentNoiseComment(comment, ticket) {
   return author === "sistema" || (assignedTechnician && author === assignedTechnician);
 }
 
-function InfoItem({ label, value, mono = false }) {
+function InfoRow({ label, value, mono = false }) {
   return (
-    <div className="space-y-1.5">
-      <p className="text-xs font-semibold uppercase text-text-muted">
+    <div className="flex items-start justify-between gap-4">
+      <p className="pt-1 text-xs font-bold uppercase tracking-[0.08em] text-text-muted">
         {label}
       </p>
-      <div className={mono ? "font-mono text-base text-text-primary" : "text-base text-text-primary"}>
+      <div
+        className={`text-right text-sm text-text-primary sm:text-base ${
+          mono ? "font-mono" : ""
+        }`}
+      >
         {value}
       </div>
     </div>
