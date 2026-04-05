@@ -315,7 +315,7 @@ export function TicketsPage() {
                               ? new Date(ticket.fechaCreacion).toLocaleDateString("es-MX")
                               : "sin fecha"}
                           </span>
-                          <span className="text-[11px] text-text-muted/0 transition-all duration-200 group-hover:text-text-muted/80">
+                          <span className="text-[11px] font-medium text-text-secondary/0 transition-all duration-200 group-hover:text-text-secondary">
                             Usa el boton para asignarte este ticket.
                           </span>
                         </div>
@@ -447,7 +447,7 @@ export function TicketsPage() {
                                     Cerrado el {new Date(ticket.fechaCierre).toLocaleDateString("es-MX")}
                                   </p>
                                 )}
-                                <p className="pt-1 text-[11px] text-text-muted/0 transition-all duration-200 group-hover:text-text-muted/80">
+                                <p className="pt-1 text-[11px] font-medium text-text-secondary/0 transition-all duration-200 group-hover:text-text-secondary">
                                   Haz clic en la tarjeta para ver el detalle.
                                 </p>
                               </div>
