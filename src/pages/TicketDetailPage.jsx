@@ -215,12 +215,12 @@ export function TicketDetailPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      <div className="flex w-full items-start justify-between gap-4">
+    <div className="mx-auto max-w-7xl space-y-4">
+      <div className="flex w-full items-start gap-3">
         <div className="flex items-start gap-3">
           <button
             onClick={() => navigate("/tickets")}
-            className="mt-1 rounded-xl glass-card p-2 text-text-secondary transition-all hover:border-purple-electric hover:text-text-primary"
+            className="mt-0.5 rounded-xl bg-white/[0.03] p-2 text-text-secondary transition-all hover:text-text-primary"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -234,24 +234,17 @@ export function TicketDetailPage() {
             </p>
           </div>
         </div>
-
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-text-muted">Situacion:</span>
-          <Badge status={estadoActual} />
-          <span className="text-sm text-text-muted">Prioridad:</span>
-          <Badge priority={ticket.prioridad} />
-        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(360px,0.6fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(360px,0.6fr)] xl:items-start">
         <div className="space-y-6">
-          <div className="glass-card rounded-2xl p-6">
+          <div className="rounded-3xl bg-white/[0.03] p-6 shadow-[0_18px_45px_rgba(9,6,23,0.16)]">
             <h3 className="mb-4 text-lg font-semibold text-text-primary">Descripcion del fallo</h3>
             <p className="whitespace-pre-wrap leading-relaxed text-text-secondary">{ticket.descripcion}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="glass-card rounded-2xl p-6">
+            <div className="rounded-3xl bg-white/[0.03] p-6 shadow-[0_18px_45px_rgba(9,6,23,0.16)]">
               <h3 className="mb-4 text-lg font-semibold text-text-primary">Datos operativos</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between gap-4">
@@ -273,9 +266,22 @@ export function TicketDetailPage() {
                   </div>
                 )}
               </div>
+
+              <div className="mt-6 space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <Badge status={estadoActual} />
+                  <Badge priority={ticket.prioridad} />
+                </div>
+
+                {canCloseTicket && (
+                  <Button type="button" onClick={handleCloseTicket} className="w-full sm:w-auto">
+                    Cerrar ticket
+                  </Button>
+                )}
+              </div>
             </div>
 
-            <div className="glass-card rounded-2xl p-6">
+            <div className="rounded-3xl bg-white/[0.03] p-6 shadow-[0_18px_45px_rgba(9,6,23,0.16)]">
               <h3 className="mb-4 text-lg font-semibold text-text-primary">Contexto y contacto</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between gap-4">
@@ -305,9 +311,9 @@ export function TicketDetailPage() {
           </div>
         </div>
 
-        <aside className="xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)]">
-          <div className="flex h-full flex-col rounded-3xl border border-white/6 bg-dark-purple-950/78 p-5 shadow-[0_18px_60px_rgba(9,6,23,0.38)] backdrop-blur-xl">
-            <div className="border-b border-white/6 pb-4">
+        <aside className="xl:sticky xl:top-0 xl:h-screen">
+          <div className="flex h-full flex-col bg-dark-purple-950/82 px-5 py-6 shadow-[0_24px_70px_rgba(9,6,23,0.3)] backdrop-blur-xl">
+            <div className="pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-text-primary">Seguimiento</h3>
@@ -322,11 +328,7 @@ export function TicketDetailPage() {
               </div>
 
               <div className="mt-4">
-                {canCloseTicket ? (
-                  <Button type="button" onClick={handleCloseTicket} className="w-full">
-                    Cerrar ticket
-                  </Button>
-                ) : (
+                {!canCloseTicket && (
                   <div className="rounded-2xl bg-white/[0.04] px-4 py-3 text-sm text-text-muted">
                     {isClosedTicket
                       ? "El ticket ya fue cerrado."
@@ -338,7 +340,7 @@ export function TicketDetailPage() {
 
             <div
               ref={chatScrollRef}
-              className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1"
+              className="mt-2 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1"
             >
               {comentariosVisibles.length === 0 ? (
                 <div className="flex min-h-full items-center justify-center rounded-2xl bg-white/[0.03] px-6 py-10 text-center">
@@ -346,7 +348,7 @@ export function TicketDetailPage() {
                 </div>
               ) : (
                 comentariosVisibles.map((comentario, index) => (
-                  <div key={index} className="rounded-2xl border border-white/5 bg-white/[0.04] p-4">
+                  <div key={index} className="rounded-2xl bg-white/[0.04] p-4 shadow-[0_10px_28px_rgba(9,6,23,0.16)]">
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <span className="text-sm font-medium text-text-primary">{comentario.autor}</span>
                       <span className="text-xs text-text-muted">{formatDate(comentario.fecha) || "Sin fecha"}</span>
@@ -357,9 +359,9 @@ export function TicketDetailPage() {
               )}
             </div>
 
-            <div className="mt-4 border-t border-white/6 pt-4">
+            <div className="mt-4 pt-4">
               {canComment ? (
-                <div className="space-y-3">
+                <div className="space-y-3 rounded-[1.75rem] bg-white/[0.04] p-4 shadow-[0_12px_30px_rgba(9,6,23,0.18)]">
                   <label className="block text-xs uppercase tracking-[0.22em] text-text-muted">
                     Nuevo comentario
                   </label>
@@ -368,7 +370,7 @@ export function TicketDetailPage() {
                     onChange={(e) => handleCommentChange(e.target.value)}
                     rows={4}
                     maxLength={600}
-                    className="min-h-[108px] w-full resize-none rounded-2xl border border-dark-purple-700 bg-dark-purple-800 p-3 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:border-purple-electric focus:ring-1 focus:ring-purple-electric"
+                    className="min-h-[108px] w-full resize-none rounded-2xl bg-dark-purple-900/80 p-3 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:ring-1 focus:ring-purple-electric"
                     placeholder="Escribe un comentario..."
                   />
                   <div className="flex items-center justify-between gap-3">
