@@ -121,7 +121,7 @@ export function TicketDetailPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto h-screen max-w-7xl space-y-6 overflow-hidden">
+      <div className="mx-auto h-full max-w-7xl space-y-6 overflow-hidden">
         <div className="glass-card rounded-2xl p-12 text-center">
           <p className="text-lg text-text-secondary">Cargando ticket...</p>
         </div>
@@ -232,7 +232,7 @@ export function TicketDetailPage() {
   };
 
   return (
-    <div className="mx-auto flex h-screen max-w-7xl flex-col overflow-hidden">
+    <div className="mx-auto flex h-full min-h-0 max-w-7xl flex-col overflow-hidden">
       <div className="space-y-3 pb-3">
       <div className="flex w-full items-start gap-3">
         <div className="flex items-start gap-3">
@@ -306,9 +306,9 @@ export function TicketDetailPage() {
           <div className="flex h-full min-h-0 flex-col overflow-y-hidden rounded-[2rem] bg-white/[0.045] px-4 py-3 shadow-[0_24px_70px_rgba(9,6,23,0.22)] backdrop-blur-xl xl:h-[calc(100vh-172px)]">
             <div className="pb-2">
               <div>
-                <h3 className="text-base font-semibold text-text-primary">Bitacora de Resolucion</h3>
+                <h3 className="text-base font-semibold text-text-primary">Comentarios</h3>
                 <p className="mt-1 text-xs text-text-muted">
-                  Registro cronologico del seguimiento del ticket.
+                  Registro del seguimiento.
                 </p>
               </div>
 
