@@ -74,12 +74,13 @@ export function TicketDetailPage() {
   const isCreator = ticket ? Number(user?.id) === Number(ticket.encargado_id) : false;
   const isAssignedTechnician = ticket ? Number(user?.id) === Number(ticket.tecnico_id) : false;
   const canViewTicket = ticket ? isAdmin || isCreator || isAssignedTechnician : false;
+  const isClosedTicket = estadoActual === TICKET_STATUS.CERRADO;
   const canCloseTicket =
     !isAdmin &&
     role === ROLES.TECNICO &&
     isAssignedTechnician &&
     estadoActual !== TICKET_STATUS.CERRADO;
-  const canComment = !isAdmin && (isCreator || isAssignedTechnician);
+  const canComment = !isAdmin && !isClosedTicket && (isCreator || isAssignedTechnician);
   const comentariosVisibles = comentarios.filter((comentario) => !isAssignmentNoiseComment(comentario, ticket));
 
   useEffect(() => {
@@ -338,9 +339,15 @@ export function TicketDetailPage() {
             </div>
           )}
 
-          {!canComment && !isAdmin && (
+          {!canComment && !isAdmin && !isClosedTicket && (
             <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
               Solo el encargado creador o el tecnico asignado pueden agregar comentarios en esta vista.
+            </div>
+          )}
+
+          {isClosedTicket && (
+            <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
+              Este ticket ya fue cerrado, por lo que la conversacion queda solo como consulta.
             </div>
           )}
 
