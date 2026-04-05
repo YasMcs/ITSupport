@@ -115,7 +115,7 @@ export function TicketDetailPage() {
     if (!textarea) return;
 
     textarea.style.height = "0px";
-    const nextHeight = Math.min(textarea.scrollHeight, 220);
+    const nextHeight = Math.min(textarea.scrollHeight, 120);
     textarea.style.height = `${nextHeight}px`;
   }, [nuevoComentario]);
 
@@ -302,9 +302,9 @@ export function TicketDetailPage() {
           </div>
         </div>
 
-        <aside className="min-h-0 xl:h-full">
-          <div className="flex h-full min-h-0 flex-col overflow-y-hidden rounded-[2rem] bg-white/[0.03] px-5 py-3 shadow-[0_24px_70px_rgba(9,6,23,0.28)] backdrop-blur-xl">
-            <div className="pb-3">
+        <aside className="min-h-0 xl:self-start">
+          <div className="flex h-full min-h-0 flex-col overflow-y-hidden rounded-[2rem] bg-white/[0.045] px-4 py-3 shadow-[0_24px_70px_rgba(9,6,23,0.22)] backdrop-blur-xl xl:h-[calc(100vh-108px)]">
+            <div className="pb-2">
               <div>
                 <h3 className="text-base font-semibold text-text-primary">Bitacora de Resolucion</h3>
                 <p className="mt-1 text-xs text-text-muted">
@@ -326,7 +326,7 @@ export function TicketDetailPage() {
             <div className="mt-1 flex min-h-0 flex-1 flex-col overflow-hidden">
               <div
                 ref={chatScrollRef}
-                className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3"
+                className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-3"
               >
                 {comentariosVisibles.length === 0 ? (
                   <div className="flex min-h-full items-center justify-center rounded-2xl bg-white/[0.03] px-6 py-10 text-center">
@@ -345,20 +345,12 @@ export function TicketDetailPage() {
                         className={`flex ${isTechnicianComment ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`relative max-w-[82%] rounded-[1.6rem] px-4 py-3 shadow-[0_12px_28px_rgba(9,6,23,0.18)] ${
+                          className={`max-w-[80%] rounded-[1.45rem] border border-white/6 px-4 py-3 shadow-[0_10px_24px_rgba(9,6,23,0.14)] backdrop-blur-md ${
                             isTechnicianComment
-                              ? "bg-purple-electric text-white"
-                              : "bg-white/[0.08] text-white"
+                              ? "bg-white/[0.09] text-white"
+                              : "bg-white/[0.055] text-white"
                           }`}
                         >
-                          <span
-                            className={`absolute top-4 h-3 w-3 rotate-45 ${
-                              isTechnicianComment
-                                ? "-right-1.5 bg-purple-electric"
-                                : "-left-1.5 bg-white/[0.08]"
-                              }`}
-                          />
-
                           <div className="mb-2 flex items-center justify-between gap-3">
                             <span className="text-sm font-medium text-text-primary">{comentario.autor}</span>
                             <span className="text-xs text-text-muted">{formatDate(comentario.fecha) || "Sin fecha"}</span>
@@ -371,9 +363,9 @@ export function TicketDetailPage() {
                 )}
               </div>
 
-              <div className="mt-auto border-t border-white/6 px-4 py-3">
+              <div className="mt-auto px-3 pb-2 pt-2">
               {canComment ? (
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   <textarea
                     ref={textareaRef}
                     value={nuevoComentario}
@@ -381,7 +373,7 @@ export function TicketDetailPage() {
                     onKeyDown={handleCommentKeyDown}
                     rows={1}
                     maxLength={600}
-                    className="max-h-[150px] min-h-[38px] w-full resize-none overflow-y-auto rounded-2xl bg-dark-purple-900/80 px-4 py-2 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:ring-1 focus:ring-purple-electric"
+                    className="max-h-[120px] min-h-[36px] w-full resize-none overflow-y-auto rounded-2xl bg-white/[0.05] px-4 py-2 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:ring-1 focus:ring-white/10"
                     placeholder="Escribe un comentario..."
                   />
                   <div className="flex justify-end">
@@ -389,7 +381,7 @@ export function TicketDetailPage() {
                       variant="secondary"
                       onClick={handleAgregarComentario}
                       disabled={!nuevoComentario.trim() || submittingComment}
-                      className="w-auto px-3.5 py-2"
+                      className="w-auto px-3 py-1.5"
                     >
                       {submittingComment ? "Validando..." : "Enviar"}
                     </Button>
