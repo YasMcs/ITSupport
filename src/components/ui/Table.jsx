@@ -7,7 +7,7 @@ export function Table({ columns, data }) {
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider"
+                className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider"
               >
                 {col.label}
               </th>
@@ -18,7 +18,7 @@ export function Table({ columns, data }) {
           {data.map((row, i) => (
             <tr key={row.id ?? i} className="transition-colors duration-150 hover:bg-dark-purple-700/60">
               {columns.map((col) => (
-                <td key={col.key} className="px-6 py-4 text-sm text-text-primary">
+                <td key={col.key} className="px-6 py-3 text-sm text-text-primary">
                   {col.render ? col.render(row[col.key], row) : row[col.key]}
                 </td>
               ))}

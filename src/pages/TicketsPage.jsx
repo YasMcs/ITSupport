@@ -70,12 +70,18 @@ export function TicketsPage() {
   }, [role, user]);
 
   const filteredTickets = useMemo(
-    () => applyTicketFilters(tickets, { filters, role, searchQuery }),
+    () => applyTicketFilters(
+      [...tickets].sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)),
+      { filters, role, searchQuery }
+    ),
     [filters, role, searchQuery, tickets]
   );
 
   const filteredAvailableTickets = useMemo(
-    () => applyTicketFilters(availableTickets, { filters, role, searchQuery }),
+    () => applyTicketFilters(
+      [...availableTickets].sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)),
+      { filters, role, searchQuery }
+    ),
     [availableTickets, filters, role, searchQuery]
   );
 
@@ -163,8 +169,9 @@ export function TicketsPage() {
           : "Consulta y organiza los tickets que ya forman parte de tu flujo de trabajo.";
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="space-y-4"> 
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-2">  
+
         <div className="flex-1 max-w-md">
           <h1 className="text-3xl font-bold text-text-primary">{headerTitle}</h1>
           <p className="text-text-secondary mt-1">{headerDescription}</p>
@@ -221,7 +228,8 @@ export function TicketsPage() {
           <p className="text-text-secondary text-lg">Cargando tickets...</p>
         </div>
       ) : role === ROLES.TECNICO ? (
-        <div className="space-y-6">
+<div className="space-y-4 pt-2">
+
           {tecnicoView === "available" ? (
             <section className="rounded-3xl bg-white/[0.03] p-6 backdrop-blur-sm">
               <div className="mb-5 flex items-center justify-end gap-4">
