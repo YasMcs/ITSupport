@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Badge } from "../components/ui/Badge";
@@ -24,6 +24,7 @@ export function TicketDetailPage() {
   const [estadoActual, setEstadoActual] = useState(TICKET_STATUS.ABIERTO);
   const [submittingComment, setSubmittingComment] = useState(false);
   const [loading, setLoading] = useState(true);
+  const chatScrollRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,7 +82,14 @@ export function TicketDetailPage() {
     isAssignedTechnician &&
     estadoActual !== TICKET_STATUS.CERRADO;
   const canComment = !isAdmin && !isClosedTicket && (isCreator || isAssignedTechnician);
-  const comentariosVisibles = comentarios.filter((comentario) => !isAssignmentNoiseComment(comentario, ticket));
+
+  const comentariosVisibles = useMemo(
+    () =>
+      comentarios
+        .filter((comentario) => !isAssignmentNoiseComment(comentario, ticket))
+        .sort((a, b) => new Date(a?.fecha || 0) - new Date(b?.fecha || 0)),
+    [comentarios, ticket]
+  );
 
   useEffect(() => {
     if (!ticket || canViewTicket) return;
@@ -92,11 +100,20 @@ export function TicketDetailPage() {
     });
   }, [canViewTicket, id, ticket]);
 
+  useEffect(() => {
+    const container = chatScrollRef.current;
+    if (!container) return;
+
+    requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight;
+    });
+  }, [comentariosVisibles.length]);
+
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl space-y-6">
+      <div className="mx-auto max-w-7xl space-y-6">
         <div className="glass-card rounded-2xl p-12 text-center">
-          <p className="text-text-secondary text-lg">Cargando ticket...</p>
+          <p className="text-lg text-text-secondary">Cargando ticket...</p>
         </div>
       </div>
     );
@@ -130,7 +147,9 @@ export function TicketDetailPage() {
 
     const commentError = validateRequiredText(nuevoComentario, { min: 3, max: 600 });
     if (commentError) {
-      toast.info(commentError === "Este campo es obligatorio" ? "Escribe un comentario antes de enviarlo" : commentError);
+      toast.info(
+        commentError === "Este campo es obligatorio" ? "Escribe un comentario antes de enviarlo" : commentError
+      );
       return;
     }
 
@@ -145,12 +164,12 @@ export function TicketDetailPage() {
 
       const createdComment = await commentService.create(payload);
       setComentarios((prev) => [
+        ...prev,
         {
           ...createdComment,
           autor: createdComment.autor || getUserDisplayName(user),
           texto: createdComment.texto || payload.contenido,
         },
-        ...prev,
       ]);
       setNuevoComentario("");
       toast.success("Comentario agregado", {
@@ -196,7 +215,7 @@ export function TicketDetailPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <div className="flex w-full items-start justify-between gap-4">
         <div className="flex items-start gap-3">
           <button
@@ -216,32 +235,24 @@ export function TicketDetailPage() {
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-3">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-text-muted">Situacion:</span>
-            <Badge status={estadoActual} />
-            <span className="text-sm text-text-muted">Prioridad:</span>
-            <Badge priority={ticket.prioridad} />
-          </div>
-
-          {canCloseTicket && (
-            <Button type="button" onClick={handleCloseTicket} className="w-auto px-5 py-2.5">
-              Cerrar ticket
-            </Button>
-          )}
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-text-muted">Situacion:</span>
+          <Badge status={estadoActual} />
+          <span className="text-sm text-text-muted">Prioridad:</span>
+          <Badge priority={ticket.prioridad} />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(360px,0.6fr)]">
         <div className="space-y-6">
-          <div className="glass-card rounded-2xl p-5">
-            <h3 className="mb-4 text-lg font-semibold text-text-primary">Descripcion</h3>
+          <div className="glass-card rounded-2xl p-6">
+            <h3 className="mb-4 text-lg font-semibold text-text-primary">Descripcion del fallo</h3>
             <p className="whitespace-pre-wrap leading-relaxed text-text-secondary">{ticket.descripcion}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <div className="glass-card rounded-2xl p-5">
-              <h3 className="mb-4 text-lg font-semibold text-text-primary">Resumen operativo</h3>
+            <div className="glass-card rounded-2xl p-6">
+              <h3 className="mb-4 text-lg font-semibold text-text-primary">Datos operativos</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between gap-4">
                   <span className="text-text-muted">Folio</span>
@@ -255,10 +266,6 @@ export function TicketDetailPage() {
                   <span className="text-text-muted">Situacion</span>
                   <span className="text-text-primary">{estadoActual ? estadoActual.replace("_", " ") : "Sin dato"}</span>
                 </div>
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted">Comentarios</span>
-                  <span className="text-text-primary">{comentariosVisibles.length}</span>
-                </div>
                 {ticket.fechaCierre && (
                   <div className="flex justify-between gap-4">
                     <span className="text-text-muted">Cerrado</span>
@@ -268,8 +275,8 @@ export function TicketDetailPage() {
               </div>
             </div>
 
-            <div className="glass-card rounded-2xl p-5">
-              <h3 className="mb-4 text-lg font-semibold text-text-primary">Contexto del ticket</h3>
+            <div className="glass-card rounded-2xl p-6">
+              <h3 className="mb-4 text-lg font-semibold text-text-primary">Contexto y contacto</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between gap-4">
                   <span className="text-text-muted">Encargado</span>
@@ -281,11 +288,11 @@ export function TicketDetailPage() {
                 </div>
                 <div className="flex justify-between gap-4">
                   <span className="text-text-muted">Area</span>
-                  <span className="text-right text-text-primary">{ticket.area}</span>
+                  <span className="text-right text-text-primary">{ticket.area || "Sin dato"}</span>
                 </div>
                 <div className="flex justify-between gap-4">
                   <span className="text-text-muted">Sucursal</span>
-                  <span className="text-right text-text-primary">{ticket.sucursal}</span>
+                  <span className="text-right text-text-primary">{ticket.sucursal || "Sin dato"}</span>
                 </div>
                 {role === ROLES.TECNICO && (
                   <div className="flex justify-between gap-4">
@@ -298,74 +305,48 @@ export function TicketDetailPage() {
           </div>
         </div>
 
-        <div className="glass-card flex min-h-[620px] flex-col rounded-2xl p-5">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-text-primary">Conversacion</h3>
-              <p className="mt-1 text-sm text-text-secondary">
-                Registra seguimiento relevante del ticket en un solo hilo.
-              </p>
-            </div>
-            <div className="rounded-2xl bg-dark-purple-900/35 px-4 py-3 text-right">
-              <p className="text-xs uppercase tracking-wide text-text-muted">Comentarios</p>
-              <p className="text-2xl font-semibold text-text-primary">{comentariosVisibles.length}</p>
-            </div>
-          </div>
-
-          {canComment && (
-            <div className="rounded-2xl bg-white/5 p-4">
-              <label className="mb-2 block text-xs uppercase tracking-wider text-text-muted">Agregar comentario</label>
-              <div className="space-y-3">
-                <textarea
-                  value={nuevoComentario}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  rows={3}
-                  maxLength={600}
-                  className="min-h-[88px] w-full resize-none rounded-xl border border-dark-purple-700 bg-dark-purple-800 p-3 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:border-purple-electric focus:ring-1 focus:ring-purple-electric"
-                  placeholder="Escribe un comentario..."
-                />
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs text-text-muted">Comparte solo informacion util para el seguimiento.</span>
-                  <Button
-                    variant="secondary"
-                    onClick={handleAgregarComentario}
-                    disabled={!nuevoComentario.trim() || submittingComment}
-                    className="w-auto px-4 py-2.5"
-                  >
-                    {submittingComment ? "Validando..." : "Enviar"}
-                  </Button>
+        <aside className="xl:sticky xl:top-4 xl:h-[calc(100vh-2rem)]">
+          <div className="flex h-full flex-col rounded-3xl border border-white/6 bg-dark-purple-950/78 p-5 shadow-[0_18px_60px_rgba(9,6,23,0.38)] backdrop-blur-xl">
+            <div className="border-b border-white/6 pb-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-text-primary">Seguimiento</h3>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Conversacion y acciones del ticket en un solo panel.
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white/[0.04] px-3 py-2 text-right">
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-text-muted">Comentarios</p>
+                  <p className="mt-1 text-xl font-semibold text-text-primary">{comentariosVisibles.length}</p>
                 </div>
               </div>
-            </div>
-          )}
 
-          {!canComment && !isAdmin && !isClosedTicket && (
-            <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
-              Solo el encargado creador o el tecnico asignado pueden agregar comentarios en esta vista.
+              <div className="mt-4">
+                {canCloseTicket ? (
+                  <Button type="button" onClick={handleCloseTicket} className="w-full">
+                    Cerrar ticket
+                  </Button>
+                ) : (
+                  <div className="rounded-2xl bg-white/[0.04] px-4 py-3 text-sm text-text-muted">
+                    {isClosedTicket
+                      ? "El ticket ya fue cerrado."
+                      : "Solo el tecnico asignado puede cerrar este ticket."}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
 
-          {isClosedTicket && (
-            <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
-              Este ticket ya fue cerrado, por lo que la conversacion queda solo como consulta.
-            </div>
-          )}
-
-          {isAdmin && (
-            <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
-              El administrador puede revisar este ticket, pero no agregar comentarios.
-            </div>
-          )}
-
-          <div className="mt-5 min-h-0 flex-1 overflow-hidden border-t border-dark-purple-700 pt-5">
-            <div className="flex h-full max-h-[540px] flex-col gap-3 overflow-y-auto pr-1">
+            <div
+              ref={chatScrollRef}
+              className="mt-4 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1"
+            >
               {comentariosVisibles.length === 0 ? (
-                <div className="flex flex-1 items-center justify-center rounded-2xl bg-dark-purple-900/20 px-6 py-10 text-center">
+                <div className="flex min-h-full items-center justify-center rounded-2xl bg-white/[0.03] px-6 py-10 text-center">
                   <p className="text-sm text-text-muted">Aun no hay comentarios relevantes por mostrar.</p>
                 </div>
               ) : (
                 comentariosVisibles.map((comentario, index) => (
-                  <div key={index} className="rounded-2xl bg-dark-purple-900/45 p-4">
+                  <div key={index} className="rounded-2xl border border-white/5 bg-white/[0.04] p-4">
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <span className="text-sm font-medium text-text-primary">{comentario.autor}</span>
                       <span className="text-xs text-text-muted">{formatDate(comentario.fecha) || "Sin fecha"}</span>
@@ -375,8 +356,47 @@ export function TicketDetailPage() {
                 ))
               )}
             </div>
+
+            <div className="mt-4 border-t border-white/6 pt-4">
+              {canComment ? (
+                <div className="space-y-3">
+                  <label className="block text-xs uppercase tracking-[0.22em] text-text-muted">
+                    Nuevo comentario
+                  </label>
+                  <textarea
+                    value={nuevoComentario}
+                    onChange={(e) => handleCommentChange(e.target.value)}
+                    rows={4}
+                    maxLength={600}
+                    className="min-h-[108px] w-full resize-none rounded-2xl border border-dark-purple-700 bg-dark-purple-800 p-3 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:border-purple-electric focus:ring-1 focus:ring-purple-electric"
+                    placeholder="Escribe un comentario..."
+                  />
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs text-text-muted">
+                      Comparte solo informacion util para el seguimiento.
+                    </span>
+                    <Button
+                      variant="secondary"
+                      onClick={handleAgregarComentario}
+                      disabled={!nuevoComentario.trim() || submittingComment}
+                      className="w-auto px-4 py-2.5"
+                    >
+                      {submittingComment ? "Validando..." : "Enviar"}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-2xl bg-white/[0.04] px-4 py-3 text-sm text-text-muted">
+                  {isClosedTicket
+                    ? "Este ticket ya fue cerrado, por lo que la conversacion queda solo como consulta."
+                    : isAdmin
+                      ? "El administrador puede revisar este ticket, pero no agregar comentarios."
+                      : "Solo el encargado creador o el tecnico asignado pueden agregar comentarios en esta vista."}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );
