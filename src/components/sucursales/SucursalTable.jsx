@@ -46,6 +46,7 @@ export function SucursalTable({ sucursales, onEditar, onToggleEstado }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate(`/sucursales/editar/${row.id}`)}
+              data-row-action="true"
               className="p-2 text-text-secondary hover:text-purple-electric hover:bg-dark-purple-700 rounded-lg transition-colors duration-200"
               title="Editar"
             >
@@ -53,6 +54,7 @@ export function SucursalTable({ sucursales, onEditar, onToggleEstado }) {
             </button>
             <button
               onClick={() => onToggleEstado && onToggleEstado(row.id)}
+              data-row-action="true"
               className={`p-2 rounded-lg transition-colors duration-200 ${
                 isActive
                   ? "text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10"
@@ -68,5 +70,11 @@ export function SucursalTable({ sucursales, onEditar, onToggleEstado }) {
     },
   ];
 
-  return <Table columns={COLUMNS} data={sucursales} />;
+  return (
+    <Table
+      columns={COLUMNS}
+      data={sucursales}
+      onRowClick={(row) => navigate(`/sucursales/editar/${row.id}`)}
+    />
+  );
 }

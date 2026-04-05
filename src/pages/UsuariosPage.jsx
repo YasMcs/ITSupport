@@ -183,6 +183,7 @@ export function UsuariosPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate(`/usuarios/editar/${row.id}`)}
+              data-row-action="true"
               className="p-2 text-text-secondary hover:text-purple-electric hover:bg-dark-purple-700 rounded-lg transition-colors duration-200"
               title="Editar"
             >
@@ -190,6 +191,7 @@ export function UsuariosPage() {
             </button>
             <button
               onClick={() => toggleSuspension(row)}
+              data-row-action="true"
               className={`p-2 rounded-lg transition-colors duration-200 ${
                 isActive
                   ? "text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10"
@@ -246,7 +248,7 @@ export function UsuariosPage() {
         </div>
       ) : (
         <div className="glass-card rounded-2xl overflow-hidden">
-          <Table columns={columns} data={usuarios} />
+          <Table columns={columns} data={usuarios} onRowClick={(row) => navigate(`/usuarios/editar/${row.id}`)} />
         </div>
       )}
 

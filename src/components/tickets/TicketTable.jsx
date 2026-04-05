@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Table } from "../ui/Table";
 import { Badge } from "../ui/Badge";
 import { formatDate } from "../../utils/formatDate";
@@ -30,8 +30,15 @@ const DEFAULT_COLUMNS = [
 ];
 
 export function TicketTable({ tickets, columnas = [] }) {
+  const navigate = useNavigate();
   const columns = columnaKeysToColumns(columnas, tickets);
-  return <Table columns={columns} data={tickets} />;
+  return (
+    <Table
+      columns={columns}
+      data={tickets}
+      onRowClick={(ticket) => navigate(`/tickets/${ticket.id}`, { state: { ticket } })}
+    />
+  );
 }
 
 function columnaKeysToColumns(columnas, tickets = []) {
@@ -70,6 +77,7 @@ function columnaKeysToColumns(columnas, tickets = []) {
               <Link
                 to={`/tickets/${id}`}
                 state={{ ticket: ticketsById.get(String(id)) }}
+                data-row-action="true"
                 className="text-purple-electric hover:text-purple-electric-hover font-medium transition-colors duration-200"
               >
                 Ver detalle

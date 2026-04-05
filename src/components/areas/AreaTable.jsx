@@ -31,6 +31,7 @@ export function AreaTable({ areas, onEditar, onToggleEstado }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => onEditar && onEditar(row.id)}
+              data-row-action="true"
               className="p-2 text-text-secondary hover:text-purple-electric hover:bg-dark-purple-700 rounded-lg transition-colors"
               title="Editar"
             >
@@ -38,6 +39,7 @@ export function AreaTable({ areas, onEditar, onToggleEstado }) {
             </button>
             <button
               onClick={() => onToggleEstado && onToggleEstado(row.id)}
+              data-row-action="true"
               className={`p-2 rounded-lg transition-colors ${
                 isActive
                   ? "text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10"
@@ -53,5 +55,5 @@ export function AreaTable({ areas, onEditar, onToggleEstado }) {
     },
   ];
 
-  return <Table columns={COLUMNS} data={areas} />;
+  return <Table columns={COLUMNS} data={areas} onRowClick={(row) => onEditar && onEditar(row.id)} />;
 }
