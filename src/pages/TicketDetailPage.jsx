@@ -205,6 +205,13 @@ export function TicketDetailPage() {
     setNuevoComentario(value);
   };
 
+  const handleCommentKeyDown = (event) => {
+    if (event.key !== "Enter" || event.shiftKey) return;
+
+    event.preventDefault();
+    handleAgregarComentario();
+  };
+
   const handleCloseTicket = () => {
     if (!canCloseTicket) return;
 
@@ -326,8 +333,8 @@ export function TicketDetailPage() {
           </div>
         </div>
 
-        <aside className="xl:sticky xl:top-0 xl:h-screen">
-          <div className="flex h-full flex-col bg-dark-purple-950/84 px-5 py-4 shadow-[0_24px_70px_rgba(9,6,23,0.28)] backdrop-blur-xl">
+        <aside className="xl:sticky xl:top-16 xl:h-[calc(100vh-64px)]">
+          <div className="flex h-full flex-col overflow-y-hidden rounded-[2rem] bg-[#18181b] px-5 py-4 shadow-[0_24px_70px_rgba(9,6,23,0.28)] backdrop-blur-xl">
             <div className="pb-3">
               <div>
                 <h3 className="text-base font-semibold text-text-primary">Bitacora de Resolucion</h3>
@@ -357,11 +364,11 @@ export function TicketDetailPage() {
                     <p className="text-sm text-text-muted">Aun no hay comentarios relevantes por mostrar.</p>
                   </div>
                 ) : (
-                  comentariosVisibles.map((comentario, index) => {
-                    const isTechnicianComment =
-                      Number(comentario?.usuario_id) === Number(ticket?.tecnico_id) ||
-                      String(comentario?.autor || "").toLowerCase().trim() ===
-                        String(ticket?.tecnico || "").toLowerCase().trim();
+                comentariosVisibles.map((comentario, index) => {
+                  const isTechnicianComment =
+                    Number(comentario?.usuario_id) === Number(ticket?.tecnico_id) ||
+                    String(comentario?.autor || "").toLowerCase().trim() ===
+                      String(ticket?.tecnico || "").toLowerCase().trim();
 
                     return (
                       <div
@@ -369,17 +376,17 @@ export function TicketDetailPage() {
                         className={`flex ${isTechnicianComment ? "justify-end" : "justify-start"}`}
                       >
                         <div
-                          className={`relative max-w-[88%] rounded-[1.6rem] px-4 py-3 shadow-[0_12px_28px_rgba(9,6,23,0.18)] ${
+                          className={`relative max-w-[82%] rounded-[1.6rem] px-4 py-3 shadow-[0_12px_28px_rgba(9,6,23,0.18)] ${
                             isTechnicianComment
-                              ? "bg-purple-electric/32 text-white"
-                              : "bg-[#23193b] text-text-primary"
+                              ? "bg-purple-electric text-white"
+                              : "bg-zinc-700 text-white"
                           }`}
                         >
                           <span
                             className={`absolute top-4 h-3 w-3 rotate-45 ${
                               isTechnicianComment
-                                ? "-right-1.5 bg-purple-electric/32"
-                                : "-left-1.5 bg-[#23193b]"
+                                ? "-right-1.5 bg-purple-electric"
+                                : "-left-1.5 bg-zinc-700"
                               }`}
                           />
 
@@ -395,13 +402,14 @@ export function TicketDetailPage() {
                 )}
               </div>
 
-              <div className="px-4 py-4">
+              <div className="mt-auto px-4 py-4">
               {canComment ? (
                 <div className="space-y-3">
                   <textarea
                     ref={textareaRef}
                     value={nuevoComentario}
                     onChange={(e) => handleCommentChange(e.target.value)}
+                    onKeyDown={handleCommentKeyDown}
                     rows={1}
                     maxLength={600}
                     className="max-h-[160px] min-h-[40px] w-full resize-none overflow-y-auto rounded-2xl bg-dark-purple-900/80 px-4 py-2 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:ring-1 focus:ring-purple-electric"
