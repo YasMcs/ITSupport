@@ -313,8 +313,8 @@ export function TicketsPage() {
                 <section className="rounded-3xl bg-white/[0.03] p-6 backdrop-blur-sm">
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                      <h2 className="text-lg font-semibold text-text-primary">Bandeja de trabajo</h2>
-                      <p className="mt-1 text-sm text-text-secondary">
+                      <p className="text-xs uppercase tracking-[0.22em] text-text-muted/65">Bandeja activa</p>
+                      <p className="mt-2 text-sm text-text-muted">
                         Se muestran primero los tickets que requieren atencion. Los cerrados quedan fuera del foco por defecto.
                       </p>
                     </div>
