@@ -37,6 +37,7 @@ export function TicketDetailPage() {
           role,
           prefetchedTicket: location.state?.ticket,
         });
+
         let commentsData = [];
 
         try {
@@ -73,7 +74,11 @@ export function TicketDetailPage() {
   const isCreator = ticket ? Number(user?.id) === Number(ticket.encargado_id) : false;
   const isAssignedTechnician = ticket ? Number(user?.id) === Number(ticket.tecnico_id) : false;
   const canViewTicket = ticket ? isAdmin || isCreator || isAssignedTechnician : false;
-  const canCloseTicket = !isAdmin && role === ROLES.TECNICO && isAssignedTechnician && estadoActual !== TICKET_STATUS.CERRADO;
+  const canCloseTicket =
+    !isAdmin &&
+    role === ROLES.TECNICO &&
+    isAssignedTechnician &&
+    estadoActual !== TICKET_STATUS.CERRADO;
   const canComment = !isAdmin && (isCreator || isAssignedTechnician);
   const comentariosVisibles = comentarios.filter((comentario) => !isAssignmentNoiseComment(comentario, ticket));
 
@@ -148,7 +153,7 @@ export function TicketDetailPage() {
       ]);
       setNuevoComentario("");
       toast.success("Comentario agregado", {
-        description: "Tu actualizacion ya es visible en el historial.",
+        description: "Tu actualizacion ya es visible en la conversacion.",
       });
     } catch (error) {
       toast.error("No pudimos guardar el comentario", {
@@ -173,7 +178,8 @@ export function TicketDetailPage() {
   const handleCloseTicket = () => {
     if (!canCloseTicket) return;
 
-    ticketService.close(id, user?.id)
+    ticketService
+      .close(id, user?.id)
       .then((updatedTicket) => {
         setTicket(updatedTicket);
         setEstadoActual(updatedTicket.estado);
@@ -225,136 +231,141 @@ export function TicketDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
+        <div className="space-y-6">
           <div className="glass-card rounded-2xl p-5">
             <h3 className="mb-4 text-lg font-semibold text-text-primary">Descripcion</h3>
             <p className="whitespace-pre-wrap leading-relaxed text-text-secondary">{ticket.descripcion}</p>
           </div>
 
-          <div className="glass-card rounded-2xl p-5">
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-semibold text-text-primary">Comentarios</h3>
-                <p className="mt-1 text-sm text-text-secondary">
-                  Usa esta seccion para dejar seguimiento relevante sobre la atencion del ticket.
-                </p>
-              </div>
-              <div className="rounded-2xl bg-dark-purple-900/35 px-4 py-3 text-right">
-                <p className="text-xs uppercase tracking-wide text-text-muted">Comentarios</p>
-                <p className="text-2xl font-semibold text-text-primary">{comentariosVisibles.length}</p>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="glass-card rounded-2xl p-5">
+              <h3 className="mb-4 text-lg font-semibold text-text-primary">Resumen operativo</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted">Folio</span>
+                  <span className="font-mono text-text-primary">#{ticket.id}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted">Creado</span>
+                  <span className="text-right text-text-primary">{formatDate(ticket.fechaCreacion) || "Sin fecha"}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted">Situacion</span>
+                  <span className="text-text-primary">{estadoActual ? estadoActual.replace("_", " ") : "Sin dato"}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted">Comentarios</span>
+                  <span className="text-text-primary">{comentariosVisibles.length}</span>
+                </div>
+                {ticket.fechaCierre && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-text-muted">Cerrado</span>
+                    <span className="text-right text-text-primary">{formatDate(ticket.fechaCierre) || "Sin fecha"}</span>
+                  </div>
+                )}
               </div>
             </div>
 
-            {canComment && (
-              <div className="rounded-2xl bg-white/5 p-4">
-                <label className="mb-2 block text-xs uppercase tracking-wider text-text-muted">Agregar Comentario</label>
-                <div className="flex items-start gap-2">
-                  <textarea
-                    value={nuevoComentario}
-                    onChange={(e) => handleCommentChange(e.target.value)}
-                    rows={2}
-                    maxLength={600}
-                    className="min-h-[50px] max-h-[200px] flex-1 resize-none overflow-y-auto rounded-xl border border-dark-purple-700 bg-dark-purple-800 p-3 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:border-purple-electric focus:ring-1 focus:ring-purple-electric"
-                    placeholder="Escribe un comentario..."
-                  />
-                  <Button
-                    variant="secondary"
-                    onClick={handleAgregarComentario}
-                    disabled={!nuevoComentario.trim() || submittingComment}
-                    className="h-[50px] px-4"
-                  >
-                    {submittingComment ? "Validando..." : "Enviar"}
-                  </Button>
+            <div className="glass-card rounded-2xl p-5">
+              <h3 className="mb-4 text-lg font-semibold text-text-primary">Contexto del ticket</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted">Encargado</span>
+                  <span className="text-right text-text-primary">{ticket.encargado}</span>
                 </div>
-              </div>
-            )}
-
-            {!canComment && !isAdmin && (
-              <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
-                Solo el encargado creador o el tecnico asignado pueden agregar comentarios en esta vista.
-              </div>
-            )}
-
-            {isAdmin && (
-              <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
-                El administrador puede revisar este ticket, pero no agregar comentarios.
-              </div>
-            )}
-
-            <div className="mt-5 border-t border-dark-purple-700 pt-5">
-              <div className="max-h-72 space-y-3 overflow-y-auto pr-1">
-                {comentariosVisibles.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-text-muted">No hay comentarios relevantes por mostrar.</p>
-                ) : (
-                  comentariosVisibles.map((comentario, index) => (
-                    <div key={index} className="rounded-xl bg-dark-purple-900/50 p-3">
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <span className="text-sm font-medium text-text-primary">{comentario.autor}</span>
-                        <span className="text-xs text-text-muted">{formatDate(comentario.fecha) || "Sin fecha"}</span>
-                      </div>
-                      <p className="text-sm leading-relaxed text-text-secondary">{comentario.texto}</p>
-                    </div>
-                  ))
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted">Tecnico</span>
+                  <span className="text-right text-text-primary">{ticket.tecnico || "Sin asignar"}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted">Area</span>
+                  <span className="text-right text-text-primary">{ticket.area}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span className="text-text-muted">Sucursal</span>
+                  <span className="text-right text-text-primary">{ticket.sucursal}</span>
+                </div>
+                {role === ROLES.TECNICO && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-text-muted">Contacto del encargado del area</span>
+                    <span className="text-right text-text-primary">{ticket.contacto || "Sin dato disponible"}</span>
+                  </div>
                 )}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <div className="glass-card rounded-2xl p-5">
-            <h3 className="mb-4 text-lg font-semibold text-text-primary">Resumen operativo</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-text-muted">Folio</span>
-                <span className="font-mono text-text-primary">#{ticket.id}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-text-muted">Creado</span>
-                <span className="text-right text-text-primary">{formatDate(ticket.fechaCreacion) || "Sin fecha"}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-text-muted">Situacion</span>
-                <span className="text-text-primary">{estadoActual ? estadoActual.replace("_", " ") : "Sin dato"}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span className="text-text-muted">Comentarios</span>
-                <span className="text-text-primary">{comentariosVisibles.length}</span>
-              </div>
-              {ticket.fechaCierre && (
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted">Cerrado</span>
-                  <span className="text-right text-text-primary">{formatDate(ticket.fechaCierre) || "Sin fecha"}</span>
-                </div>
-              )}
+        <div className="glass-card flex min-h-[620px] flex-col rounded-2xl p-5">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-text-primary">Conversacion</h3>
+              <p className="mt-1 text-sm text-text-secondary">
+                Registra seguimiento relevante del ticket en un solo hilo.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-dark-purple-900/35 px-4 py-3 text-right">
+              <p className="text-xs uppercase tracking-wide text-text-muted">Comentarios</p>
+              <p className="text-2xl font-semibold text-text-primary">{comentariosVisibles.length}</p>
             </div>
           </div>
 
-          <div className="glass-card rounded-2xl p-5">
-            <h3 className="mb-4 text-lg font-semibold text-text-primary">Contexto del ticket</h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-text-muted">Encargado</span>
-                <span className="text-text-primary">{ticket.encargado}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-text-muted">Tecnico</span>
-                <span className="text-text-primary">{ticket.tecnico || "Sin asignar"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-text-muted">Area</span>
-                <span className="text-text-primary">{ticket.area}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-text-muted">Sucursal</span>
-                <span className="text-text-primary">{ticket.sucursal}</span>
-              </div>
-              {role === "tecnico" && (
-                <div className="flex justify-between gap-4">
-                  <span className="text-text-muted">Contacto del encargado del area</span>
-                  <span className="text-right text-text-primary">{ticket.contacto || "Sin dato disponible"}</span>
+          {canComment && (
+            <div className="rounded-2xl bg-white/5 p-4">
+              <label className="mb-2 block text-xs uppercase tracking-wider text-text-muted">Agregar comentario</label>
+              <div className="space-y-3">
+                <textarea
+                  value={nuevoComentario}
+                  onChange={(e) => handleCommentChange(e.target.value)}
+                  rows={3}
+                  maxLength={600}
+                  className="min-h-[88px] w-full resize-none rounded-xl border border-dark-purple-700 bg-dark-purple-800 p-3 text-sm text-text-secondary outline-none placeholder:text-text-muted/50 focus:border-purple-electric focus:ring-1 focus:ring-purple-electric"
+                  placeholder="Escribe un comentario..."
+                />
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs text-text-muted">Comparte solo informacion util para el seguimiento.</span>
+                  <Button
+                    variant="secondary"
+                    onClick={handleAgregarComentario}
+                    disabled={!nuevoComentario.trim() || submittingComment}
+                    className="w-auto px-4 py-2.5"
+                  >
+                    {submittingComment ? "Validando..." : "Enviar"}
+                  </Button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {!canComment && !isAdmin && (
+            <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
+              Solo el encargado creador o el tecnico asignado pueden agregar comentarios en esta vista.
+            </div>
+          )}
+
+          {isAdmin && (
+            <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-text-muted">
+              El administrador puede revisar este ticket, pero no agregar comentarios.
+            </div>
+          )}
+
+          <div className="mt-5 min-h-0 flex-1 overflow-hidden border-t border-dark-purple-700 pt-5">
+            <div className="flex h-full max-h-[540px] flex-col gap-3 overflow-y-auto pr-1">
+              {comentariosVisibles.length === 0 ? (
+                <div className="flex flex-1 items-center justify-center rounded-2xl bg-dark-purple-900/20 px-6 py-10 text-center">
+                  <p className="text-sm text-text-muted">Aun no hay comentarios relevantes por mostrar.</p>
+                </div>
+              ) : (
+                comentariosVisibles.map((comentario, index) => (
+                  <div key={index} className="rounded-2xl bg-dark-purple-900/45 p-4">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="text-sm font-medium text-text-primary">{comentario.autor}</span>
+                      <span className="text-xs text-text-muted">{formatDate(comentario.fecha) || "Sin fecha"}</span>
+                    </div>
+                    <p className="text-sm leading-relaxed text-text-secondary">{comentario.texto}</p>
+                  </div>
+                ))
               )}
             </div>
           </div>
@@ -369,12 +380,12 @@ async function loadTicketForRole({ id, role, prefetchedTicket }) {
     return prefetchedTicket;
   }
 
-  if (role === ROLES.RESPONSABLE) {
+  if (role === ROLES.ENCARGADO) {
     const tickets = await ticketService.getMineCreated();
     return tickets.find((ticket) => String(ticket.id) === String(id)) ?? null;
   }
 
-  if (role === ROLES.SOPORTE) {
+  if (role === ROLES.TECNICO) {
     const tickets = await ticketService.getMineAssigned();
     return tickets.find((ticket) => String(ticket.id) === String(id)) ?? null;
   }
@@ -383,7 +394,10 @@ async function loadTicketForRole({ id, role, prefetchedTicket }) {
 }
 
 function isAssignmentNoiseComment(comment, ticket) {
-  const text = String(comment?.texto || comment?.contenido || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const text = String(comment?.texto || comment?.contenido || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
   const author = String(comment?.autor || "").toLowerCase().trim();
   const assignedTechnician = String(ticket?.tecnico || ticket?.tecnicoAsignado || "").toLowerCase().trim();
 

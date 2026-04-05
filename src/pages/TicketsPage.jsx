@@ -310,8 +310,8 @@ export function TicketsPage() {
                   </div>
                 </div>
               ) : (
-                <section className="space-y-5">
-                  <div className="flex flex-col gap-4 rounded-3xl bg-white/[0.03] p-5 backdrop-blur-sm md:flex-row md:items-center md:justify-between">
+                <section className="rounded-3xl bg-white/[0.03] p-6 backdrop-blur-sm">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
                       <h2 className="text-lg font-semibold text-text-primary">Bandeja de trabajo</h2>
                       <p className="mt-1 text-sm text-text-secondary">
@@ -352,7 +352,8 @@ export function TicketsPage() {
                     </div>
                   </div>
 
-                  {visibleTechnicianTickets.length === 0 ? (
+                  <div className="mt-5">
+                    {visibleTechnicianTickets.length === 0 ? (
                     <div className="rounded-2xl bg-dark-purple-900/20 px-6 py-10 text-center">
                       <p className="text-text-secondary">
                         {showAllTechnicianTickets
@@ -418,6 +419,7 @@ export function TicketsPage() {
                       ))}
                     </div>
                   )}
+                  </div>
                 </section>
               )}
             </>
