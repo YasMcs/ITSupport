@@ -71,18 +71,20 @@ export function TicketsPage() {
   }, [role, user]);
 
   const filteredTickets = useMemo(
-    () => applyTicketFilters(
-      [...tickets].sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)),
-      { filters, role, searchQuery }
-    ),
+    () =>
+      applyTicketFilters(
+        [...tickets].sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)),
+        { filters, role, searchQuery }
+      ),
     [filters, role, searchQuery, tickets]
   );
 
   const filteredAvailableTickets = useMemo(
-    () => applyTicketFilters(
-      [...availableTickets].sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)),
-      { filters, role, searchQuery }
-    ),
+    () =>
+      applyTicketFilters(
+        [...availableTickets].sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion)),
+        { filters, role, searchQuery }
+      ),
     [availableTickets, filters, role, searchQuery]
   );
 
@@ -121,19 +123,37 @@ export function TicketsPage() {
       ];
     }
     if (role === ROLES.TECNICO) {
-      return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.TITULO, COLUMN_KEYS.AREA, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.FECHA, COLUMN_KEYS.ACCIONES];
+      return [
+        COLUMN_KEYS.NUMERO,
+        COLUMN_KEYS.TITULO,
+        COLUMN_KEYS.AREA,
+        COLUMN_KEYS.PRIORIDAD,
+        COLUMN_KEYS.ESTADO,
+        COLUMN_KEYS.FECHA,
+        COLUMN_KEYS.ACCIONES,
+      ];
     }
     if (role === ROLES.ENCARGADO) {
-      return [COLUMN_KEYS.NUMERO, COLUMN_KEYS.FECHA, COLUMN_KEYS.PRIORIDAD, COLUMN_KEYS.ESTADO, COLUMN_KEYS.TECNICO, COLUMN_KEYS.ACCIONES];
+      return [
+        COLUMN_KEYS.NUMERO,
+        COLUMN_KEYS.FECHA,
+        COLUMN_KEYS.PRIORIDAD,
+        COLUMN_KEYS.ESTADO,
+        COLUMN_KEYS.TECNICO,
+        COLUMN_KEYS.ACCIONES,
+      ];
     }
     return [];
   };
 
-  const clearFilters = () => setFilters({ estado: "", prioridad: "", area: "", sucursal: "", tecnico: "" });
+  const clearFilters = () =>
+    setFilters({ estado: "", prioridad: "", area: "", sucursal: "", tecnico: "" });
   const hasActiveFilters = Object.values(filters).some((value) => value !== "");
   const areaOptions = [...new Set(tickets.map((ticket) => ticket.area).filter(Boolean))];
   const sucursalOptions = [...new Set(tickets.map((ticket) => ticket.sucursal).filter(Boolean))];
-  const tecnicoOptions = [...new Set(tickets.map((ticket) => ticket.tecnicoAsignado || ticket.tecnico).filter(Boolean))];
+  const tecnicoOptions = [
+    ...new Set(tickets.map((ticket) => ticket.tecnicoAsignado || ticket.tecnico).filter(Boolean)),
+  ];
 
   const getEmptyMessage = () => {
     if (role === ROLES.TECNICO) return "No tienes tickets asignados";
@@ -169,9 +189,8 @@ export function TicketsPage() {
     }
   };
 
-  const tecnicoView = role === ROLES.TECNICO && location.pathname === "/tickets/disponibles"
-    ? "available"
-    : "assigned";
+  const tecnicoView =
+    role === ROLES.TECNICO && location.pathname === "/tickets/disponibles" ? "available" : "assigned";
 
   const headerTitle =
     role === ROLES.TECNICO
@@ -190,19 +209,23 @@ export function TicketsPage() {
           : "Consulta y organiza los tickets que ya forman parte de tu flujo de trabajo.";
 
   return (
-      <div className="space-y-4"> 
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-2">  
-
-        <div className="flex-1 max-w-md">
+    <div className="space-y-4">
+      <div className="flex flex-col gap-4 pt-2 md:flex-row md:items-center md:justify-between">
+        <div className="max-w-md flex-1">
           <h1 className="text-3xl font-bold text-text-primary">{headerTitle}</h1>
-          <p className="text-text-secondary mt-1">{headerDescription}</p>
+          <p className="mt-1 text-text-secondary">{headerDescription}</p>
         </div>
 
-        <div className="flex-1 max-w-md">
+        <div className="max-w-md flex-1">
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg className="h-5 w-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
             <input
@@ -210,7 +233,7 @@ export function TicketsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar tickets..."
-              className="w-full bg-dark-purple-800 border border-dark-purple-700 text-text-primary rounded-xl pl-10 pr-4 py-2.5 text-sm placeholder:text-text-muted/50 focus:outline-none focus:ring-1 focus:ring-purple-electric focus:border-purple-electric transition-all"
+              className="w-full rounded-xl border border-dark-purple-700 bg-dark-purple-800 py-2.5 pl-10 pr-4 text-sm text-text-primary placeholder:text-text-muted/50 transition-all focus:border-purple-electric focus:outline-none focus:ring-1 focus:ring-purple-electric"
             />
           </div>
         </div>
@@ -226,7 +249,9 @@ export function TicketsPage() {
               Volver a mis tickets
             </Button>
           )}
-          {role === ROLES.ENCARGADO && <Button onClick={() => navigate("/tickets/nuevo")}>Nuevo Ticket</Button>}
+          {role === ROLES.ENCARGADO && (
+            <Button onClick={() => navigate("/tickets/nuevo")}>Nuevo Ticket</Button>
+          )}
         </div>
       </div>
 
@@ -246,11 +271,10 @@ export function TicketsPage() {
 
       {loading ? (
         <div className="glass-card rounded-2xl p-12 text-center">
-          <p className="text-text-secondary text-lg">Cargando tickets...</p>
+          <p className="text-lg text-text-secondary">Cargando tickets...</p>
         </div>
       ) : role === ROLES.TECNICO ? (
-<div className="space-y-4 pt-2">
-
+        <div className="space-y-4 pt-2">
           {tecnicoView === "available" ? (
             <section className="rounded-3xl bg-white/[0.03] p-6 backdrop-blur-sm">
               {filteredAvailableTickets.length === 0 ? (
@@ -282,7 +306,10 @@ export function TicketsPage() {
 
                       <div className="mt-5 flex items-center justify-between gap-3">
                         <span className="text-xs text-text-muted">
-                          Creado el {ticket.fechaCreacion ? new Date(ticket.fechaCreacion).toLocaleDateString("es-MX") : "sin fecha"}
+                          Creado el{" "}
+                          {ticket.fechaCreacion
+                            ? new Date(ticket.fechaCreacion).toLocaleDateString("es-MX")
+                            : "sin fecha"}
                         </span>
                         <Button
                           type="button"
@@ -303,19 +330,23 @@ export function TicketsPage() {
               {filteredTickets.length === 0 ? (
                 <div className="glass-card rounded-2xl p-12 text-center">
                   <div className="flex flex-col items-center gap-3">
-                    <svg className="w-16 h-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg className="h-16 w-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
-                    <p className="text-text-secondary text-lg">{getEmptyMessage()}</p>
+                    <p className="text-lg text-text-secondary">{getEmptyMessage()}</p>
                   </div>
                 </div>
               ) : (
                 <section className="rounded-3xl bg-white/[0.03] p-6 backdrop-blur-sm">
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.22em] text-text-muted/65">Bandeja activa</p>
                       <p className="mt-2 text-sm text-text-muted">
-                        Se muestran primero los tickets que requieren atencion. Los cerrados quedan fuera del foco por defecto.
+                        Los tickets mas antiguos aparecen primero dentro de cada prioridad.
                       </p>
                     </div>
 
@@ -354,71 +385,71 @@ export function TicketsPage() {
 
                   <div className="mt-5">
                     {visibleTechnicianTickets.length === 0 ? (
-                    <div className="rounded-2xl bg-dark-purple-900/20 px-6 py-10 text-center">
-                      <p className="text-text-secondary">
-                        {showAllTechnicianTickets
-                          ? "No hay tickets para mostrar con los filtros actuales."
-                          : "No tienes tickets activos en este momento."}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-                      {visibleTechnicianTickets.map((ticket) => (
-                        <article key={ticket.id} className="rounded-2xl bg-dark-purple-900/30 p-5 backdrop-blur-sm">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <p className="text-xs font-mono text-text-muted">#{ticket.id}</p>
-                              <h3 className="mt-1 line-clamp-2 text-base font-semibold text-text-primary">
-                                {ticket.titulo}
-                              </h3>
+                      <div className="rounded-2xl bg-dark-purple-900/20 px-6 py-10 text-center">
+                        <p className="text-text-secondary">
+                          {showAllTechnicianTickets
+                            ? "No hay tickets para mostrar con los filtros actuales."
+                            : "No tienes tickets activos en este momento."}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                        {visibleTechnicianTickets.map((ticket) => (
+                          <article key={ticket.id} className="rounded-2xl bg-dark-purple-900/30 p-5 backdrop-blur-sm">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="text-xs font-mono text-text-muted">#{ticket.id}</p>
+                                <h3 className="mt-1 line-clamp-2 text-base font-semibold text-text-primary">
+                                  {ticket.titulo}
+                                </h3>
+                              </div>
+                              <div className="flex shrink-0 flex-col items-end gap-2">
+                                <Badge priority={ticket.prioridad} />
+                                <Badge status={ticket.estado} />
+                              </div>
                             </div>
-                            <div className="flex shrink-0 flex-col items-end gap-2">
-                              <Badge priority={ticket.prioridad} />
-                              <Badge status={ticket.estado} />
-                            </div>
-                          </div>
 
-                          <p className="mt-3 line-clamp-2 text-sm text-text-secondary">{ticket.descripcion}</p>
+                            <p className="mt-3 line-clamp-2 text-sm text-text-secondary">{ticket.descripcion}</p>
 
-                          <div className="mt-4 flex flex-wrap gap-2 text-xs text-text-muted">
-                            <span className="rounded-full bg-dark-purple-800/55 px-3 py-1">
-                              {ticket.area || "Sin area"}
-                            </span>
-                            {ticket.encargado && (
+                            <div className="mt-4 flex flex-wrap gap-2 text-xs text-text-muted">
                               <span className="rounded-full bg-dark-purple-800/55 px-3 py-1">
-                                {ticket.encargado}
+                                {ticket.area || "Sin area"}
                               </span>
-                            )}
-                          </div>
-
-                          <div className="mt-5 flex items-end justify-between gap-4">
-                            <div className="space-y-1 text-xs text-text-muted">
-                              <p>
-                                Creado el{" "}
-                                {ticket.fechaCreacion
-                                  ? new Date(ticket.fechaCreacion).toLocaleDateString("es-MX")
-                                  : "sin fecha"}
-                              </p>
-                              {ticket.fechaCierre && (
-                                <p>
-                                  Cerrado el {new Date(ticket.fechaCierre).toLocaleDateString("es-MX")}
-                                </p>
+                              {ticket.encargado && (
+                                <span className="rounded-full bg-dark-purple-800/55 px-3 py-1">
+                                  {ticket.encargado}
+                                </span>
                               )}
                             </div>
 
-                            <Button
-                              type="button"
-                              variant={ticket.estado === "cerrado" ? "secondary" : "primary"}
-                              className="w-auto px-5 py-2.5"
-                              onClick={() => navigate(`/tickets/${ticket.id}`, { state: { ticket } })}
-                            >
-                              Ver detalle
-                            </Button>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  )}
+                            <div className="mt-5 flex items-end justify-between gap-4">
+                              <div className="space-y-1 text-xs text-text-muted">
+                                <p>
+                                  Creado el{" "}
+                                  {ticket.fechaCreacion
+                                    ? new Date(ticket.fechaCreacion).toLocaleDateString("es-MX")
+                                    : "sin fecha"}
+                                </p>
+                                {ticket.fechaCierre && (
+                                  <p>
+                                    Cerrado el {new Date(ticket.fechaCierre).toLocaleDateString("es-MX")}
+                                  </p>
+                                )}
+                              </div>
+
+                              <Button
+                                type="button"
+                                variant={ticket.estado === "cerrado" ? "secondary" : "primary"}
+                                className="w-auto px-5 py-2.5"
+                                onClick={() => navigate(`/tickets/${ticket.id}`, { state: { ticket } })}
+                              >
+                                Ver detalle
+                              </Button>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </section>
               )}
@@ -428,14 +459,19 @@ export function TicketsPage() {
       ) : filteredTickets.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
           <div className="flex flex-col items-center gap-3">
-            <svg className="w-16 h-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg className="h-16 w-16 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
-            <p className="text-text-secondary text-lg">{getEmptyMessage()}</p>
+            <p className="text-lg text-text-secondary">{getEmptyMessage()}</p>
           </div>
         </div>
       ) : (
-        <div className="glass-card rounded-2xl overflow-hidden">
+        <div className="glass-card overflow-hidden rounded-2xl">
           <TicketTable tickets={filteredTickets} columnas={getColumns()} />
         </div>
       )}
