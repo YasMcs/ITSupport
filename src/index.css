@@ -126,13 +126,13 @@ body,
 
 .scroll-area {
   overflow: auto;
-  overflow: overlay;
   scrollbar-gutter: stable;
+  overscroll-behavior: contain;
 }
 
 .scroll-area-no-gutter {
   overflow: auto;
-  overflow: overlay;
+  overscroll-behavior: contain;
 }
 
 [data-sonner-toaster] [data-sonner-toast] {
