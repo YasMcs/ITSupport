@@ -112,7 +112,7 @@ export function parseJwtPayload(token) {
   if (!token || typeof token !== "string") return null;
 
   const parts = token.split(".");
-  if (parts.length < 2) return null;
+  if (parts.length !== 3) return null;
 
   try {
     const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
@@ -126,7 +126,7 @@ export function parseJwtPayload(token) {
 
 export function isTokenExpired(token, skewSeconds = 30) {
   const payload = parseJwtPayload(token);
-  if (!payload?.exp) return false;
+  if (!payload?.exp) return true;
 
   const nowInSeconds = Math.floor(Date.now() / 1000);
   return Number(payload.exp) <= nowInSeconds + skewSeconds;

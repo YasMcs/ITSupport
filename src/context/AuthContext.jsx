@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = subscribeToAuthFailures(({ status }) => {
-      if (status !== 401) return;
+      if (status !== 401 && status !== 403) return;
 
       setUser((currentUser) => {
         if (!currentUser) return currentUser;

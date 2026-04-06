@@ -32,7 +32,7 @@ api.interceptors.response.use(
       requestUrl === "/auth/login" ||
       requestUrl === "/usuarios/registro";
 
-    if (status === 401 && !isPublicAuthRoute) {
+    if ((status === 401 || status === 403) && !isPublicAuthRoute) {
       authFailureListeners.forEach((listener) =>
         listener({
           status,
