@@ -4,8 +4,10 @@ import { toast } from "sonner";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../hooks/useAuth";
+import { useWebSocket } from "../context/WebSocketContext";
 import { commentService } from "../services/commentService";
 import { ticketService } from "../services/ticketService";
+import { normalizeComment } from "../utils/apiMappers";
 import { containsForbiddenInput, normalizeTextInput, validateRequiredText } from "../utils/security";
 import { formatDate } from "../utils/formatDate";
 import { feedbackText, getFeedbackMessage } from "../utils/feedback";
@@ -18,6 +20,7 @@ export function TicketDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, role } = useAuth();
+  const { subscribeToTicketComments } = useWebSocket();
   const [ticket, setTicket] = useState(() => location.state?.ticket ?? null);
   const [comentarios, setComentarios] = useState([]);
   const [nuevoComentario, setNuevoComentario] = useState("");
@@ -109,6 +112,20 @@ export function TicketDetailPage() {
       container.scrollTop = container.scrollHeight;
     });
   }, [comentariosVisibles.length]);
+
+  useEffect(() => {
+    if (!ticket?.id) return undefined;
+
+    return subscribeToTicketComments(ticket.id, (incomingComment) => {
+      const normalized = normalizeComment(incomingComment);
+
+      setComentarios((prev) => {
+        const alreadyExists = prev.some((comment) => String(comment.id) === String(normalized.id));
+        if (alreadyExists) return prev;
+        return [...prev, normalized];
+      });
+    });
+  }, [subscribeToTicketComments, ticket?.id]);
 
   useEffect(() => {
     const textarea = textareaRef.current;

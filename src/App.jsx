@@ -2,30 +2,33 @@ import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 import { TicketProvider } from "./context/TicketContext";
+import { WebSocketProvider } from "./context/WebSocketContext";
 import { AppRouter } from "./routes/AppRouter";
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <TicketProvider>
-          <AppRouter />
-          <Toaster
-            richColors
-            position="top-right"
-            theme="dark"
-            toastOptions={{
-              duration: 5000,
-              style: {
-                background: "#11111a",
-                border: "1px solid rgba(148, 163, 184, 0.18)",
-                color: "#f8fafc",
-                boxShadow: "0 0 30px rgba(118, 96, 216, 0.14)",
-              },
-              className: "sonner-premium-toast",
-            }}
-          />
-        </TicketProvider>
+        <WebSocketProvider>
+          <TicketProvider>
+            <AppRouter />
+            <Toaster
+              richColors
+              position="top-right"
+              theme="dark"
+              toastOptions={{
+                duration: 5000,
+                style: {
+                  background: "#11111a",
+                  border: "1px solid rgba(148, 163, 184, 0.18)",
+                  color: "#f8fafc",
+                  boxShadow: "0 0 30px rgba(118, 96, 216, 0.14)",
+                },
+                className: "sonner-premium-toast",
+              }}
+            />
+          </TicketProvider>
+        </WebSocketProvider>
       </AuthProvider>
     </BrowserRouter>
   );
