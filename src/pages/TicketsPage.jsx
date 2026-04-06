@@ -7,6 +7,7 @@ import { TicketTable, COLUMN_KEYS } from "../components/tickets/TicketTable";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { FilterBar } from "../components/ui/FilterBar";
+import { LoadingState } from "../components/ui/LoadingState";
 import { ticketService } from "../services/ticketService";
 import { getFeedbackMessage } from "../utils/feedback";
 
@@ -291,9 +292,10 @@ export function TicketsPage() {
       />
 
       {loading ? (
-        <div className="glass-card rounded-2xl p-12 text-center">
-          <p className="text-lg text-text-secondary">Cargando tickets...</p>
-        </div>
+        <LoadingState
+          title="Cargando tickets"
+          description="Estamos preparando la bandeja para que puedas continuar."
+        />
       ) : role === ROLES.TECNICO ? (
         <div className="space-y-4 pt-2">
           {tecnicoView === "available" ? (

@@ -3,6 +3,7 @@ import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
+import { LoadingState } from "../components/ui/LoadingState";
 import { useAuth } from "../hooks/useAuth";
 import { useWebSocket } from "../context/WebSocketContext";
 import { commentService } from "../services/commentService";
@@ -139,9 +140,10 @@ export function TicketDetailPage() {
   if (loading) {
     return (
       <div className="mx-auto h-full min-h-0 max-w-7xl space-y-6 overflow-hidden">
-        <div className="glass-card rounded-2xl p-12 text-center">
-          <p className="text-lg text-text-secondary">Cargando ticket...</p>
-        </div>
+        <LoadingState
+          title="Cargando ticket"
+          description="Estamos preparando el detalle y la conversacion."
+        />
       </div>
     );
   }

@@ -63,6 +63,11 @@
     80% { transform: translate3d(18px, 28px, 0) scale(1.02); }
   }
 
+  @keyframes loading-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
   .animate-float-slow {
     animation: float-slow 8s ease-in-out infinite;
   }
@@ -85,6 +90,19 @@
 
   .animate-drift-wide {
     animation: drift-wide 28s ease-in-out infinite;
+  }
+
+  .loading-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0.08) 35%,
+      rgba(125, 99, 230, 0.18) 50%,
+      rgba(255, 255, 255, 0.08) 65%,
+      rgba(255, 255, 255, 0.04) 100%
+    );
+    background-size: 200% 100%;
+    animation: loading-shimmer 1.8s linear infinite;
   }
 
   /* Glassmorphism utility */

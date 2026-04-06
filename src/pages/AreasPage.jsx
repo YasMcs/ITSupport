@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../components/ui/Button";
+import { LoadingState } from "../components/ui/LoadingState";
 import { Modal } from "../components/ui/Modal";
 import { AreaTable } from "../components/areas/AreaTable";
 import { areaService } from "../services/areaService";
@@ -196,9 +197,10 @@ export function AreasPage() {
       </div>
 
       {loading ? (
-        <div className="glass-card rounded-2xl p-12 text-center">
-          <p className="text-text-secondary text-lg">Cargando areas...</p>
-        </div>
+        <LoadingState
+          title="Cargando areas"
+          description="Estamos organizando la informacion operativa."
+        />
       ) : filteredAreas.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
           <div className="flex flex-col items-center gap-3">

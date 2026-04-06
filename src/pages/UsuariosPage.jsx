@@ -5,6 +5,7 @@ import { CheckCircle2, Pencil, XCircle } from "lucide-react";
 import { Table } from "../components/ui/Table";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
+import { LoadingState } from "../components/ui/LoadingState";
 import { Modal } from "../components/ui/Modal";
 import { useAuth } from "../hooks/useAuth";
 import { getFeedbackMessage } from "../utils/feedback";
@@ -234,9 +235,10 @@ export function UsuariosPage() {
       </div>
 
       {loading ? (
-        <div className="glass-card rounded-2xl p-12 text-center">
-          <p className="text-text-secondary text-lg">Cargando usuarios...</p>
-        </div>
+        <LoadingState
+          title="Cargando usuarios"
+          description="Estamos preparando las cuentas registradas."
+        />
       ) : usuarios.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
           <div className="flex flex-col items-center gap-3">
