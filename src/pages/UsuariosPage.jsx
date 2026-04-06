@@ -232,9 +232,13 @@ export function UsuariosPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex-1 max-w-md">
-          <div className="relative">
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold text-text-primary">Usuarios</h1>
+          <p className="text-text-secondary mt-1">Administra cuentas, roles y estado de acceso del personal.</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg className="w-5 h-5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -248,24 +252,23 @@ export function UsuariosPage() {
               className="w-full bg-dark-purple-800 border border-dark-purple-700 text-text-primary rounded-xl pl-10 pr-4 py-2.5 text-sm placeholder:text-text-muted/50 focus:outline-none focus:ring-1 focus:ring-purple-electric focus:border-purple-electric transition-all"
             />
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <FilterBar
-            filters={filters}
-            onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
-            onClearFilters={() => setFilters({ estado: "", rol: "", sucursal: "" })}
-            hasActiveFilters={Object.values(filters).some(v => v !== "")}
-            showFilters={showFilters}
-            onToggleFilters={() => setShowFilters(p => !p)}
-            hideStatus={false}
-            role="admin"
-            areaOptions={[]}
-            sucursalOptions={[...new Set(usuariosState.map(u => u.nombreSucursal).filter(Boolean))]}
-            tecnicoOptions={[]}
-          />
           <Button onClick={() => navigate("/usuarios/nuevo")}>+ Nuevo Usuario</Button>
         </div>
       </div>
+
+      <FilterBar
+        filters={filters}
+        onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
+        onClearFilters={() => setFilters({ estado: "", rol: "", sucursal: "" })}
+        hasActiveFilters={Object.values(filters).some(v => v !== "")}
+        showFilters={showFilters}
+        onToggleFilters={() => setShowFilters(p => !p)}
+        hideStatus={false}
+        role="admin"
+        areaOptions={[]}
+        sucursalOptions={[...new Set(usuariosState.map(u => u.nombreSucursal).filter(Boolean))]}
+        tecnicoOptions={[]}
+      />
 
       {loading ? (
         <LoadingState
