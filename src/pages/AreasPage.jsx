@@ -18,6 +18,7 @@ export function AreasPage() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     estado: "",
+    sucursal: "",
   });
 
   const loadAreas = async (cancelled = false) => {
@@ -59,6 +60,9 @@ export function AreasPage() {
     if (filters.estado) {
       filtered = filtered.filter((area) => area.estado === filters.estado);
     }
+    if (filters.sucursal) {
+      filtered = filtered.filter((area) => area.nombreSucursal === filters.sucursal);
+    }
 
     return filtered;
   }, [searchQuery, filters, areas]);
@@ -68,7 +72,7 @@ export function AreasPage() {
   };
 
   const clearFilters = () => {
-    setFilters({ estado: "" });
+    setFilters({ estado: "", sucursal: "" });
   };
 
   const hasActiveFilters = Object.values(filters).some((v) => v !== "");
