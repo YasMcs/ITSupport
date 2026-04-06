@@ -338,19 +338,20 @@ export function TicketDetailPage() {
                   </div>
                 ) : (
                 comentariosVisibles.map((comentario, index) => {
-                  const isTechnicianComment =
-                    Number(comentario?.usuario_id) === Number(ticket?.tecnico_id) ||
-                    String(comentario?.autor || "").toLowerCase().trim() ===
-                      String(ticket?.tecnico || "").toLowerCase().trim();
+                  const isOwnComment =
+                    !isAdmin &&
+                    (Number(comentario?.usuario_id) === Number(user?.id) ||
+                      String(comentario?.autor || "").toLowerCase().trim() ===
+                        String(getUserDisplayName(user) || "").toLowerCase().trim());
 
                     return (
                       <div
                         key={index}
-                        className={`flex ${isTechnicianComment ? "justify-end" : "justify-start"}`}
+                        className={`flex ${isOwnComment ? "justify-end" : "justify-start"}`}
                       >
                         <div
                           className={`max-w-[80%] rounded-[1.45rem] px-4 py-3 shadow-[0_10px_24px_rgba(9,6,23,0.14)] backdrop-blur-md ${
-                            isTechnicianComment
+                            isOwnComment
                               ? "bg-black/24 text-white"
                               : "bg-black/18 text-white"
                           }`}
