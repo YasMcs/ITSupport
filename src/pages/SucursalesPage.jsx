@@ -2,17 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../components/ui/Button";
+import { FilterBar } from "../components/ui/FilterBar";
 import { LoadingState } from "../components/ui/LoadingState";
 import { Modal } from "../components/ui/Modal";
 import { SucursalTable } from "../components/sucursales/SucursalTable";
 import { sucursalService } from "../services/sucursalService";
-import { getFeedbackMessage } from "../utils/feedback";
-
-const ESTADO_OPTIONS = [
-  { value: "", label: "Todos" },
-  { value: "Activa", label: "Activa" },
-  { value: "Desactivada", label: "Desactivada" },
-];
+import { getFeedbackMessage } from "../utils/feedback"; 
 
 export function SucursalesPage() {
   const navigate = useNavigate();
@@ -155,47 +150,19 @@ export function SucursalesPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${
-            showFilters || hasActiveFilters
-              ? "bg-dark-purple-800 border-dark-purple-700"
-              : "bg-dark-purple-800/50 border-dark-purple-700"
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          <span className="text-sm text-text-secondary">Filtros</span>
-          {hasActiveFilters && (
-            <span className="bg-purple-electric text-white text-xs px-1.5 py-0.5 rounded-full">
-              {Object.values(filters).filter((v) => v !== "").length}
-            </span>
-          )}
-        </button>
-
-        {showFilters && (
-          <>
-            <select
-              value={filters.estado}
-              onChange={(e) => handleFilterChange("estado", e.target.value)}
-              className="w-48 bg-dark-purple-800 border border-dark-purple-700 text-text-primary rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-electric focus:border-purple-electric transition-all"
-            >
-              {ESTADO_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className="text-sm text-accent-pink">
-                Limpiar
-              </button>
-            )}
-          </>
-        )}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
+        <FilterBar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          hasActiveFilters={hasActiveFilters}
+          showFilters={showFilters}
+          onToggleFilters={() => setShowFilters(!showFilters)}
+          hideStatus={true}
+        />
+        <div className="flex items-center gap-3 lg:flex-1 lg:justify-end">
+          <Button onClick={handleNuevaSucursal}>+ Nueva Sucursal</Button>
+        </div>
       </div>
 
       {loading ? (

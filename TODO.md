@@ -6,4 +6,15 @@
 - [x] 5. Probar con `npm run dev`, throttle network para simular loading.
 - [x] 6. Completar task
 
-## COMPLETADO ✅
+## PARCIAL - Feedback: Shimmers auto-adaptativos + FilterBar global
+
+**Task 1 - Loadings:**
+- [x] Spinner simple completado
+- [x] Shimmers auto-adaptativos completados
+
+**Task 2 - Filters:**
+- [x] Identificadas Areas/Sucursales (native select)
+- [x] Replicado FilterBar custom selects en AreasPage/SucursalesPage
+
+**COMPLETADO** 🎉
+
