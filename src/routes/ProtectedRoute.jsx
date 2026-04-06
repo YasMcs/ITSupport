@@ -5,9 +5,13 @@ import { ROLES } from "../constants/roles";
 
 
 export function ProtectedRoute({ children, allowedRoles = null }) {
-  const { user, role, isAuthenticated } = useAuth();
+  const { role, isAuthenticated, logoutReason } = useAuth();
 
   if (!isAuthenticated) {
+    if (logoutReason === "expired") {
+      return <Navigate to="/sesion-expirada" replace />;
+    }
+
     return <Navigate to="/login" replace />;
   }
 
