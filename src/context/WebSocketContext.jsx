@@ -37,7 +37,7 @@ export function WebSocketProvider({ children }) {
 
 function handleSocketToast(event, user) {
   const { destination, payload } = event;
-  const ticketLabel = payload?.titulo ? `"${payload.titulo}"` : payload?.ticketId ? `#${payload.ticketId}` : "ticket";
+  const ticketLabel = payload?.ticketId || payload?.id ? `#${payload?.ticketId || payload?.id}` : "ticket";
   const authorName = String(payload?.autor || payload?.usuarioNombre || "").trim();
   const isOwnAuthor =
     !user
