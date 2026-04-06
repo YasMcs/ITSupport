@@ -17,16 +17,28 @@ class WebSocketService {
   }
 
   connect() {
-    const token = getAuthToken();
-    if (!token) return;
     if (this.client?.active || this.connected) return;
 
     this.client = new Client({
       reconnectDelay: 5000,
-      connectHeaders: {
-        Authorization: `Bearer ${token}`,
+      beforeConnect: () => {
+        const token = getAuthToken();
+        if (!token) return;
+
+        this.client.connectHeaders = {
+          Authorization: `Bearer ${token}`,
+          authorization: `Bearer ${token}`,
+          token,
+        };
       },
-      webSocketFactory: () => new SockJS(WS_URL),
+      webSocketFactory: () => {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error("Missing auth token for websocket connection.");
+        }
+
+        return new SockJS(buildSocketUrl(token));
+      },
       debug: () => {},
       onConnect: () => {
         this.connected = true;
@@ -158,6 +170,11 @@ function parseSocketPayload(body) {
   } catch {
     return { message: body };
   }
+}
+
+function buildSocketUrl(token) {
+  const separator = WS_URL.includes("?") ? "&" : "?";
+  return `${WS_URL}${separator}token=${encodeURIComponent(token)}`;
 }
 
 export const websocketService = new WebSocketService();
