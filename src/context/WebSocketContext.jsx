@@ -71,7 +71,7 @@ function handleSocketToast(event, user) {
 
   if (destination === "/user/queue/asignacion") {
     toast.success("Nuevo ticket asignado", {
-      description: `Un tecnico se asigno al ticket ${ticketLabel}.`,
+      description: `Un tecnico ya esta atendiendo el ticket ${ticketLabel}.`,
       id: `ws:assignment:${payload?.id || payload?.ticketId || payload?.titulo || Math.random()}`,
     });
     return;
