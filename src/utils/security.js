@@ -4,12 +4,22 @@ const INLINE_EVENT_PATTERN = /\bon\w+\s*=/gi;
 const JS_PROTOCOL_PATTERN = /javascript:/gi;
 const DATA_HTML_PATTERN = /data\s*:\s*text\/html/gi;
 const HTML_BRACKET_PATTERN = /[<>]/g;
+const CONTROL_CHAR_PATTERN = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+const SQLI_PATTERN =
+  /(?:\bunion\b\s+\bselect\b|\bdrop\b\s+\btable\b|\binsert\b\s+\binto\b|\bdelete\b\s+\bfrom\b|\bupdate\b\s+\w+\s+\bset\b|(?:^|[\s'"`;])or\s+['"\d]+\s*=\s*['"\d]+|(?:^|[\s'"`;])and\s+['"\d]+\s*=\s*['"\d]+|\bxp_cmdshell\b|\binformation_schema\b|\bsleep\s*\(|\bbenchmark\s*\(|\/\*|\*\/)/gi;
+const NOSQL_PATTERN = /\$(?:ne|gt|gte|lt|lte|regex|where)\b/gi;
+const TEMPLATE_INJECTION_PATTERN = /(?:\{\{[\s\S]*\}\}|\$\{[\s\S]*\})/g;
 const SUSPICIOUS_HTML_CHECK = /<\s*\/?\s*(script|iframe|object|embed|svg|math|style|link|meta)[^>]*>/i;
 const GENERIC_HTML_TAG_CHECK = /<[^>]+>/i;
 const INLINE_EVENT_CHECK = /\bon\w+\s*=/i;
 const JS_PROTOCOL_CHECK = /javascript:/i;
 const DATA_HTML_CHECK = /data\s*:\s*text\/html/i;
 const HTML_BRACKET_CHECK = /[<>]/;
+const SQLI_CHECK =
+  /(?:\bunion\b\s+\bselect\b|\bdrop\b\s+\btable\b|\binsert\b\s+\binto\b|\bdelete\b\s+\bfrom\b|\bupdate\b\s+\w+\s+\bset\b|(?:^|[\s'"`;])or\s+['"\d]+\s*=\s*['"\d]+|(?:^|[\s'"`;])and\s+['"\d]+\s*=\s*['"\d]+|\bxp_cmdshell\b|\binformation_schema\b|\bsleep\s*\(|\bbenchmark\s*\(|\/\*|\*\/)/i;
+const NOSQL_CHECK = /\$(?:ne|gt|gte|lt|lte|regex|where)\b/i;
+const TEMPLATE_INJECTION_CHECK = /(?:\{\{[\s\S]*\}\}|\$\{[\s\S]*\})/i;
+const CONTROL_CHAR_CHECK = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
 
 const NAME_PATTERN = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s'-]{2,60}$/;
 const USERNAME_PATTERN = /^[a-zA-Z0-9._-]{3,30}$/;
@@ -21,12 +31,17 @@ export function stripUnsafeFragments(value = "") {
     .replace(GENERIC_HTML_TAG_PATTERN, "")
     .replace(INLINE_EVENT_PATTERN, "")
     .replace(JS_PROTOCOL_PATTERN, "")
-    .replace(DATA_HTML_PATTERN, "");
+    .replace(DATA_HTML_PATTERN, "")
+    .replace(SQLI_PATTERN, "")
+    .replace(NOSQL_PATTERN, "")
+    .replace(TEMPLATE_INJECTION_PATTERN, "")
+    .replace(CONTROL_CHAR_PATTERN, "");
 }
 
 export function normalizeTextInput(value = "") {
   return stripUnsafeFragments(value)
     .replace(/[<>]/g, "")
+    .replace(/\s{3,}/g, "  ")
     .trim();
 }
 
@@ -38,7 +53,11 @@ export function containsForbiddenInput(value = "") {
     INLINE_EVENT_CHECK.test(raw) ||
     JS_PROTOCOL_CHECK.test(raw) ||
     DATA_HTML_CHECK.test(raw) ||
-    HTML_BRACKET_CHECK.test(raw)
+    HTML_BRACKET_CHECK.test(raw) ||
+    SQLI_CHECK.test(raw) ||
+    NOSQL_CHECK.test(raw) ||
+    TEMPLATE_INJECTION_CHECK.test(raw) ||
+    CONTROL_CHAR_CHECK.test(raw)
   );
 }
 
