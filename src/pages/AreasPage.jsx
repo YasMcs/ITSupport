@@ -148,15 +148,16 @@ export function AreasPage() {
         </div>
       </div>
 
-      <FilterBar
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onClearFilters={clearFilters}
-        hasActiveFilters={hasActiveFilters}
-        showFilters={showFilters}
-        onToggleFilters={() => setShowFilters(!showFilters)}
-        hideStatus={true}
-      />
+        <FilterBar
+          pageType="areas"
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          hasActiveFilters={hasActiveFilters}
+          showFilters={showFilters}
+          onToggleFilters={() => setShowFilters(!showFilters)}
+          hideStatus={true}
+        />
 
       {loading ? (
         <LoadingState

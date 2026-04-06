@@ -29,7 +29,20 @@ export function FilterBar({
   areaOptions = [],
   sucursalOptions = [],
   tecnicoOptions = [],
+  pageType = "tickets", // "tickets" | "usuarios" | "areas" | "sucursales"
 }) {
+  const ESTADO_OPTIONS = pageType === "areas" 
+    ? [{ value: "", label: "Todos" }, { value: "Activa", label: "Activa" }, { value: "Inactiva", label: "Inactiva" }]
+    : pageType === "sucursales"
+    ? [{ value: "", label: "Todos" }, { value: "Activa", label: "Activa" }, { value: "Desactivada", label: "Desactivada" }]
+    : pageType === "usuarios"
+    ? [{ value: "", label: "Todos" }, { value: "activo", label: "Activo" }, { value: "suspendido", label: "Suspendido" }]
+    : [{ value: "", label: "Todos" }, { value: TICKET_STATUS.ABIERTO, label: "Sin tecnico" }, { value: TICKET_STATUS.EN_PROCESO, label: "Con tecnico" }, { value: TICKET_STATUS.CERRADO, label: "Resuelto" }];
+
+  const ROL_OPTIONS = pageType === "usuarios" 
+    ? [{ value: "", label: "Todos" }, { value: "tecnico", label: "Técnico" }, { value: "encargado", label: "Encargado" }]
+    : [];
+
   return (
     <div className="mb-4 w-full">
       <div className="flex w-full flex-wrap items-center gap-3">
@@ -60,6 +73,16 @@ export function FilterBar({
                 onChange={(value) => onFilterChange("estado", value)}
                 options={ESTADO_OPTIONS}
                 placeholder="Estado"
+                className="w-full flex-none sm:w-[170px]"
+              />
+            )}
+
+            {pageType === "usuarios" && (
+              <Select
+                value={filters.rol}
+                onChange={(value) => onFilterChange("rol", value)}
+                options={ROL_OPTIONS}
+                placeholder="Rol"
                 className="w-full flex-none sm:w-[170px]"
               />
             )}

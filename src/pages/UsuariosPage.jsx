@@ -256,19 +256,20 @@ export function UsuariosPage() {
         </div>
       </div>
 
-      <FilterBar
-        filters={filters}
-        onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
-        onClearFilters={() => setFilters({ estado: "", rol: "", sucursal: "" })}
-        hasActiveFilters={Object.values(filters).some(v => v !== "")}
-        showFilters={showFilters}
-        onToggleFilters={() => setShowFilters(p => !p)}
-        hideStatus={false}
-        role="admin"
-        areaOptions={[]}
-        sucursalOptions={[...new Set(usuariosState.map(u => u.nombreSucursal).filter(Boolean))]}
-        tecnicoOptions={[]}
-      />
+        <FilterBar
+          pageType="usuarios"
+          filters={filters}
+          onFilterChange={(key, value) => setFilters(prev => ({ ...prev, [key]: value }))}
+          onClearFilters={() => setFilters({ estado: "", rol: "", sucursal: "" })}
+          hasActiveFilters={Object.values(filters).some(v => v !== "")}
+          showFilters={showFilters}
+          onToggleFilters={() => setShowFilters(p => !p)}
+          hideStatus={false}
+          role="admin"
+          areaOptions={[]}
+          sucursalOptions={[...new Set(usuariosState.map(u => u.nombreSucursal).filter(Boolean))]}
+          tecnicoOptions={[]}
+        />
 
       {loading ? (
         <LoadingState
