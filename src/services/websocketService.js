@@ -4,7 +4,7 @@ import { getAuthToken } from "./api";
 import { normalizeComment } from "../utils/apiMappers";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "https://exquisite-creativity-production.up.railway.app/api";
-const WS_URL = import.meta.env.VITE_WS_URL ?? API_URL.replace(/\/api\/?$/, "/ws");
+const WS_URL = import.meta.env.VITE_WS_URL ?? `${API_URL.replace(/\/$/, "")}/ws`;
 
 class WebSocketService {
   constructor() {
