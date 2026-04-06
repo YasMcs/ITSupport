@@ -7,7 +7,10 @@ export function Select({ value, onChange, options, placeholder, className = "", 
   const normalizedOptions = useMemo(() => (Array.isArray(options) ? options : []), [options]);
 
   const selectedOption = normalizedOptions.find((option) => String(option.value) === String(value));
-  const selectedLabel = selectedOption?.label ?? placeholder ?? "Seleccionar";
+  const selectedLabel =
+    value === "" || value === null || value === undefined
+      ? placeholder ?? "Seleccionar"
+      : selectedOption?.label ?? placeholder ?? "Seleccionar";
 
   useEffect(() => {
     if (!open) return undefined;
