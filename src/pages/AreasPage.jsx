@@ -6,7 +6,7 @@ import { FilterBar } from "../components/ui/FilterBar";
 import { LoadingState } from "../components/ui/LoadingState";
 import { Modal } from "../components/ui/Modal";
 import { AreaTable } from "../components/areas/AreaTable";
-import { areaService } from "../services/areaService";
+import { areaService } from   "../services/areaService";
 import { getFeedbackMessage } from "../utils/feedback"; 
 
 export function AreasPage() {
