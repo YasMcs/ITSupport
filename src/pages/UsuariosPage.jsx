@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { encodeId } from "../utils/cryptoUtils";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { CheckCircle2, Pencil, XCircle } from "lucide-react";
@@ -205,7 +206,7 @@ export function UsuariosPage() {
         return (
           <div className="flex items-center gap-2">
             <button
-              onClick={() => navigate(`/usuarios/editar/${row.id}`)}
+              onClick={() => navigate(`/usuarios/editar/${encodeId(row.id)}`)}
               data-row-action="true"
               className="p-2 text-text-secondary hover:text-purple-electric hover:bg-dark-purple-700 rounded-lg transition-colors duration-200"
               title="Editar"
@@ -287,7 +288,7 @@ export function UsuariosPage() {
         </div>
       ) : (
         <div className="glass-card rounded-2xl overflow-hidden">
-          <Table columns={columns} data={usuarios} onRowClick={(row) => navigate(`/usuarios/${row.id}`)} />
+          <Table columns={columns} data={usuarios} onRowClick={(row) => navigate(`/usuarios/${encodeId(row.id)}`)} />
         </div>
       )}
 

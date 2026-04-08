@@ -23,8 +23,6 @@
 **Opciones/Sidebar:**
 - Menú completo (tickets/áreas/sucursales/usuarios/stats/perfil)
 
----
-
 ## TECNICO (`tecnico`)
 **Puede VER:**
 - Dashboard: Mis tickets asignados + tracking personal
@@ -43,8 +41,6 @@
 **Opciones/Sidebar:**
 - Tickets, Dashboard personal, Perfil, Tickets disponibles (tomar)
 
----
-
 ## ENCARGADO (`encargado`)
 **Puede VER:**
 - Dashboard: Mis tickets + pendientes sin técnico
@@ -62,11 +58,6 @@
 **Opciones/Sidebar:**
 - Tickets propios, Nuevo Ticket, Dashboard, Perfil
 
-**Fuente**: Análisis código (ProtectedRoute.jsx, TicketsPage.jsx, DashboardPage.jsx, WebSocketContext.jsx, etc.)
+**Fuente**: Código actual (ProtectedRoute.jsx, NuevoTicketPage.jsx, TicketsPage.jsx, etc.)
 
 **Actualizado**: Octubre 2024
-
-**Fuente**: ProtectedRoute.jsx, role filters en pages (TicketsPage, DashboardPage, etc.), WebSocketContext subscriptions.
-
-Actualizado: [Fecha]
-

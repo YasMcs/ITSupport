@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { encodeId } from "../utils/cryptoUtils";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../components/ui/Button";
@@ -82,11 +83,11 @@ export function AreasPage() {
   };
 
   const handleEditar = (id) => {
-    navigate(`/areas/editar/${id}`);
+    navigate(`/areas/editar/${encodeId(id)}`);
   };
 
   const handleVer = (id) => {
-    navigate(`/areas/${id}`);
+    navigate(`/areas/${encodeId(id)}`);
   };
 
   const handleToggleEstado = (id) => {

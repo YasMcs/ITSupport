@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { decodeId } from "../utils/cryptoUtils";
 import { useParams, useNavigate } from "react-router-dom";
 import { AreaForm } from "../components/areas/AreaForm";
 import { areaService } from "../services/areaService";
@@ -6,7 +7,8 @@ import { sucursalService } from "../services/sucursalService";
 import { getFeedbackMessage } from "../utils/feedback";
 
 export function EditarAreaPage() {
-  const { id } = useParams();
+  const { id: encodedId } = useParams();
+  const id = decodeId(encodedId);
   const navigate = useNavigate();
   const [areaExistente, setAreaExistente] = useState(null);
   const [sucursalOptions, setSucursalOptions] = useState([]);

@@ -9,6 +9,6 @@
 - `contextos/SEGURIDAD-FRONTEND.MD`
 - TODO-PerfilRedesign.md / TODO-SuspensionText.md (cerrados)
 
-Task completado. Toda documentación actualizada.
+✅ REESCrito ROLES-PERMISSIONS.md **SIN TABLAS** (listas claras por rol: Ver/Editar/Notifs/Opciones). Súper legible. Task completado final.
 
 

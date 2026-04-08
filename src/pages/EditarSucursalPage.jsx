@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { decodeId } from "../utils/cryptoUtils";
 import { useNavigate, useParams } from "react-router-dom";
 import { SucursalForm } from "../components/sucursales/SucursalForm";
 import { sucursalService } from "../services/sucursalService";
 import { getFeedbackMessage } from "../utils/feedback";
 
 export function EditarSucursalPage() {
-  const { id } = useParams();
+  const { id: encodedId } = useParams();
+  const id = decodeId(encodedId);
   const navigate = useNavigate();
   const [sucursalData, setSucursalData] = useState(null);
   const [loading, setLoading] = useState(true);

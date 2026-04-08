@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { decodeId } from "../utils/cryptoUtils";
 import { useNavigate, useParams } from "react-router-dom";
 import { UsuarioForm } from "../components/usuarios/UsuarioForm";
 import { areaService } from "../services/areaService";
@@ -6,7 +7,8 @@ import { userService } from "../services/userService";
 import { getFeedbackMessage } from "../utils/feedback";
 
 export function EditarUsuarioPage() {
-  const { id } = useParams();
+  const { id: encodedId } = useParams();
+  const id = decodeId(encodedId);
   const navigate = useNavigate();
   const [usuario, setUsuario] = useState(null);
   const [areas, setAreas] = useState([]);

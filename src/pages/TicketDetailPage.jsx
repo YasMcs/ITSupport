@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { decodeId } from "../utils/cryptoUtils";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Badge } from "../components/ui/Badge";
@@ -17,7 +18,8 @@ import { ROLES } from "../constants/roles";
 import { TICKET_STATUS } from "../constants/ticketStatus";
 
 export function TicketDetailPage() {
-  const { id } = useParams();
+  const { id: encodedId } = useParams();
+  const id = decodeId(encodedId);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, role } = useAuth();

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { encodeId } from "../utils/cryptoUtils";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
@@ -426,11 +427,11 @@ export function TicketsPage() {
                     ) : (
                       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                         {visibleTechnicianTickets.map((ticket) => (
-                          <article
-                            key={ticket.id}
-                            onClick={() => navigate(`/tickets/${ticket.id}`, { state: { ticket } })}
-                            className="group cursor-pointer rounded-2xl bg-dark-purple-900/30 p-5 backdrop-blur-sm transition-all duration-200 hover:bg-dark-purple-900/40"
-                          >
+                        <article
+                          key={ticket.id}
+                          onClick={() => navigate(`/tickets/${encodeId(ticket.id)}`, { state: { ticket } })}
+                          className="group cursor-pointer rounded-2xl bg-dark-purple-900/30 p-5 backdrop-blur-sm transition-all duration-200 hover:bg-dark-purple-900/40"
+                        >
                             <div className="flex items-start justify-between gap-3">
                               <div className="min-w-0">
                                 <p className="text-xs font-mono text-text-muted">#{ticket.id}</p>
@@ -566,9 +567,9 @@ export function TicketsPage() {
                     {visibleManagerTickets.map((ticket) => (
                       <article
                         key={ticket.id}
-                        onClick={() => navigate(`/tickets/${ticket.id}`, { state: { ticket } })}
+                        onClick={() => navigate(`/tickets/${encodeId(ticket.id)}`, { state: { ticket } })}
                         className="group cursor-pointer rounded-2xl bg-dark-purple-900/30 p-5 backdrop-blur-sm transition-all duration-200 hover:bg-dark-purple-900/40"
-                      >
+                        >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="text-xs font-mono text-text-muted">#{ticket.id}</p>

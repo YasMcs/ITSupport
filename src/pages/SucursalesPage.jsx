@@ -1,6 +1,7 @@
 
 
 import { useEffect, useMemo, useState } from "react";
+import { encodeId } from "../utils/cryptoUtils";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button } from "../components/ui/Button";
@@ -82,11 +83,11 @@ export function SucursalesPage() {
   };
 
   const handleEditar = (id) => {
-    navigate(`/sucursales/editar/${id}`);
+    navigate(`/sucursales/editar/${encodeId(id)}`);
   };
 
   const handleVer = (id) => {
-    navigate(`/sucursales/${id}`);
+    navigate(`/sucursales/${encodeId(id)}`);
   };
 
   const handleToggleEstado = (id) => {
