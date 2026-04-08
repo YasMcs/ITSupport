@@ -20,6 +20,12 @@ import { TICKET_STATUS } from "../constants/ticketStatus";
 export function TicketDetailPage() {
   const { id: encodedId } = useParams();
   const id = decodeId(encodedId);
+  useEffect(() => {
+    if (id === null) {
+      toast.error("ID de ticket inválido");
+      navigate("/tickets", { replace: true });
+    }
+  }, [id, navigate, toast]);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, role } = useAuth();

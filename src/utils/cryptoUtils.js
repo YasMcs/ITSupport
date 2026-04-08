@@ -2,24 +2,29 @@
 const SALT = 'ITSupportSec2024!'; // Secreto frontend, cambiar en builds
 
 export function encodeId(id) {
-  if (!Number.isInteger(id) || id <= 0) throw new Error('ID debe ser entero positivo');
-  const strId = id.toString();
+  const numId = Number(id);
+  if (!Number.isInteger(numId) || numId <= 0) return null;
+  const strId = numId.toString();
   const salted = strId + SALT;
-  const encoded = btoa(salted);
-  return encoded.replace(/=/g, ''); // Limpia padding para URL clean
+  try {
+    const encoded = btoa(salted);
+    return encoded.replace(/=/g, '');
+  } catch {
+    return null;
+  }
 }
 
 export function decodeId(encoded) {
-  if (!encoded) throw new Error('Hash requerido');
+  if (!encoded) return null;
   try {
     const padded = encoded.padEnd(encoded.length + (4 - encoded.length % 4) % 4, '=');
     const salted = atob(padded);
     const idStr = salted.replace(SALT, '');
     const id = Number.parseInt(idStr, 10);
-    if (Number.isNaN(id) || id <= 0) throw new Error('ID inválido');
+    if (Number.isNaN(id) || id <= 0) return null;
     return id;
   } catch {
-    throw new Error('Hash inválido');
+    return null;
   }
 }
 
