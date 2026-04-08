@@ -16,6 +16,6 @@
 
 Pendientes: 0/3
 
-**Ver cambios**: npm run dev && ve /perfil
+**COMPLETADO** - Ver ROLES-PERMISSIONS.md para más info. Archivo archivado.
 
 

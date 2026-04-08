@@ -161,13 +161,17 @@ Hoy el mayor riesgo no esta en la UI visible, sino en:
 - documentar politica de seguridad frontend
 - revisar headers de seguridad del deploy junto con backend
 
+## Control de Roles y Permisos
+
+Ver [ROLES-PERMISSIONS.md](../contextos/ROLES-PERMISSIONS.md) para detalles completos por rol (ADMIN, TECNICO, ENCARGADO).
+
 ## Conclusion
 El frontend actual no esta inseguro de forma alarmante, pero tampoco esta en un punto de seguridad madura completa.
 
 La base es buena en:
 - estructura
 - validaciones
-- control visual de acceso
+- control visual de acceso **por rol**
 - orden de sesion y rutas
 
 Los siguientes saltos reales de seguridad estan en:
@@ -175,3 +179,4 @@ Los siguientes saltos reales de seguridad estan en:
 - websocket
 
 Si esos puntos se corrigen, la postura general del frontend sube bastante.
+

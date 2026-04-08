@@ -294,7 +294,7 @@ export function UsuariosPage() {
       <Modal isOpen={Boolean(confirmAction)} onClose={() => setConfirmAction(null)} title={confirmAction?.title || "Confirmar accion"}>
         <p className="text-text-secondary text-sm mb-6">
           {confirmAction
-            ? `Estas seguro de que deseas ${confirmAction.actionLabel} a ${confirmAction.targetName}? Esta accion no se puede deshacer.`
+            ? `Estas seguro de que deseas ${confirmAction.actionLabel} a ${confirmAction.targetName}?`
             : ""}
         </p>
         <div className="flex justify-end gap-3">
