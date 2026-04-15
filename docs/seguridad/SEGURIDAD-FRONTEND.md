@@ -178,7 +178,7 @@ Hoy el mayor riesgo no esta en la UI visible, sino en:
 
 ## Control de Roles y Permisos
 
-Ver [ROLES-PERMISSIONS.md](roles/ROLES-PERMISSIONS.md) para detalles completos por rol (ADMIN, TECNICO, ENCARGADO).
+Ver [ROLES-PERMISSIONS.md](../roles/ROLES-PERMISSIONS.md) para detalles completos por rol (ADMIN, TECNICO, ENCARGADO).
 
 ## Conclusion
 El frontend actual no esta inseguro de forma alarmante, pero tampoco esta en un punto de seguridad madura completa.

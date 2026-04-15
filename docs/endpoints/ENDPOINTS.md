@@ -55,5 +55,5 @@ Base URL: `https://exquisite-creativity-production.up.railway.app/api`
 
 **Fuente**: services/*.js actual.
 
-**Actualizado**: Oct 2024
+**Actualizado**: 2026-04-15
 

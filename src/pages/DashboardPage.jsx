@@ -8,6 +8,7 @@ import { PRIORIDAD } from "../constants/ticketPrioridad";
 import { getUserDisplayName } from "../utils/userDisplay";
 import { ticketService } from "../services/ticketService";
 import { formatDate } from "../utils/formatDate";
+import { encodeId } from "../utils/cryptoUtils";
 
 export function DashboardPage() {
   const { user, role } = useAuth();
@@ -131,7 +132,8 @@ export function DashboardPage() {
             ) : recentTickets.map((ticket) => (
               <Link
                 key={ticket.id}
-                to={`/tickets/${ticket.id}`}
+                to={`/tickets/${encodeId(ticket.id) || ticket.id}`}
+                state={{ ticket }}
                 className="flex cursor-pointer items-center justify-between rounded-xl border border-white/5 bg-white/[0.03] p-4 transition-colors duration-200 hover:bg-white/5"
               >
                 <div className="min-w-0 flex-1">
@@ -166,7 +168,8 @@ export function DashboardPage() {
                 criticalTickets.map((ticket) => (
                   <Link
                     key={ticket.id}
-                    to={`/tickets/${ticket.id}`}
+                    to={`/tickets/${encodeId(ticket.id) || ticket.id}`}
+                    state={{ ticket }}
                     className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/5 p-3 transition-colors duration-200 hover:bg-white/5"
                   >
                     <span className="h-2 w-2 flex-shrink-0 rounded-full bg-purple-electric/80"></span>

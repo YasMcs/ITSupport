@@ -5,6 +5,7 @@ import { ROLES } from "../constants/roles";
 import { TICKET_STATUS } from "../constants/ticketStatus";
 import { Badge } from "../components/ui/Badge";
 import { ticketService } from "../services/ticketService";
+import { encodeId } from "../utils/cryptoUtils";
 import { 
   getSystemHealth, 
   calculateTrackingIndex, 
@@ -218,7 +219,8 @@ export function EstadisticasPage() {
             stagnantTickets.map((ticket) => (
               <Link
                 key={ticket.id}
-                to={`/tickets/${ticket.id}`}
+                to={`/tickets/${encodeId(ticket.id) || ticket.id}`}
+                state={{ ticket }}
                 className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.01] p-3 transition-colors hover:bg-white/[0.05]"
               >
                 <div>

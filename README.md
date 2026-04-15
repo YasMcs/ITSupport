@@ -1,34 +1,48 @@
-# IT Support - Frontend
+# IT Support Frontend
 
-Frontend para el sistema de gestión de tickets IT Support, construido con React + Vite.
+Frontend del sistema de soporte IT para gestion de tickets, seguimiento por rol y actualizacion en tiempo real.
 
-## Estructura del proyecto
+## Stack
+- React 18
+- Vite
+- React Router DOM
+- TailwindCSS
+- Axios
+- SockJS + STOMP
+- Sonner
 
-El proyecto sigue la estructura definida en `.cursor/skills/frontend-structure-react-vite/SKILL.md`.
-
-## Instalación
-
+## Scripts
 ```bash
 npm install
-```
-
-## Desarrollo
-
-```bash
 npm run dev
+npm run build
+npm run preview
 ```
 
-La aplicación estará disponible en `http://localhost:5173`
+## Variables de entorno
+Copia `.env.example` a `.env` y configura como minimo:
 
-## Configuración
-
-Copia `.env.example` a `.env` y configura la URL de tu API:
-
-```
+```env
 VITE_API_URL=http://localhost:3000/api
 ```
 
-## Notas
+Opcionalmente puedes definir:
 
-- En modo desarrollo, si el backend no está disponible, la aplicación usará datos mock para permitir probar la UI.
-- El login en desarrollo permite acceder con cualquier credencial cuando el backend no responde.
+```env
+VITE_WS_URL=http://localhost:3000/api/ws
+```
+
+## Documentacion
+La documentacion principal vive en [docs/README.md](./docs/README.md).
+
+Puntos de entrada recomendados:
+- onboarding rapido: [docs/onboarding/GUIA-RAPIDA.md](./docs/onboarding/GUIA-RAPIDA.md)
+- mapa del proyecto: [docs/onboarding/MAPA-DEL-PROYECTO.md](./docs/onboarding/MAPA-DEL-PROYECTO.md)
+- modulos y roles: [docs/producto/MODULOS-Y-RESPONSABILIDADES.md](./docs/producto/MODULOS-Y-RESPONSABILIDADES.md)
+
+## Estado actual
+- autenticacion con token Bearer en `sessionStorage`
+- rutas protegidas por rol
+- detalle de ticket con comentarios en tiempo real
+- dashboard y estadisticas con vistas acotadas por rol
+- CRUD administrativo para usuarios, areas y sucursales

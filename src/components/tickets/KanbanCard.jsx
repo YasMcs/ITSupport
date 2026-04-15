@@ -2,6 +2,7 @@ import { Draggable } from "@hello-pangea/dnd";
 import { Link } from "react-router-dom";
 import { Badge } from "../ui/Badge";
 import { formatDate } from "../../utils/formatDate";
+import { encodeId } from "../../utils/cryptoUtils";
 
 export function KanbanCard({ ticket, index }) {
   const getTimeAgo = (fecha) => {
@@ -28,7 +29,7 @@ export function KanbanCard({ ticket, index }) {
             snapshot.isDragging ? "bg-dark-purple-700 shadow-lg shadow-purple-electric/20 rotate-2" : ""
           }`}
         >
-          <Link to={`/tickets/${ticket.id}`} state={{ ticket }} className="block">
+          <Link to={`/tickets/${encodeId(ticket.id) || ticket.id}`} state={{ ticket }} className="block">
             <div className="flex items-start justify-between mb-3">
               <span className="text-xs font-mono text-text-muted">#{ticket.id}</span>
             </div>
