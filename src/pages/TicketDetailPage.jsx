@@ -135,11 +135,7 @@ export function TicketDetailPage() {
     return subscribeToTicketComments(ticket.id, (incomingComment) => {
       const normalized = normalizeComment(incomingComment);
 
-      setComentarios((prev) => {
-        const alreadyExists = prev.some((comment) => String(comment.id) === String(normalized.id));
-        if (alreadyExists) return prev;
-        return [...prev, normalized];
-      });
+      setComentarios((prev) => mergeComment(prev, normalized));
     });
   }, [subscribeToTicketComments, ticket?.id]);
 
@@ -209,14 +205,16 @@ export function TicketDetailPage() {
       };
 
       const createdComment = await commentService.create(payload);
-      setComentarios((prev) => [
-        ...prev,
-        {
+      setComentarios((prev) =>
+        mergeComment(prev, {
           ...createdComment,
           autor: createdComment.autor || getUserDisplayName(user),
           texto: createdComment.texto || payload.contenido,
-        },
-      ]);
+          contenido: createdComment.contenido || payload.contenido,
+          ticket_id: createdComment.ticket_id || Number(id),
+          usuario_id: createdComment.usuario_id || Number(user?.id),
+        })
+      );
       setNuevoComentario("");
       toast.success("Comentario agregado", {
         description: "Tu actualizacion ya es visible en la conversacion.",
@@ -485,6 +483,62 @@ function isAssignmentNoiseComment(comment, ticket) {
   if (!looksLikeAssignmentEvent) return false;
 
   return author === "sistema" || (assignedTechnician && author === assignedTechnician);
+}
+
+function mergeComment(currentComments, incomingComment) {
+  const normalizedIncoming = normalizeComment(incomingComment);
+  const existingIndex = currentComments.findIndex((comment) =>
+    areSameComment(comment, normalizedIncoming)
+  );
+
+  if (existingIndex === -1) {
+    return [...currentComments, normalizedIncoming];
+  }
+
+  const nextComments = [...currentComments];
+  nextComments[existingIndex] = {
+    ...nextComments[existingIndex],
+    ...normalizedIncoming,
+  };
+  return nextComments;
+}
+
+function areSameComment(a, b) {
+  const aId = normalizeComparableValue(a?.id);
+  const bId = normalizeComparableValue(b?.id);
+  if (aId && bId) return aId === bId;
+
+  const sameUser =
+    normalizeComparableValue(a?.usuario_id) &&
+    normalizeComparableValue(a?.usuario_id) === normalizeComparableValue(b?.usuario_id);
+  const sameTicket =
+    normalizeComparableValue(a?.ticket_id) &&
+    normalizeComparableValue(a?.ticket_id) === normalizeComparableValue(b?.ticket_id);
+  const sameText = normalizeComparableText(a?.texto || a?.contenido) === normalizeComparableText(b?.texto || b?.contenido);
+
+  if (!sameUser || !sameTicket || !sameText) return false;
+
+  const aTime = getCommentTimestamp(a?.fecha);
+  const bTime = getCommentTimestamp(b?.fecha);
+
+  if (aTime === null || bTime === null) return true;
+
+  return Math.abs(aTime - bTime) <= 10000;
+}
+
+function normalizeComparableValue(value) {
+  if (value === undefined || value === null || value === "") return "";
+  return String(value).trim();
+}
+
+function normalizeComparableText(value) {
+  return String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function getCommentTimestamp(value) {
+  if (!value) return null;
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? null : timestamp;
 }
 
 function InfoRow({ label, value, mono = false }) {
