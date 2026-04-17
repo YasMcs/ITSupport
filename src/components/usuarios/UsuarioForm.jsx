@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { FormField } from "../ui/FormField";
 import { Select } from "../ui/Select";
 import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 import {
   containsForbiddenInput,
   normalizeTextInput,
@@ -43,9 +44,11 @@ export function UsuarioForm({
     estado_cuenta: usuario?.estado_cuenta || "activo",
     area_id: usuario?.area_id ? String(usuario.area_id) : "",
   });
-const [errors, setErrors] = useState({});  
+const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
   const normalizedAreaOptions = areaOptions
     .filter((area) => area.estado === "Activa")
     .map((area) => ({
@@ -162,8 +165,15 @@ const [errors, setErrors] = useState({});
 
     if (!validate()) return;
 
+    // Mostrar modal de confirmación
+    setShowSaveModal(true);
+  };
+
+  const handleConfirmSave = async () => {
     try {
       setSubmitting(true);
+      setShowSaveModal(false);
+      
       await Promise.resolve(onSubmit?.({
         nombre: normalizeTextInput(formData.nombre),
         apellido_paterno: normalizeTextInput(formData.apellido_paterno),
@@ -182,6 +192,17 @@ const [errors, setErrors] = useState({});
       setFormError(getFeedbackMessage(error, feedbackText.saveGeneric));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleCancelClick = () => {
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setShowCancelModal(false);
+    if (onCancel) {
+      onCancel();
     }
   };
 
@@ -268,8 +289,13 @@ const [errors, setErrors] = useState({});
               )}
 
               <div className="flex justify-end gap-3 mt-6">
-                {onCancel && (
-                  <Button type="button" variant="secondary" onClick={onCancel} className="px-6 py-3 w-auto">
+                {!readOnly && (
+                  <Button 
+                    type="button" 
+                    variant="secondary" 
+                    onClick={handleCancelClick} 
+                    className="px-6 py-3 w-auto"
+                  >
                     Cancelar
                   </Button>
                 )}
@@ -347,6 +373,67 @@ const [errors, setErrors] = useState({});
           </div>
         </div>
       </form>
+
+      {/* Modal de Confirmación de Guardado */}
+      <Modal 
+        isOpen={showSaveModal} 
+        onClose={() => setShowSaveModal(false)}
+        title="¿Confirmar cambios?"
+      >
+        <div className="space-y-6">
+          <p className="text-text-secondary">
+            Se actualizará la información del usuario en el sistema. Esta acción no se puede deshacer.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button 
+              type="button" 
+              variant="secondary" 
+              onClick={() => setShowSaveModal(false)}
+              className="px-6 py-3"
+            >
+              Revisar
+            </Button>
+            <Button 
+              type="button" 
+              className="px-6 py-3 bg-blue-500 hover:bg-blue-600"
+              onClick={handleConfirmSave}
+              disabled={submitting}
+            >
+              {submitting ? "Guardando..." : "Confirmar y Guardar"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal de Descarte de Cambios */}
+      <Modal 
+        isOpen={showCancelModal} 
+        onClose={() => setShowCancelModal(false)}
+        title="¿Descartar cambios?"
+      >
+        <div className="space-y-6">
+          <p className="text-text-secondary">
+            Los datos modificados se perderán. Esta acción no se puede deshacer.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button 
+              type="button" 
+              variant="secondary" 
+              onClick={() => setShowCancelModal(false)}
+              className="px-6 py-3"
+            >
+              Seguir editando
+            </Button>
+            <Button 
+              type="button" 
+              className="px-6 py-3 bg-rose-500 hover:bg-rose-600"
+              onClick={handleConfirmCancel}
+            >
+              Descartar
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
