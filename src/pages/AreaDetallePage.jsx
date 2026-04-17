@@ -19,31 +19,12 @@ export function AreaDetallePage() {
   useEffect(() => {
     let cancelled = false;
 
-    // 🔍 DEBUG: Información completa del ID
-    console.group('%c[AreaDetallePage - DEBUG]', 'color: #FFD93D; font-weight: bold; font-size: 12px;');
-    console.table({
-      'URL encodedId': encodedId,
-      'Tipo de encodedId': typeof encodedId,
-      'Es null o undefined': encodedId === null || encodedId === undefined,
-    });
-    console.table({
-      'Decoded ID': id,
-      'Tipo de ID decodificado': typeof id,
-      '¿Es Number?': typeof id === 'number',
-      'Es null?': id === null,
-      'Es positivo?': id > 0,
-    });
-    console.groupEnd();
-
     // Guardia: Validar que el ID sea válido
     if (!id || id === "null" || id === "undefined") {
-      console.error('%c[AreaDetallePage] ❌ GUARDIA ACTIVADA - ID Inválido', 'color: #FF6B6B; font-weight: bold;', { id, encodedId });
       toast.error("El ID del área no es válido o ha expirado.");
       navigate("/areas");
       return;
     }
-
-    console.log('%c[AreaDetallePage] ✅ ID válido, llamando API con:', 'color: #51CF66; font-weight: bold;', { id, tipo: typeof id });
 
     async function loadData() {
       try {

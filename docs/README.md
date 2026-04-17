@@ -3,6 +3,10 @@
 ## Fuente canonica
 Esta carpeta `docs/` concentra la documentacion funcional y tecnica vigente del frontend.
 
+**Última actualización**: 2026-04-17
+- ✨ Confirmación ultra-segura implementada en formularios de usuarios, áreas y sucursales
+- ✨ Documentación sincronizada con cambios recientes
+
 ## Ruta recomendada de lectura
 ### Si es tu primera vez en el proyecto
 1. [Guia rapida](./onboarding/GUIA-RAPIDA.md)
@@ -42,4 +46,4 @@ Esta carpeta `docs/` concentra la documentacion funcional y tecnica vigente del 
 - evitar duplicar el mismo contenido en varios archivos
 - actualizar la doc cuando cambie el comportamiento real
 
-**Actualizado**: 2026-04-15
+**Actualizado**: 2026-04-17

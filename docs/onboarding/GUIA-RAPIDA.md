@@ -52,6 +52,7 @@ VITE_WS_URL=http://localhost:3000/api/ws
 - Los roles cambian tanto el menu como los datos visibles.
 - Los servicios normalizan payloads del backend antes de entregarlos a las vistas.
 - Los comentarios y varias notificaciones llegan por WebSocket.
+- Formularios de datos críticos (usuarios, áreas, sucursales) requieren confirmación explícita antes de guardar o descartar cambios.
 
 ## Documentos de referencia rapida
 - rutas y permisos: [ROLES-PERMISSIONS.md](../roles/ROLES-PERMISSIONS.md)

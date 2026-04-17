@@ -3,6 +3,10 @@
 ## Objetivo
 Documento vivo del estado actual del frontend: rutas, permisos, flujos funcionales, validaciones, notificaciones y decisiones visibles para la persona usuaria.
 
+**Última actualización**: 2026-04-17
+- ✨ Nuevo: Confirmación ultra-segura en formularios (Usuarios, Áreas, Sucursales)
+- ✨ Nuevo: Botón Cancelar disponible en AREAForm y SucursalForm
+
 ## Roles oficiales
 - `admin`
 - `tecnico`
@@ -104,6 +108,50 @@ Todos se manejan en minusculas.
 - `sucursalService.js`
 - `websocketService.js`
 
+## Flujo Ultra-Seguro de Confirmación en Formularios
+
+### Aplicable a
+- `UsuarioForm` (crear y editar usuarios)
+- `AreaForm` (crear y editar áreas)
+- `SucursalForm` (crear y editar sucursales)
+
+### Comportamiento: Guardar Cambios
+1. Usuario llena el formulario y hace clic en "Guardar Cambios" o "Crear [Recurso]"
+2. **Validación frontend**: Se validan reglas básicas (emails, caracteres, campos requeridos)
+3. **Modal de confirmación**: Se abre modal con título "¿Confirmar cambios?"
+   - Mensaje: "Se actualizará la información en el sistema. Esta acción no se puede deshacer."
+   - Botón "Revisar" (gris): Cierra el modal, vuelve al formulario
+   - Botón "Confirmar y Guardar" (azul eléctrico): Ejecuta la acción
+4. **Si confirma**: Datos se normalizan, se envían a API y se navega a listado
+5. **Si hace clic en "Revisar"**: Modal se cierra y el usuario puede seguir editando
+
+### Comportamiento: Descartar Cambios
+1. Usuario hace clic en botón "Cancelar" (solo visible si no está en modo `readOnly`)
+2. **Modal de descarte**: Se abre modal con título "¿Descartar cambios?"
+   - Mensaje: "Los datos modificados se perderán. Esta acción no se puede deshacer."
+   - Botón "Seguir editando" (gris): Cierra el modal, vuelve al formulario
+   - Botón "Descartar" (rojo/rosa): Navega sin guardar
+3. **Confirmación visual**: Los botones tienen colores que indican gravedad de la acción
+
+### Comportamiento: Vista de Detalle (readOnly = true)
+- El botón "Cancelar" está **completamente oculto**
+- El botón "Guardar" está **completamente oculto**
+- Solo está visible el botón "Editar" (o equivalente según contexto)
+- No hay riesgo de descarte accidental porque la vista es de solo lectura
+
+### Estados internos del formulario
+Cada formulario mantiene dos estados adicionales:
+- `showCancelModal`: booleano que controla visibilidad del modal de descarte
+- `showSaveModal`: booleano que controla visibilidad del modal de confirmación
+
+### Mensajes y diseño visual
+- **Modal de Guardado**:
+  - Botón principal: `bg-blue-500 hover:bg-blue-600` (azul eléctrico)
+  - Acción: Crítica pero esperada (guardar datos es la intención)
+- **Modal de Descarte**:
+  - Botón principal: `bg-rose-500 hover:bg-rose-600` (rojo/rosa)
+  - Acción: Destructiva (perdida de datos)
+
 ## Modulo de usuarios
 
 ### Listado
@@ -129,6 +177,8 @@ Todos se manejan en minusculas.
   - area asignada solo si el rol es `encargado`
 - Regla visual y funcional:
   - el cargo se define al crear y no se cambia en edicion
+- **Flujo de guardado**: Usa confirmación ultra-segura (modal de doble confirmación antes de crear)
+- **Flujo de cancela**: Botón "Cancelar" abre otro modal para confirmar descarte
 
 ### Editar usuario
 - Visible para `admin`.
@@ -142,6 +192,8 @@ Todos se manejan en minusculas.
   - rol
   - area
   - estado de cuenta
+- **Flujo de guardado**: Usa confirmación ultra-segura (modal de doble confirmación antes de guardar cambios)
+- **Flujo de cancela**: Botón "Cancelar" abre modal para confirmar descarte
 
 ### Activar y suspender
 - Visible para `admin`.
@@ -171,6 +223,8 @@ Todos se manejan en minusculas.
 - Campos omitidos en frontend:
   - extension
   - contacto local
+- **Flujo de guardado**: Usa confirmación ultra-segura (modal de doble confirmación antes de guardar)
+- **Flujo de cancela**: Botón "Cancelar" abre modal para confirmar descarte
 
 ### Activar y desactivar
 - Visible para `admin`.
@@ -193,6 +247,8 @@ Todos se manejan en minusculas.
 - Campos activos:
   - nombre del area
   - sucursal
+- **Flujo de guardado**: Usa confirmación ultra-segura (modal de doble confirmación antes de guardar)
+- **Flujo de cancela**: Botón "Cancelar" abre modal para confirmar descarte
 
 ### Activar y desactivar
 - Visible para `admin`.

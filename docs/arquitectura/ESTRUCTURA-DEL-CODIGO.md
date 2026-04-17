@@ -3,6 +3,10 @@
 ## Objetivo
 Explicar donde vive cada responsabilidad tecnica para que el codigo siga creciendo de forma ordenada.
 
+**Última actualización**: 2026-04-17
+- ✨ Nuevo: Componentes de formulario usan Modal para confirmación de guardado y descarte
+- ✨ Nuevo: Estados `showCancelModal` y `showSaveModal` en formularios
+
 ## Capas del frontend
 ### `routes/`
 Define la superficie navegable de la app y protege acceso por rol.
@@ -45,8 +49,13 @@ Piezas reutilizables.
 
 Subgrupos actuales:
 - `ui/`: primitives y wrappers de interfaz
+  - `Button`, `Input`, `FormField`, `Badge`, `Table`, `Select`, `FilterBar`, `Modal`
+  - **`Modal`** es utilizado por formularios para confirmación ultra-segura de guardado y descarte
 - `layout/`: shell visual
 - `tickets/`, `usuarios/`, `areas/`, `sucursales/`: componentes por dominio
+  - Formularios (`*Form.jsx`) ahora usan Modal para:
+    - Confirmación antes de guardar cambios
+    - Confirmación antes de descartar cambios
 
 ### `utils/`
 Reglas transversales y helpers.

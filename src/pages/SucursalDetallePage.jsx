@@ -17,47 +17,22 @@ export function SucursalDetallePage() {
   useEffect(() => {
     let cancelled = false;
 
-    // 🔍 DEBUG: Información completa del ID
-    console.group('%c[SucursalDetallePage - DEBUG]', 'color: #9D84B7; font-weight: bold; font-size: 12px;');
-    console.table({
-      'URL encodedId': encodedId,
-      'Tipo de encodedId': typeof encodedId,
-      'Es null o undefined': encodedId === null || encodedId === undefined,
-    });
-    console.table({
-      'Decoded ID': id,
-      'Tipo de ID decodificado': typeof id,
-      '¿Es Number?': typeof id === 'number',
-      'Es null?': id === null,
-      'Es positivo?': id > 0,
-    });
-    console.groupEnd();
-
     // Guardia: Validar que el ID sea válido
     if (!id || id === "null" || id === "undefined") {
-      console.error('%c[SucursalDetallePage] ❌ GUARDIA ACTIVADA - ID Inválido', 'color: #FF6B6B; font-weight: bold;', { id, encodedId });
       toast.error("El ID de la sucursal no es válido o ha expirado.");
       navigate("/sucursales");
       return;
     }
 
-    console.log('%c[SucursalDetallePage] ✅ ID válido, llamando API con:', 'color: #51CF66; font-weight: bold;', { id, tipo: typeof id });
-
     async function loadSucursal() {
       try {
-        console.log(`%c[SucursalDetallePage] 📡 GET /sucursales/${id}`, 'color: #4C6EF5; font-style: italic;');
         const data = await sucursalService.getById(id);
         if (!cancelled) {
-          console.log('%c[SucursalDetallePage] ✅ Datos cargados correctamente', 'color: #51CF66;', { data });
           setSucursalData(data);
           setLoadError("");
         }
       } catch (error) {
         if (!cancelled) {
-          console.error('%c[SucursalDetallePage] ❌ Error al cargar sucursal', 'color: #FF6B6B;', {
-            status: error.response?.status,
-            message: error.message,
-          });
           setLoadError(getFeedbackMessage(error, "No pudimos abrir la sucursal seleccionada."));
         }
       } finally {

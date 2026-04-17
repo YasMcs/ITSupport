@@ -14,7 +14,6 @@ import {
 import { feedbackText, getFeedbackMessage } from "../../utils/feedback";
 
 export const ROL_OPTIONS = [
-  { value: "admin", label: "Admin" },
   { value: "encargado", label: "Encargado" },
   { value: "tecnico", label: "Tecnico" },
 ];

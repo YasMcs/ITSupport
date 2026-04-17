@@ -3,12 +3,17 @@
 ## Objetivo
 Dejar reglas practicas para que el proyecto siga siendo mantenible conforme crece.
 
+**Última actualización**: 2026-04-17
+- ✨ Nuevo: Confirmación ultra-segura en formularios (UsuarioForm, AreaForm, SucursalForm)
+- ✨ Nuevo: Botón "Cancelar" ahora disponible en AREAForm y SucursalForm
+
 ## Convenciones de codigo
 - usa constantes para roles, estados y prioridades
 - usa `services/` para toda llamada remota
 - usa `utils/apiMappers.js` cuando el backend cambie nombres o estructuras
 - usa `feedback.js` para mantener mensajes consistentes
 - usa `security.js` para validar y sanitizar entradas de texto
+- formularios que modifiquen datos criticos (usuarios, áreas, sucursales) deben usar confirmación ultra-segura con Modal
 
 ## Convenciones de UI
 - reutiliza componentes de `src/components/ui`
@@ -33,6 +38,7 @@ Dejar reglas practicas para que el proyecto siga siendo mantenible conforme crec
 - la vista usa servicios y no llamadas HTTP directas
 - el feedback visible es claro
 - la documentacion afectada fue actualizada
+- si es un formulario que modifica datos criticos, tiene confirmación ultra-segura (Modal)
 
 ## Lugares que suelen necesitar sincronizacion
 - `AppRouter.jsx` y `Sidebar.jsx`

@@ -5,6 +5,9 @@
 ## Objetivo
 Resumen corto de la estructura actual del proyecto, sus decisiones sanas, los puntos fuertes y la deuda tecnica visible.
 
+**Última actualización**: 2026-04-17
+- ✨ Nuevo: Confirmación ultra-segura en formularios de datos críticos
+
 ## Estructura principal
 
 ### `src/components`
@@ -92,6 +95,13 @@ Transformaciones, formato, seguridad, feedback y metricas.
 - fondo global
 - badges coherentes
 - dropdown propio para selects
+
+### 6. Confirmación Ultra-Segura en Formularios (Nuevo)
+- formularios de datos críticos (`UsuarioForm`, `AreaForm`, `SucursalForm`) requieren confirmación explícita antes de guardar o descartar
+- usa `Modal` reutilizable con dos botones claros (revisar/descartar o confirmar/guardar)
+- los colores varían según gravedad: azul eléctrico para guardar, rojo/rosa para descartar
+- esto mitiga acciones accidentales sin comprometer UX
+- la validación frontend sigue siendo la primera barrera, pero no la única
 
 ## Buenas practicas que ya se estan cumpliendo
 

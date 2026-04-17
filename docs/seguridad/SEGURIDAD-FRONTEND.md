@@ -107,6 +107,31 @@ Hoy el mayor riesgo no esta en la UI visible, sino en:
 - No debe considerarse defensa final.
 - La validacion fuerte debe existir tambien en backend.
 
+## Confirmación Ultra-Segura en Formularios (Nueva capa)
+
+**Implementado**: Modales de confirmación dual en formularios críticos.
+
+### Aplicado a
+- `UsuarioForm` (crear/editar usuarios)
+- `AreaForm` (crear/editar áreas)
+- `SucursalForm` (crear/editar sucursales)
+
+### Mecanismo
+1. **Validación**: Frontend valida reglas básicas (emails, campos requeridos, caracteres).
+2. **Modal de confirmación**: Antes de enviar a API, se abre un modal explícito.
+   - Título: "¿Confirmar cambios?" o "¿Descartar cambios?"
+   - Mensaje claro: Advierte sobre irreversibilidad.
+   - Dos botones: "Revisar" (secundario) o "Confirmar y Guardar" (azul eléctrico).
+3. **Descarte confirmado**: Botón "Cancelar" abre un segundo modal.
+   - Título: "¿Descartar cambios?"
+   - Mensaje claro: Advierte sobre pérdida de datos.
+   - Dos botones: "Seguir editando" (secundario) o "Descartar" (rojo/rosa).
+
+### Beneficio de seguridad
+- **Mitiga acciones accidentales**: Usuario debe confirmar 2 veces antes de guardar o descartar.
+- **Interfaz clara**: Colores diferenciados (azul para guardar, rojo para descartar) ayudan a la intención.
+- **No es cripto, es UX**: La confirmación es barrera visual y funcional, no sustituto de validación backend.
+
 ### Exceso de datos en payloads o eventos
 - Si backend manda mas datos de los necesarios en tickets o sockets, el frontend no los filtra de forma estricta.
 - Conviene seguir revisando que DTOs traigan solo lo necesario.
