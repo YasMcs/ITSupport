@@ -110,7 +110,6 @@ export function SucursalDetallePage() {
       initialData={sucursalData}
       readOnly
       primaryActionLabel="Editar Sucursal"
-      onPrimaryAction={() => navigate(`/sucursales/editar/${id}`)}
-    />
+      onPrimaryAction={() => navigate(`/sucursales/editar/${encodedId}`)}    />
   );
 }
