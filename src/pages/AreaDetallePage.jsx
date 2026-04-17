@@ -120,7 +120,6 @@ export function AreaDetallePage() {
       sucursalOptions={sucursalOptions}
       readOnly
       primaryActionLabel="Editar Area"
-      onPrimaryAction={() => navigate(`/areas/editar/${id}`)}
-    />
+      onPrimaryAction={() => navigate(`/areas/editar/${encodedId}`)}    />
   );
 }

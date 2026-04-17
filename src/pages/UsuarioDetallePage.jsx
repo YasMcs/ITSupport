@@ -143,8 +143,7 @@ export function UsuarioDetallePage() {
         areaOptions={areas}
         readOnly
         primaryActionLabel="Editar Usuario"
-        onPrimaryAction={() => navigate(`/usuarios/editar/${id}`)}
-      />
+        onPrimaryAction={() => navigate(`/usuarios/editar/${encodedId}`)}      />
     </div>
   );
 }
