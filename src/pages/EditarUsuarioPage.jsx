@@ -19,27 +19,61 @@ export function EditarUsuarioPage() {
   useEffect(() => {
     let cancelled = false;
 
+    // 🔍 DEBUG: Información completa del ID
+    console.group('%c[EditarUsuarioPage - DEBUG]', 'color: #FF6B6B; font-weight: bold; font-size: 12px;');
+    console.table({
+      'URL encodedId': encodedId,
+      'Tipo de encodedId': typeof encodedId,
+      'Es null o undefined': encodedId === null || encodedId === undefined,
+      'Valor es "null"': encodedId === 'null',
+      'Valor es "undefined"': encodedId === 'undefined',
+    });
+    console.table({
+      'Decoded ID': id,
+      'Tipo de ID decodificado': typeof id,
+      '¿Es Number?': typeof id === 'number',
+      'Es null?': id === null,
+      'Es NaN?': Number.isNaN(id),
+      'Es positivo?': id > 0,
+      'Valor es string "null"': id === 'null',
+    });
+    console.groupEnd();
+
     // Guardia: Validar que el ID sea válido
     if (!id || id === "null" || id === "undefined") {
+      console.error('%c[EditarUsuarioPage] ❌ GUARDIA ACTIVADA - ID Inválido', 'color: #FF6B6B; font-weight: bold;', {
+        id,
+        encodedId,
+        razon: !id ? 'ID es falsy' : `ID es string "${id}"`,
+      });
       toast.error("El ID del usuario no es válido o ha expirado.");
       navigate("/usuarios");
       return;
     }
 
+    console.log('%c[EditarUsuarioPage] ✅ Guardia pasada - ID válido, llamando API con:', 'color: #51CF66; font-weight: bold;', { id, tipo: typeof id });
+
     async function loadData() {
       try {
+        console.log(`%c[EditarUsuarioPage] 📡 GET /usuarios/${id}`, 'color: #4C6EF5; font-style: italic;');
         const [userData, areaData] = await Promise.all([
           userService.getById(id),
           areaService.getAll(),
         ]);
 
         if (!cancelled) {
+          console.log('%c[EditarUsuarioPage] ✅ Datos cargados correctamente', 'color: #51CF66;', { userData, areaCount: areaData.length });
           setUsuario(userData);
           setAreas(areaData);
           setLoadError("");
         }
       } catch (error) {
         if (!cancelled) {
+          console.error('%c[EditarUsuarioPage] ❌ Error al cargar usuario', 'color: #FF6B6B;', {
+            status: error.response?.status,
+            message: error.message,
+            url: error.config?.url,
+          });
           setLoadError(getFeedbackMessage(error, "No pudimos abrir el usuario seleccionado."));
         }
       } finally {

@@ -19,18 +19,39 @@ export function AreaDetallePage() {
   useEffect(() => {
     let cancelled = false;
 
+    // 🔍 DEBUG: Información completa del ID
+    console.group('%c[AreaDetallePage - DEBUG]', 'color: #FFD93D; font-weight: bold; font-size: 12px;');
+    console.table({
+      'URL encodedId': encodedId,
+      'Tipo de encodedId': typeof encodedId,
+      'Es null o undefined': encodedId === null || encodedId === undefined,
+    });
+    console.table({
+      'Decoded ID': id,
+      'Tipo de ID decodificado': typeof id,
+      '¿Es Number?': typeof id === 'number',
+      'Es null?': id === null,
+      'Es positivo?': id > 0,
+    });
+    console.groupEnd();
+
     // Guardia: Validar que el ID sea válido
     if (!id || id === "null" || id === "undefined") {
+      console.error('%c[AreaDetallePage] ❌ GUARDIA ACTIVADA - ID Inválido', 'color: #FF6B6B; font-weight: bold;', { id, encodedId });
       toast.error("El ID del área no es válido o ha expirado.");
       navigate("/areas");
       return;
     }
 
+    console.log('%c[AreaDetallePage] ✅ ID válido, llamando API con:', 'color: #51CF66; font-weight: bold;', { id, tipo: typeof id });
+
     async function loadData() {
       try {
+        console.log(`%c[AreaDetallePage] 📡 GET /areas/${id}`, 'color: #4C6EF5; font-style: italic;');
         const [areaData, sucursales] = await Promise.all([areaService.getById(id), sucursalService.getAll()]);
 
         if (!cancelled) {
+          console.log('%c[AreaDetallePage] ✅ Datos cargados correctamente', 'color: #51CF66;', { areaData, sucursalCount: sucursales.length });
           setAreaExistente(areaData);
           setSucursalOptions(
             sucursales.map((sucursal) => ({
@@ -42,6 +63,10 @@ export function AreaDetallePage() {
         }
       } catch (error) {
         if (!cancelled) {
+          console.error('%c[AreaDetallePage] ❌ Error al cargar área', 'color: #FF6B6B;', {
+            status: error.response?.status,
+            message: error.message,
+          });
           setLoadError(getFeedbackMessage(error, "No pudimos abrir el area seleccionada."));
         }
       } finally {
